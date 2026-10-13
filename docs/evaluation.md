@@ -353,4 +353,32 @@ The observations are audited rather than assumed clean: historical versions, pub
 
 Only 301 weekly development outcomes are scored, with potentially dependent horizons. Delayed spot benchmarks and a narrow eleven-input feature set also constrain the question. Inventory changes are measured levels/differences, not surprises relative to contemporary market expectations. The weak fitted results do not prove that the underlying prices or stock observations are bad; they show that this limited information set and model family have not demonstrated an edge. The rolling experiment tests a different history policy, not a repair of source quality.
 
-Assess paired accuracy, balanced accuracy, AUC, Brier score and log loss, plus yearly stability. The main hypothesis is that stronger regularization improves probability quality relative to `C=1`; improvement beyond neutral and historical-prevalence probabilities would be more useful evidence. A gain caused only by approaching constant probabilities is not a discovered forecasting edge. No settings may be changed in response to this experiment's results, and no independent-sample significance claim is warranted. The 2023-onward final holdout stays closed.
+## Rolling versus expanding results
+
+The fixed four-year protocol and implementation were committed as `931d8bf` before computing rolling results. Run `f4849ff22a6723bfd1d9` uses the same qualified source dataset, inventory audit and common native runtime as the expanding reference `21e67f2c5ee9e4c216d6`. All **310 forecasts, 301 scored outcomes, nine unscored states and 607 frozen inventory rows** are retained. Expanding training counts remain **295–596**; rolling retains **197–207** examples and excludes 90–398 older eligible rows per fit.
+
+| Model / benchmark | Correct / scored | Accuracy | Balanced accuracy | ROC AUC | Brier score | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Inventory C=0.1, expanding | 160 / 301 | 53.16% | 52.87% | 0.5077 | 0.2563 | 0.7126 |
+| Inventory C=0.1, four-year rolling | 153 / 301 | 50.83% | 49.45% | 0.4764 | 0.2697 | 0.7866 |
+| Training-majority / prevalence, expanding | 149 / 301 | 49.50% | 51.71% | 0.4864 | 0.2512 | 0.6955 |
+| Five-day momentum | 151 / 301 | 50.17% | 49.72% | — | — | — |
+| Always up | 168 / 301 | 55.81% | 50.00% | — | — | — |
+| Constant probability 0.5 | 168 / 301 | 55.81% | 50.00% | 0.5000 | 0.2500 | 0.6931 |
+
+Rolling loses **seven correct forecasts (-2.33 percentage points)**. Both are correct on 119 dates and wrong on 107; rolling alone is correct on 34 and expanding alone on 41. Balanced accuracy falls by 3.41 points and AUC by 0.0313. Brier increases by 0.01336 and log loss by 0.07401. Both models remain worse than the neutral and historical-prevalence probability benchmarks; the rolling AUC is below 0.5 in this development sample.
+
+| Year | Scored | Expanding accuracy | Rolling accuracy | Additional correct, rolling | Brier difference rolling minus expanding | Log-loss difference |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2017 | 52 | 51.92% | 51.92% | 0 | +0.01818 | +0.04129 |
+| 2018 | 50 | 50.00% | 52.00% | +1 | +0.00354 | +0.00682 |
+| 2019 | 50 | 50.00% | 50.00% | 0 | -0.00373 | -0.00719 |
+| 2020 | 50 | 54.00% | 48.00% | -3 | +0.05545 | +0.39267 |
+| 2021 | 50 | 56.00% | 58.00% | +1 | +0.00050 | -0.00002 |
+| 2022 | 49 | 57.14% | 44.90% | -6 | +0.00586 | +0.01055 |
+
+Accuracy improves in two years, ties in two and deteriorates in two, with the largest loss in 2022. Brier worsens in five years; log loss worsens in four, with a very small 2021 improvement. The largest probability deterioration occurs in 2020, when log loss rises from 0.7571 to 1.1497. The result favors the expanding `C=0.1` policy among these development candidates; it does not prove that all rolling policies fail, identify source corruption, establish significance or validate a forecasting edge. No settings or durations changed after this comparison.
+
+All five expanding control payloads, complete training metadata, inventory inputs/provenance and scoring states reproduce exactly. Every rolling fit preserves the frozen null inputs and meets the unchanged minimum/class checks; it refits preprocessing only on its recent subset. All regressions converge, with at most seven WTI, eleven `C=1`, nine expanding `C=0.1` and nine rolling iterations. The [window-comparison report](../reports/inventory_window_comparison.json) contains matched aggregate/yearly metrics, paired disagreements, simple benchmarks, both training-count ranges and reference-reproduction checks. The immutable local run retains raw inventory features, per-forecast rolling metadata/hashes and fitted diagnostics. The final holdout remains closed.
+
+Independent reconstruction verifies all 310 causal rolling subsets and both training-input hashes, all 1,550 expanding control payloads, all 607 raw inventory rows, aggregate/yearly metrics and benchmark scores, artifact checksums, all 28 code hashes against `931d8bf`, and all 211 native-file hashes. The repeated report and all run artifacts are byte-identical. A checksum comparison confirms all **717 pre-existing data/report files** remain unchanged. The timed repeat plus preservation checks took **12.24 seconds**, excluding imports and including source authentication, construction, 1,240 logistic fits, scoring and file checks. All **314 tests pass**. The experiment uses the existing free data and CPU runtime with no new downloads or paid services.
