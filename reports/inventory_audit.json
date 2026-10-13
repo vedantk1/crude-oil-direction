@@ -1,0 +1,911 @@
+{
+  "audit_directory": "data/audits/inventories/3a01db73789436d8ea29",
+  "audit_id": "3a01db73789436d8ea29",
+  "auxiliary_evidence": {
+    "manifest_sha256": "65bbf45f407eef914f99fb5347dc1719ab9a64ef1a26e35a49a8f9d37e459f18",
+    "verified_artifacts": {
+      "2011-08-03-table1.csv": {
+        "bytes": 5937,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/csv/table1.csv",
+        "sha256": "1f191f63c587ba4eda6ea84ebd58a9b5845f04aaa0595a57925bfe79a46a0b6d"
+      },
+      "2020-04-22-table1.csv": {
+        "bytes": 6080,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2020/2020_04_22/csv/table1.csv",
+        "sha256": "3ea1cf7635fa560139ef84d9d2356839ca940e026e51a9e57447657c71c6fcad"
+      },
+      "2022-06-29-table1.csv": {
+        "bytes": 6096,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2022/2022_06_29/csv/table1.csv",
+        "sha256": "947e4ed0060e56035dd43e41100283cbefef9d579c8a993de7f5e6baff840a79"
+      },
+      "delayed-release-june2022-confirmation.html": {
+        "bytes": 53246,
+        "requested_url": "https://www.eia.gov/pressroom/releases/press507.php",
+        "sha256": "c7c2f2ece441378970c793bb43bbc62642414eb89d50c57da10ee2841faafd67"
+      },
+      "delayed-release-june2022-plan.html": {
+        "bytes": 52320,
+        "requested_url": "https://www.eia.gov/pressroom/releases/press506.php",
+        "sha256": "31027dcebc10363e2ea7209e337b7e4d84be0a4fb3e7e4b968a2f3b9a07057ff"
+      },
+      "lease-definition-2016.html": {
+        "bytes": 52492,
+        "requested_url": "https://www.eia.gov/todayinenergy/detail.php?id=28292",
+        "sha256": "05780dc994b10a76cf49f1185a11c7821c42d15d7c7474835d3123869afdcc1d"
+      },
+      "methodology-2011.html": {
+        "bytes": 426766,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_08_03/pdf/appendixb.pdf",
+        "sha256": "706b8a125a282e05ea081c26e2a0dbc5b1d86551f8038d956075cf157f32c90e"
+      }
+    }
+  },
+  "bounded_early_2011_resource_probes": {
+    "manifest_sha256": "6a62a0539209a11b1cda4c5f913825d14223e2429c24e80ed3f99273193ca9cb",
+    "probe_count": 5,
+    "qualification": "These requested modern archive paths returned HTTP 404 at capture time; this does not prove that all older historical inventory files are unavailable.",
+    "sources": [
+      {
+        "attempted_at_utc": "2026-10-13T08:15:58.995404+00:00",
+        "attempts": [
+          {
+            "attempted_at_utc": "2026-10-13T08:15:58.995404+00:00",
+            "error_type": "HTTPError",
+            "http_status": 404,
+            "status": "download_failed"
+          }
+        ],
+        "candidate_release_date": "2011-04-06",
+        "error_type": "HTTPError",
+        "file": "2011_04_06-table4.csv",
+        "http_status": 404,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_04_06/csv/table4.csv",
+        "status": "download_failed"
+      },
+      {
+        "attempted_at_utc": "2026-10-13T08:16:09.344443+00:00",
+        "attempts": [
+          {
+            "attempted_at_utc": "2026-10-13T08:16:09.344443+00:00",
+            "error_type": "HTTPError",
+            "http_status": 404,
+            "status": "download_failed"
+          }
+        ],
+        "candidate_release_date": "2011-05-04",
+        "error_type": "HTTPError",
+        "file": "2011_05_04-table4.csv",
+        "http_status": 404,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_05_04/csv/table4.csv",
+        "status": "download_failed"
+      },
+      {
+        "attempted_at_utc": "2026-10-13T08:16:19.673913+00:00",
+        "attempts": [
+          {
+            "attempted_at_utc": "2026-10-13T08:16:19.673913+00:00",
+            "error_type": "HTTPError",
+            "http_status": 404,
+            "status": "download_failed"
+          }
+        ],
+        "candidate_release_date": "2011-06-01",
+        "error_type": "HTTPError",
+        "file": "2011_06_01-table4.csv",
+        "http_status": 404,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_06_01/csv/table4.csv",
+        "status": "download_failed"
+      },
+      {
+        "attempted_at_utc": "2026-10-13T08:16:29.041211+00:00",
+        "attempts": [
+          {
+            "attempted_at_utc": "2026-10-13T08:16:29.041211+00:00",
+            "error_type": "HTTPError",
+            "http_status": 404,
+            "status": "download_failed"
+          }
+        ],
+        "candidate_release_date": "2011-07-06",
+        "error_type": "HTTPError",
+        "file": "2011_07_06-table4.csv",
+        "http_status": 404,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_07_06/csv/table4.csv",
+        "status": "download_failed"
+      },
+      {
+        "attempted_at_utc": "2026-10-13T08:16:38.489265+00:00",
+        "attempts": [
+          {
+            "attempted_at_utc": "2026-10-13T08:16:38.489265+00:00",
+            "error_type": "HTTPError",
+            "http_status": 404,
+            "status": "download_failed"
+          }
+        ],
+        "candidate_release_date": "2011-07-20",
+        "error_type": "HTTPError",
+        "file": "2011_07_20-table4.csv",
+        "http_status": 404,
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2011/2011_07_20/csv/table4.csv",
+        "status": "download_failed"
+      }
+    ]
+  },
+  "current_observation_date_range": [
+    "2011-07-22",
+    "2022-12-23"
+  ],
+  "development_coverage": {
+    "by_series": {
+      "commercial_crude": {
+        "four_week_change_available": 309,
+        "stock_available": 309,
+        "weekly_change_available": 309
+      },
+      "cushing": {
+        "four_week_change_available": 309,
+        "stock_available": 309,
+        "weekly_change_available": 309
+      }
+    },
+    "forecast_count": 310,
+    "forecast_date_range": [
+      "2017-01-06",
+      "2022-12-22"
+    ],
+    "observation_age_calendar_days": {
+      "maximum": 10,
+      "median": 6,
+      "minimum": 6
+    },
+    "release_age_calendar_days": {
+      "maximum": 3,
+      "median": 1,
+      "minimum": 1
+    },
+    "status_counts": {
+      "available": 309,
+      "latest_declared_issue_unusable": 1
+    }
+  },
+  "failure_count": 1,
+  "failures": [
+    {
+      "captured_response_metadata": {
+        "bytes": 2345,
+        "http_last_modified": "Wed, 26 Jun 2019 12:06:44 GMT",
+        "retrieved_at_utc": "2026-10-13T08:16:57.050466+00:00",
+        "sha256": "e8e75163084b1d967d681a80de2f5e5d1b74279ce79ab2dbf6e30e79ab85c51f"
+      },
+      "error_type": "ValueError",
+      "http_status": null,
+      "issue_id": "2019_07_03",
+      "observation_date": "2019-06-28",
+      "reason": "Inventory table observation week differs from its release evidence",
+      "release_date": "2019-07-03",
+      "response_bytes_saved_in_primary_snapshot": false,
+      "status": "download_failed"
+    }
+  ],
+  "holdout_evaluated": false,
+  "issue_count": 597,
+  "lag_interpretation": "observed calendar lags; no automatic attribution to holidays or disruptions",
+  "leading_2011_coverage_limit": {
+    "first_saved_release_date": "2011-07-27",
+    "no_saved_release_evidence_from": "2011-01-01",
+    "no_saved_release_evidence_through": "2011-07-26",
+    "qualification": "missing from this captured release evidence; not proof that every older file is unavailable; prior-week values cannot be backfilled before their release",
+    "unrepresented_current_observation_fridays": [
+      "2011-01-07",
+      "2011-01-14",
+      "2011-01-21",
+      "2011-01-28",
+      "2011-02-04",
+      "2011-02-11",
+      "2011-02-18",
+      "2011-02-25",
+      "2011-03-04",
+      "2011-03-11",
+      "2011-03-18",
+      "2011-03-25",
+      "2011-04-01",
+      "2011-04-08",
+      "2011-04-15",
+      "2011-04-22",
+      "2011-04-29",
+      "2011-05-06",
+      "2011-05-13",
+      "2011-05-20",
+      "2011-05-27",
+      "2011-06-03",
+      "2011-06-10",
+      "2011-06-17",
+      "2011-06-24",
+      "2011-07-01",
+      "2011-07-08",
+      "2011-07-15"
+    ]
+  },
+  "missing_friday_weeks_within_captured_span": [],
+  "multiple_issues_on_one_release_date": {
+    "2022-06-29": [
+      "2022_06_17_data",
+      "2022_06_29"
+    ]
+  },
+  "nonstandard_release_lags": [
+    {
+      "issue_id": "2011_09_08",
+      "lag_calendar_days": 6,
+      "observation_date": "2011-09-02",
+      "release_date": "2011-09-08"
+    },
+    {
+      "issue_id": "2011_10_13",
+      "lag_calendar_days": 6,
+      "observation_date": "2011-10-07",
+      "release_date": "2011-10-13"
+    },
+    {
+      "issue_id": "2011_12_29",
+      "lag_calendar_days": 6,
+      "observation_date": "2011-12-23",
+      "release_date": "2011-12-29"
+    },
+    {
+      "issue_id": "2012_01_05",
+      "lag_calendar_days": 6,
+      "observation_date": "2011-12-30",
+      "release_date": "2012-01-05"
+    },
+    {
+      "issue_id": "2012_01_19",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-01-13",
+      "release_date": "2012-01-19"
+    },
+    {
+      "issue_id": "2012_02_23",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-02-17",
+      "release_date": "2012-02-23"
+    },
+    {
+      "issue_id": "2012_05_31",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-05-25",
+      "release_date": "2012-05-31"
+    },
+    {
+      "issue_id": "2012_07_05",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-06-29",
+      "release_date": "2012-07-05"
+    },
+    {
+      "issue_id": "2012_09_06",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-08-31",
+      "release_date": "2012-09-06"
+    },
+    {
+      "issue_id": "2012_10_11",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-10-05",
+      "release_date": "2012-10-11"
+    },
+    {
+      "issue_id": "2012_11_01",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-10-26",
+      "release_date": "2012-11-01"
+    },
+    {
+      "issue_id": "2012_11_15",
+      "lag_calendar_days": 6,
+      "observation_date": "2012-11-09",
+      "release_date": "2012-11-15"
+    },
+    {
+      "issue_id": "2012_12_28",
+      "lag_calendar_days": 7,
+      "observation_date": "2012-12-21",
+      "release_date": "2012-12-28"
+    },
+    {
+      "issue_id": "2013_01_04",
+      "lag_calendar_days": 7,
+      "observation_date": "2012-12-28",
+      "release_date": "2013-01-04"
+    },
+    {
+      "issue_id": "2013_01_24",
+      "lag_calendar_days": 6,
+      "observation_date": "2013-01-18",
+      "release_date": "2013-01-24"
+    },
+    {
+      "issue_id": "2013_02_21",
+      "lag_calendar_days": 6,
+      "observation_date": "2013-02-15",
+      "release_date": "2013-02-21"
+    },
+    {
+      "issue_id": "2013_05_30",
+      "lag_calendar_days": 6,
+      "observation_date": "2013-05-24",
+      "release_date": "2013-05-30"
+    },
+    {
+      "issue_id": "2013_09_05",
+      "lag_calendar_days": 6,
+      "observation_date": "2013-08-30",
+      "release_date": "2013-09-05"
+    },
+    {
+      "issue_id": "2013_10_21",
+      "lag_calendar_days": 10,
+      "observation_date": "2013-10-11",
+      "release_date": "2013-10-21"
+    },
+    {
+      "issue_id": "2013_11_14",
+      "lag_calendar_days": 6,
+      "observation_date": "2013-11-08",
+      "release_date": "2013-11-14"
+    },
+    {
+      "issue_id": "2013_12_27",
+      "lag_calendar_days": 7,
+      "observation_date": "2013-12-20",
+      "release_date": "2013-12-27"
+    },
+    {
+      "issue_id": "2014_01_03",
+      "lag_calendar_days": 7,
+      "observation_date": "2013-12-27",
+      "release_date": "2014-01-03"
+    },
+    {
+      "issue_id": "2014_01_23",
+      "lag_calendar_days": 6,
+      "observation_date": "2014-01-17",
+      "release_date": "2014-01-23"
+    },
+    {
+      "issue_id": "2014_02_20",
+      "lag_calendar_days": 6,
+      "observation_date": "2014-02-14",
+      "release_date": "2014-02-20"
+    },
+    {
+      "issue_id": "2014_05_29",
+      "lag_calendar_days": 6,
+      "observation_date": "2014-05-23",
+      "release_date": "2014-05-29"
+    },
+    {
+      "issue_id": "2014_09_04",
+      "lag_calendar_days": 6,
+      "observation_date": "2014-08-29",
+      "release_date": "2014-09-04"
+    },
+    {
+      "issue_id": "2014_10_16",
+      "lag_calendar_days": 6,
+      "observation_date": "2014-10-10",
+      "release_date": "2014-10-16"
+    },
+    {
+      "issue_id": "2014_11_13",
+      "lag_calendar_days": 6,
+      "observation_date": "2014-11-07",
+      "release_date": "2014-11-13"
+    },
+    {
+      "issue_id": "2015_01_22",
+      "lag_calendar_days": 6,
+      "observation_date": "2015-01-16",
+      "release_date": "2015-01-22"
+    },
+    {
+      "issue_id": "2015_02_19",
+      "lag_calendar_days": 6,
+      "observation_date": "2015-02-13",
+      "release_date": "2015-02-19"
+    },
+    {
+      "issue_id": "2015_05_28",
+      "lag_calendar_days": 6,
+      "observation_date": "2015-05-22",
+      "release_date": "2015-05-28"
+    },
+    {
+      "issue_id": "2015_09_10",
+      "lag_calendar_days": 6,
+      "observation_date": "2015-09-04",
+      "release_date": "2015-09-10"
+    },
+    {
+      "issue_id": "2015_10_15",
+      "lag_calendar_days": 6,
+      "observation_date": "2015-10-09",
+      "release_date": "2015-10-15"
+    },
+    {
+      "issue_id": "2015_11_12",
+      "lag_calendar_days": 6,
+      "observation_date": "2015-11-06",
+      "release_date": "2015-11-12"
+    },
+    {
+      "issue_id": "2016_01_21",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-01-15",
+      "release_date": "2016-01-21"
+    },
+    {
+      "issue_id": "2016_02_18",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-02-12",
+      "release_date": "2016-02-18"
+    },
+    {
+      "issue_id": "2016_06_02",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-05-27",
+      "release_date": "2016-06-02"
+    },
+    {
+      "issue_id": "2016_07_07",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-07-01",
+      "release_date": "2016-07-07"
+    },
+    {
+      "issue_id": "2016_09_08",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-09-02",
+      "release_date": "2016-09-08"
+    },
+    {
+      "issue_id": "2016_10_13",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-10-07",
+      "release_date": "2016-10-13"
+    },
+    {
+      "issue_id": "2016_12_29",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-12-23",
+      "release_date": "2016-12-29"
+    },
+    {
+      "issue_id": "2017_01_05",
+      "lag_calendar_days": 6,
+      "observation_date": "2016-12-30",
+      "release_date": "2017-01-05"
+    },
+    {
+      "issue_id": "2017_01_19",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-01-13",
+      "release_date": "2017-01-19"
+    },
+    {
+      "issue_id": "2017_02_23",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-02-17",
+      "release_date": "2017-02-23"
+    },
+    {
+      "issue_id": "2017_06_01",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-05-26",
+      "release_date": "2017-06-01"
+    },
+    {
+      "issue_id": "2017_07_06",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-06-30",
+      "release_date": "2017-07-06"
+    },
+    {
+      "issue_id": "2017_09_07",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-09-01",
+      "release_date": "2017-09-07"
+    },
+    {
+      "issue_id": "2017_10_12",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-10-06",
+      "release_date": "2017-10-12"
+    },
+    {
+      "issue_id": "2017_12_28",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-12-22",
+      "release_date": "2017-12-28"
+    },
+    {
+      "issue_id": "2018_01_04",
+      "lag_calendar_days": 6,
+      "observation_date": "2017-12-29",
+      "release_date": "2018-01-04"
+    },
+    {
+      "issue_id": "2018_01_18",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-01-12",
+      "release_date": "2018-01-18"
+    },
+    {
+      "issue_id": "2018_02_22",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-02-16",
+      "release_date": "2018-02-22"
+    },
+    {
+      "issue_id": "2018_05_31",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-05-25",
+      "release_date": "2018-05-31"
+    },
+    {
+      "issue_id": "2018_07_05",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-06-29",
+      "release_date": "2018-07-05"
+    },
+    {
+      "issue_id": "2018_09_06",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-08-31",
+      "release_date": "2018-09-06"
+    },
+    {
+      "issue_id": "2018_10_11",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-10-05",
+      "release_date": "2018-10-11"
+    },
+    {
+      "issue_id": "2018_11_15",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-11-09",
+      "release_date": "2018-11-15"
+    },
+    {
+      "issue_id": "2018_12_06",
+      "lag_calendar_days": 6,
+      "observation_date": "2018-11-30",
+      "release_date": "2018-12-06"
+    },
+    {
+      "issue_id": "2018_12_28",
+      "lag_calendar_days": 7,
+      "observation_date": "2018-12-21",
+      "release_date": "2018-12-28"
+    },
+    {
+      "issue_id": "2019_01_04",
+      "lag_calendar_days": 7,
+      "observation_date": "2018-12-28",
+      "release_date": "2019-01-04"
+    },
+    {
+      "issue_id": "2019_01_24",
+      "lag_calendar_days": 6,
+      "observation_date": "2019-01-18",
+      "release_date": "2019-01-24"
+    },
+    {
+      "issue_id": "2019_02_21",
+      "lag_calendar_days": 6,
+      "observation_date": "2019-02-15",
+      "release_date": "2019-02-21"
+    },
+    {
+      "issue_id": "2019_05_30",
+      "lag_calendar_days": 6,
+      "observation_date": "2019-05-24",
+      "release_date": "2019-05-30"
+    },
+    {
+      "issue_id": "2019_09_05",
+      "lag_calendar_days": 6,
+      "observation_date": "2019-08-30",
+      "release_date": "2019-09-05"
+    },
+    {
+      "issue_id": "2019_10_17",
+      "lag_calendar_days": 6,
+      "observation_date": "2019-10-11",
+      "release_date": "2019-10-17"
+    },
+    {
+      "issue_id": "2019_11_14",
+      "lag_calendar_days": 6,
+      "observation_date": "2019-11-08",
+      "release_date": "2019-11-14"
+    },
+    {
+      "issue_id": "2019_12_27",
+      "lag_calendar_days": 7,
+      "observation_date": "2019-12-20",
+      "release_date": "2019-12-27"
+    },
+    {
+      "issue_id": "2020_01_03",
+      "lag_calendar_days": 7,
+      "observation_date": "2019-12-27",
+      "release_date": "2020-01-03"
+    },
+    {
+      "issue_id": "2020_01_23",
+      "lag_calendar_days": 6,
+      "observation_date": "2020-01-17",
+      "release_date": "2020-01-23"
+    },
+    {
+      "issue_id": "2020_02_20",
+      "lag_calendar_days": 6,
+      "observation_date": "2020-02-14",
+      "release_date": "2020-02-20"
+    },
+    {
+      "issue_id": "2020_05_28",
+      "lag_calendar_days": 6,
+      "observation_date": "2020-05-22",
+      "release_date": "2020-05-28"
+    },
+    {
+      "issue_id": "2020_09_10",
+      "lag_calendar_days": 6,
+      "observation_date": "2020-09-04",
+      "release_date": "2020-09-10"
+    },
+    {
+      "issue_id": "2020_10_15",
+      "lag_calendar_days": 6,
+      "observation_date": "2020-10-09",
+      "release_date": "2020-10-15"
+    },
+    {
+      "issue_id": "2020_11_12",
+      "lag_calendar_days": 6,
+      "observation_date": "2020-11-06",
+      "release_date": "2020-11-12"
+    },
+    {
+      "issue_id": "2021_01_22",
+      "lag_calendar_days": 7,
+      "observation_date": "2021-01-15",
+      "release_date": "2021-01-22"
+    },
+    {
+      "issue_id": "2021_02_18",
+      "lag_calendar_days": 6,
+      "observation_date": "2021-02-12",
+      "release_date": "2021-02-18"
+    },
+    {
+      "issue_id": "2021_06_03",
+      "lag_calendar_days": 6,
+      "observation_date": "2021-05-28",
+      "release_date": "2021-06-03"
+    },
+    {
+      "issue_id": "2021_07_08",
+      "lag_calendar_days": 6,
+      "observation_date": "2021-07-02",
+      "release_date": "2021-07-08"
+    },
+    {
+      "issue_id": "2021_09_09",
+      "lag_calendar_days": 6,
+      "observation_date": "2021-09-03",
+      "release_date": "2021-09-09"
+    },
+    {
+      "issue_id": "2021_10_14",
+      "lag_calendar_days": 6,
+      "observation_date": "2021-10-08",
+      "release_date": "2021-10-14"
+    },
+    {
+      "issue_id": "2022_01_20",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-01-14",
+      "release_date": "2022-01-20"
+    },
+    {
+      "issue_id": "2022_02_24",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-02-18",
+      "release_date": "2022-02-24"
+    },
+    {
+      "issue_id": "2022_06_02",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-05-27",
+      "release_date": "2022-06-02"
+    },
+    {
+      "issue_id": "2022_06_17_data",
+      "lag_calendar_days": 12,
+      "observation_date": "2022-06-17",
+      "release_date": "2022-06-29"
+    },
+    {
+      "issue_id": "2022_07_07",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-07-01",
+      "release_date": "2022-07-07"
+    },
+    {
+      "issue_id": "2022_09_08",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-09-02",
+      "release_date": "2022-09-08"
+    },
+    {
+      "issue_id": "2022_10_13",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-10-07",
+      "release_date": "2022-10-13"
+    },
+    {
+      "issue_id": "2022_12_29",
+      "lag_calendar_days": 6,
+      "observation_date": "2022-12-23",
+      "release_date": "2022-12-29"
+    }
+  ],
+  "parsed_issue_count": 596,
+  "parsed_issue_counts_by_year": {
+    "2011": 23,
+    "2012": 52,
+    "2013": 52,
+    "2014": 53,
+    "2015": 52,
+    "2016": 52,
+    "2017": 52,
+    "2018": 52,
+    "2019": 51,
+    "2020": 53,
+    "2021": 52,
+    "2022": 52
+  },
+  "previous_observation_date_range": [
+    "2011-07-15",
+    "2022-12-16"
+  ],
+  "quarantined_source_evidence": {
+    "manifest_sha256": "d34451c5f84019cecdd51662c666d860b1d59c921f3889e54894e99a08b7fc2f",
+    "verified_stale_responses": [
+      {
+        "actual_current_date_header": "2019-06-21",
+        "actual_previous_date_header": "2019-06-14",
+        "bytes": 2345,
+        "excluded_from_inventory_records": true,
+        "expected_observation_date": "2019-06-28",
+        "file": "2019-07-03-stale-table4.csv",
+        "issue_id": "2019_07_03",
+        "requested_url": "https://www.eia.gov/petroleum/supply/weekly/archive/2019/2019_07_03/csv/table4.csv",
+        "sha256": "e8e75163084b1d967d681a80de2f5e5d1b74279ce79ab2dbf6e30e79ab85c51f"
+      }
+    ]
+  },
+  "reference_run": {
+    "artifacts": {
+      "predictions.jsonl": {
+        "bytes": 694314,
+        "sha256": "cf769bd1f8057de59f6e57293e124722f6d9fe28fba595ef9c09f2320c91d69d"
+      },
+      "summary.json": {
+        "bytes": 11101,
+        "sha256": "87f78efb5d1b0ab86325ff65c18916de5f051174efaafe3713cec84b76b5f231"
+      }
+    },
+    "evaluation_directory": "data/evaluations/eaf91570f5aaab09a992",
+    "manifest_sha256": "abe529badd9c9bab2756664672dd0eef497871cfba6096af076ba8c9051ca34d",
+    "report_sha256": "38de220dd1762f854aa92a17712b253a551f3ce2455da1c40d127b787ca367dd",
+    "run_id": "eaf91570f5aaab09a992"
+  },
+  "release_date_range": [
+    "2011-07-27",
+    "2022-12-29"
+  ],
+  "release_issue_counts_by_year": {
+    "2011": 23,
+    "2012": 52,
+    "2013": 52,
+    "2014": 53,
+    "2015": 52,
+    "2016": 52,
+    "2017": 52,
+    "2018": 52,
+    "2019": 52,
+    "2020": 53,
+    "2021": 52,
+    "2022": 52
+  },
+  "release_lag_calendar_days_counts": {
+    "10": 1,
+    "12": 1,
+    "5": 509,
+    "6": 77,
+    "7": 9
+  },
+  "repeated_observation_comparisons": {
+    "commercial_crude": {
+      "definition_break_change": 1,
+      "definition_transitions": 1,
+      "observations": 598,
+      "occurrences": 1192,
+      "other_archive_value_change": 0,
+      "overlap_comparisons": 594
+    },
+    "cushing": {
+      "definition_break_change": 0,
+      "definition_transitions": 0,
+      "observations": 598,
+      "occurrences": 1192,
+      "other_archive_value_change": 0,
+      "overlap_comparisons": 594
+    }
+  },
+  "revisions_qualification": "compares current/prior-week values across currently saved archive issues; unchanged overlaps do not prove the files are original first releases",
+  "rounding_residuals": {
+    "commercial_crude": {
+      "maximum_absolute_million_barrels": 0.001,
+      "nonzero_count": 44
+    },
+    "cushing": {
+      "maximum_absolute_million_barrels": 0.0,
+      "nonzero_count": 0
+    }
+  },
+  "series_parsed_issue_counts": {
+    "commercial_crude": 596,
+    "cushing": 596
+  },
+  "source_snapshot_directory": "data/audit/inventories/20261013T075852032262Z",
+  "status": "qualified archive replay; unchanged first releases and intraday availability not proved",
+  "table1_commercial_stock_crosschecks": [
+    {
+      "issue_id": "2011_08_03",
+      "match": true,
+      "matched_fields": [
+        "current_million_barrels",
+        "previous_million_barrels",
+        "published_change_million_barrels"
+      ]
+    },
+    {
+      "issue_id": "2020_04_22",
+      "match": true,
+      "matched_fields": [
+        "current_million_barrels",
+        "previous_million_barrels",
+        "published_change_million_barrels"
+      ]
+    },
+    {
+      "issue_id": "2022_06_29",
+      "match": true,
+      "matched_fields": [
+        "current_million_barrels",
+        "previous_million_barrels",
+        "published_change_million_barrels"
+      ]
+    }
+  ],
+  "unusable_friday_weeks_within_span": [
+    "2019-06-28"
+  ]
+}

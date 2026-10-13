@@ -65,7 +65,7 @@ On the same 301 scored development outcomes:
 
 Brent adds five correct predictions, a **1.66 percentage-point** accuracy increase, but worsens Brier score and log loss (lower is better). It improves accuracy in only two of six development years. Both fitted models also trail the always-up benchmark on accuracy and the constant 0.5 benchmark on probability scores. The constant direction rules each have 50% balanced accuracy; the 55.81% headline score reflects the development set's greater number of up outcomes.
 
-See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison report](reports/brent_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. The benchmark implementation adds 13 synthetic tests to the 141-test Brent checkpoint. The WTI command above records a new reproduction report while preserving the original reference.
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison report](reports/brent_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **203 project tests pass**, including 13 added benchmark tests and 49 inventory-audit tests. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -84,6 +84,18 @@ To reproduce the added benchmarks from authenticated saved development artifacts
 ```
 
 This creates a separate content-addressed analysis and `reports/development_benchmarks.json`, preserving both original reports. Always-up and always-not-up are direction rules with no assigned probability; the neutral 0.5 probability predicts up under the existing tie convention. These benchmarks were added retrospectively and are now also included in future development replay summaries.
+
+## Audit free inventory data
+
+The [2011–2022 EIA inventory audit](docs/inventory-audit.md) checked 597 intended issues for commercial crude and Cushing stocks. It admitted 596 CSV issues, with inventory history available for 309 of the original 310 development dates. Early 2011 coverage remains incomplete. A stale July 2019 CSV is quarantined; a correct lower-precision PDF is documented as a possible later fallback. The October 2016 definition change and delayed releases are handled explicitly. Archived values support a qualified replay; they do not prove immutable first releases.
+
+The audit adds no model inputs and fits no model. Its [report](reports/inventory_audit.json) records source checks, overlap comparisons, gaps, and per-series coverage. The final holdout stays closed. Reproduce it offline with the exact evidence paths in the audit document, or capture a new bounded snapshot:
+
+```sh
+.venv/bin/python -m oil_audit.inventory_sources
+```
+
+Use the printed snapshot directory with `python -m oil_audit.inventory --snapshot-dir <directory>`. Optional evidence manifests add independent Table 1 comparisons, early-2011 failed probes, and quarantined bytes. Captures and audit artifacts remain under ignored `data/`; downloads need no credentials or payment.
 
 ## Reproduce the saved audit offline
 
@@ -121,6 +133,7 @@ The ALFRED downloader submits the public download form and requests at most 450 
 - `features`: separate benchmark lookups, dollar changes, coverage, age, and aligned spread.
 - `labels`, `training`: versioned targets and cutoff-specific training selection.
 - `dataset`: reproducible artifacts, manifests, summary, and CLI.
+- `inventory_sources`, `inventory_tables`, `inventory`: bounded EIA release captures, strict stock-table parsing, and qualified offline inventory auditing.
 
 The separate `oil_eval` package contains the fixed protocol, holdout-filtered loader, models, metrics, reference validation, chronological replay, and artifact runner. It consumes dataset artifacts without changing their source history.
 
@@ -128,7 +141,7 @@ The older `vintages.snapshot` helper remains an audit primitive: `strict=False` 
 
 ## Next experiment and checkpoints
 
-Completed checkpoints cover the source audit and dataset, the fixed chronological protocol and holdout safeguards, the baseline-versus-WTI-logistic comparison, and the Brent comparison on identical development dates. Possible later development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
+Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison on identical development dates, constant benchmarks, and the inventory archive audit. A later inventory feature experiment must handle early missing history, the July 2019 quarantine or a separately validated PDF fallback, and archive-version qualifications. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 

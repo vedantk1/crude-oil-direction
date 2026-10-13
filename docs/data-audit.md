@@ -115,6 +115,8 @@ A weekly update experiment has roughly 800 historical update opportunities from 
 
 The subsequent [dataset implementation](dataset.md) applies these decisions and records 801 forecast opportunities. It documents the final issuance convention, independent WTI/Brent joins, fixed US business-day horizon, source-capture limits, and separate historical training and evaluation labels.
 
+The separate [2011–2022 inventory audit](inventory-audit.md) examines free EIA commercial-crude and Cushing stock archives for a possible later feature experiment. It uses publication dates independently of observation weeks, preserves the October 2016 commercial-definition break, and qualifies archived values rather than claiming immutable first releases. Its scope ends before the model holdout; it does not alter this price audit or the ALFRED dataset.
+
 ## Cost, reuse, and saved evidence
 
 All downloads were free and key-free. EIA also offers a free registered API, but this audit did not require it. The spot data are attributed to Refinitiv/LSEG, and the daily snapshot says they are republished with permission. EIA permits broad reuse of its own material but identifies protected third-party exceptions. Consequently, this repository keeps downloaded prices local under ignored `data/` and provides source download code. It does not assert a CC0 or unrestricted redistribution license for vendor-origin prices. Sources: [EIA Open Data](https://www.eia.gov/opendata/), [price source notes](https://www.eia.gov/dnav/pet/TblDefs/pet_pri_spt_tbldef2.asp), [reuse policy](https://www.eia.gov/about/copyrights_reuse.php).
