@@ -9,6 +9,7 @@ from oil_audit.dataset import json_bytes, sha256
 from oil_audit.features import WTI_FEATURE_COLUMNS
 from oil_audit.labels import select_label
 from oil_audit.training import training_rows
+from .benchmarks import summarize_benchmarks
 from .metrics import classification_metrics
 from .models import (COMPARISON_MODEL_NAMES, MODEL_NAMES,
                      fit_predict_comparison_models, fit_predict_models)
@@ -174,6 +175,8 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
             "metrics": _metrics([row for row in predictions if row["forecast_date"].startswith(year)], model_names),
         } for year in years},
         "paired_accuracy_comparisons": paired,
+        "constant_benchmarks": summarize_benchmarks(
+            predictions, ("logistic", "logistic_wti_brent") if comparison else ("logistic",)),
         "holdout_evaluated": False,
     }
     if comparison:

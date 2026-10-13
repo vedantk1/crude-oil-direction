@@ -131,3 +131,23 @@ The accuracy gain occurs in two of six years; the combined model loses accuracy 
 All 310 six-feature WTI training hashes match the reference, and every original WTI, majority, and momentum payload—including fitted diagnostics—reproduces exactly. Both regressions converged at every issuance: at most seven iterations for WTI and 32 for WTI/Brent. A repeated comparison produced identical prediction, summary, and manifest bytes. Saved hashes and label-maturity bounds passed verification, with no forecasts or targets entering 2023.
 
 The [separate comparison report](../reports/brent_comparison.json) records full aggregate and yearly metrics, paired disagreements, shared-cohort counts, and reference-reproduction checks. Its local manifest additionally records the original report/artifact hashes. The dataset and original WTI report remain unchanged; execution used the existing CPU runtime with no paid data, downloads, or GPU.
+
+## Added constant benchmarks
+
+The following benchmarks were added retrospectively after the WTI and Brent experiments. Both constant direction rules are reported, without choosing a class from development labels. The neutral probability is fixed at 0.5 and uses the existing threshold/tie rule to predict up. Direction-only rules have null probability metrics rather than treating their predictions as certainty.
+
+| Benchmark | Correct / scored | Accuracy | Balanced accuracy | ROC AUC | Brier score | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Always up | 168 / 301 | 55.81% | 50.00% | — | — | — |
+| Always not up, including ties | 133 / 301 | 44.19% | 50.00% | — | — | — |
+| Constant probability 0.5 | 168 / 301 | 55.81% | 50.00% | 0.5000 | 0.2500 | 0.6931 |
+
+WTI-only logistic scores 19 fewer outcomes correctly than always-up, a 6.31-percentage-point deficit. WTI/Brent scores 14 fewer, a 4.65-point deficit. Both fitted models have worse Brier and log-loss scores than the neutral probability. The constant direction rules' balanced accuracy remains 50%; their differing ordinary accuracies arise from the 168 up and 133 not-up outcomes. These are development diagnostics, with no claim about final holdout performance.
+
+```sh
+.venv/bin/python -m oil_eval.benchmarks
+```
+
+The command authenticates the existing WTI and Brent reports, run identities, source/runtime agreement, original reference hashes, and all saved prediction artifacts. It independently recomputes the saved aggregate and yearly model metrics before scoring constants. Forecasts, targets, scoring availability, and labels must match between the two runs. Held-out forecasts are rejected before JSON decoding; future outcome availability is rejected before scoring. No model fitting or source-dataset read occurs.
+
+The [supplemental report](../reports/development_benchmarks.json) contains aggregate/yearly benchmark metrics and paired comparisons against both logistic models. Its content-addressed directory under `data/evaluations/` retains compact per-forecast benchmark outputs, the summary, provenance, and hashes. Original reports and immutable artifacts are protected against overwrite. Repeated runs produce identical outputs. The benchmark implementation adds **13 passing synthetic tests**, covering fixed predictions, metric cases, exact cohorts, integrity failures, holdout rejection, and artifact protection. Future replay summaries also include these constants without changing the original model family or frozen protocols.

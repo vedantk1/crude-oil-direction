@@ -55,14 +55,17 @@ On the same 301 scored development outcomes:
 
 | Model | Accuracy | Brier score | Log loss |
 | --- | ---: | ---: | ---: |
+| Always up | 55.81% | — | — |
+| Always not up | 44.19% | — | — |
+| Constant probability 0.5 | 55.81% | 0.2500 | 0.6931 |
 | Training-majority baseline | 49.50% | 0.2512 | 0.6955 |
 | Five-day momentum | 50.17% | — | — |
 | WTI-only logistic | 49.50% | 0.2578 | 0.7179 |
 | WTI + Brent logistic | 51.16% | 0.2666 | 0.7336 |
 
-Brent adds five correct predictions, a **1.66 percentage-point** accuracy increase, but worsens Brier score and log loss (lower is better). It improves accuracy in only two of six development years. This is a mixed development result, not evidence of a reliable forecasting edge.
+Brent adds five correct predictions, a **1.66 percentage-point** accuracy increase, but worsens Brier score and log loss (lower is better). It improves accuracy in only two of six development years. Both fitted models also trail the always-up benchmark on accuracy and the constant 0.5 benchmark on probability scores. The constant direction rules each have 50% balanced accuracy; the 55.81% headline score reflects the development set's greater number of up outcomes.
 
-See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), and [Brent comparison report](reports/brent_comparison.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **141 tests pass**. The WTI command above records a new reproduction report while preserving the original reference.
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison report](reports/brent_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. The benchmark implementation adds 13 synthetic tests to the 141-test Brent checkpoint. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -73,6 +76,14 @@ The Brent comparison authenticates the saved WTI run and requires its exact fore
 ```
 
 It uses the same eligible historical rows for both logistic regressions, with six WTI inputs versus fourteen WTI/Brent inputs. The default result is `reports/brent_comparison.json`; the original WTI report and artifacts are preserved. All 310 WTI training-input hashes and original model outputs reproduced exactly; Brent eligibility removed no historical training rows. The fixed protocol was committed as `77c24e9` before computing Brent results.
+
+To reproduce the added benchmarks from authenticated saved development artifacts, without fitting models or opening the source dataset:
+
+```sh
+.venv/bin/python -m oil_eval.benchmarks
+```
+
+This creates a separate content-addressed analysis and `reports/development_benchmarks.json`, preserving both original reports. Always-up and always-not-up are direction rules with no assigned probability; the neutral 0.5 probability predicts up under the existing tie convention. These benchmarks were added retrospectively and are now also included in future development replay summaries.
 
 ## Reproduce the saved audit offline
 
