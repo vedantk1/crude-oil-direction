@@ -13,7 +13,7 @@ HOLDOUT_START = date(2023, 1, 1)
 SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
 EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison", "inventory-regularization",
-               "inventory-window-comparison", "inventory-tree-comparison")
+               "inventory-window-comparison", "inventory-tree-comparison", "inventory-availability-delay")
 
 
 def protocol_config(experiment: str = "wti") -> dict:
@@ -59,7 +59,7 @@ def protocol_config(experiment: str = "wti") -> dict:
             "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
         })
     if experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison",
-                      "inventory-tree-comparison"):
+                      "inventory-tree-comparison", "inventory-availability-delay"):
         config.update({
             "protocol_id": "wti-inventory-development-v1",
             "feature_columns": list(INVENTORY_MODEL_COLUMNS),
@@ -78,7 +78,8 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired WTI-plus-inventory minus WTI-only development accuracy; constants and probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, threshold and dates fixed",
         })
-    if experiment in ("inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison"):
+    if experiment in ("inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison",
+                      "inventory-availability-delay"):
         config.update({
             "protocol_id": "wti-inventory-regularization-development-v1",
             "compared_feature_sets": {
@@ -148,6 +149,31 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired development Brier score and log loss for tree minus expanding C=0.1 inventory; accuracy and yearly stability also reported",
             "success_criteria": "report aggregate Brier/log-loss differences against expanding C=0.1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
             "tuning": "one fixed small tree candidate; no grid, calibration, parameter, feature, threshold, date or holdout changes",
+        })
+    if experiment == "inventory-availability-delay":
+        config.update({
+            "protocol_id": "wti-inventory-availability-delay-development-v1",
+            "compared_feature_sets": {
+                **config["compared_feature_sets"],
+                "logistic_wti_inventory_c01_delayed": list(INVENTORY_MODEL_COLUMNS),
+            },
+            "logistic_variants": {
+                **config["logistic_variants"],
+                "logistic_wti_inventory_c01_delayed": dict(config["logistic_variants"]["logistic_wti_inventory_c01"]),
+            },
+            "additional_information_delay_business_days": 1,
+            "delayed_information_clock": "P is the previous US business day before original forecast D; WTI archive cutoff is P minus one calendar day; inventory original earliest eligible issuance must be no later than P",
+            "delayed_training_labels": "select every active label state, including revisions and withdrawals, as of P; never use a later state or frozen scoring labels for fitting",
+            "delayed_features": "reconstruct and freeze all eleven inputs at each original issuance using the delayed source clock; never shift forecast dates or reuse a previous weekly feature row",
+            "delayed_feature_ages": "measure WTI observation age and inventory release age at actual forecast D; preserve existing WTI lookbacks anchored at the latest usable delayed observation",
+            "training_cohort": "controls retain exact original expanding rows; delayed C=0.1 uses its own frozen delayed-feature eligibility and labels active at P, with all exclusions and label changes recorded; minimum 150 and both classes unchanged",
+            "forecast_cohort": "exact original forecast IDs, dates, targets and frozen scoring states; fail rather than drop any development forecast",
+            "source_admission": "authenticate original source bytes; gate ALFRED observation and vintage dates before value decoding; mask future interval ends; require baseline WTI reconstruction to match every original row before delayed fitting",
+            "candidate_selection": "retrospective single predefined one-additional-business-day availability sensitivity check after earlier development results",
+            "reference_reproduction": "require exact authenticated WTI, C=1 inventory and expanding C=0.1 controls on their original information clock; native runtime fingerprints must match before fitting",
+            "primary_comparison": "paired development Brier score and log loss for delayed minus original expanding C=0.1 inventory; accuracy and yearly stability also reported",
+            "success_criteria": "report aggregate and yearly differences descriptively against the original information convention and simple probability benchmarks, without a formal success threshold or significance claim",
+            "tuning": "one fixed availability delay; no lag grid, feature, parameter, threshold, forecast, target or holdout changes",
         })
     return config
 

@@ -110,3 +110,19 @@ class ProtocolTests(unittest.TestCase):
         self.assertIn("without causal interpretation", tree["feature_importance"])
         self.assertIn("no grid, calibration", candidate["tuning"])
         self.assertIn("without a formal success threshold or significance claim", candidate["success_criteria"])
+
+    def test_availability_delay_keeps_model_and_targets_fixed_with_one_extra_information_day(self):
+        original = protocol_config("inventory-regularization")
+        delayed = protocol_config("inventory-availability-delay")
+        for key in ("initial_training_start", "development_start", "development_scoring_as_of",
+                    "holdout_start", "logistic", "minimum_training_rows", "feature_columns", "scoring_labels"):
+            self.assertEqual(original[key], delayed[key])
+        self.assertEqual(delayed["logistic_variants"]["logistic_wti_inventory_c01_delayed"],
+                         original["logistic_variants"]["logistic_wti_inventory_c01"])
+        self.assertEqual(delayed["additional_information_delay_business_days"], 1)
+        self.assertIn("P is the previous US business day", delayed["delayed_information_clock"])
+        self.assertIn("including revisions and withdrawals", delayed["delayed_training_labels"])
+        self.assertIn("fail rather than drop", delayed["forecast_cohort"])
+        self.assertIn("before value decoding", delayed["source_admission"])
+        self.assertIn("never shift forecast dates", delayed["delayed_features"])
+        self.assertIn("no lag grid", delayed["tuning"])

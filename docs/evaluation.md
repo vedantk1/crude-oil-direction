@@ -438,3 +438,44 @@ Accuracy improves in one year, ties in one and deteriorates in four. Both probab
 All five expanding model payloads, complete training metadata, raw inventory inputs/provenance and scoring states reproduce exactly. Every tree fit uses exactly 50 binary boosting stages; all 15,500 trees have depth at most two and three or four leaves, with 30–526 total training examples per leaf. Training-only imputation preserves all eleven inputs and explicit source nulls. Logistic controls converge with the same seven/eleven/nine maximum iteration counts. The [tree report](../reports/inventory_tree_comparison.json) records aggregate/yearly metrics, paired disagreements, constants, strict reference checks and bounded tree-fit diagnostics. The immutable local run retains all raw inventory features and per-forecast fitted diagnostics. Historical artifacts and the final holdout remain preserved.
 
 Independent reconstruction verifies all 310 causal training sets and input hashes, active-label maturity, fitted medians/missing counts, all 1,550 control payloads, all 607 raw inventory rows, aggregate/yearly/paired/benchmark scores, artifact hashes, all 28 code hashes against `66d0eeb`, and all 211 native-file hashes. Independent refits at three predetermined origins (first forecast, first 2020 forecast, and last forecast) reproduce tree probabilities exactly. All tree leaf counts sum to their training sample count and respect the committed limits. Repeating the run produces byte-identical reports/artifacts, and all **722 pre-existing data/report files** remain unchanged. The timed repeat plus preservation checks took **22.40 seconds**, excluding imports and including authentication, construction, 930 logistic fits, 310 ensembles with 15,500 shallow trees, scoring and file checks. All **331 tests pass**. No new downloads, paid data, GPU or holdout evaluation was used.
+
+
+## Locked one-business-day availability sensitivity check
+
+The final development check keeps the fixed expanding WTI/inventory logistic
+model at C=0.1. It tests an additional availability safety margin, not an
+accuracy-improvement hypothesis, and is not used to choose a new variant.
+There is no lag grid, feature search, threshold change or holdout evaluation.
+
+For each original forecast date D, let P be the previous fixed US business day.
+WTI admits archive versions through P minus one calendar day. Inventories admit
+only releases whose original earliest eligible issuance is no later than P.
+WTI observation age and inventory report age are measured at actual D; lookbacks
+retain the original definition anchored at the latest usable delayed observation.
+Each training example's delayed inputs are reconstructed and frozen at its own
+original issuance, rather than shifting an earlier weekly feature row.
+
+Training selects active label states at P, including corrections and withdrawals,
+and requires target date strictly before P. Frozen scoring labels never train a
+model. Delayed eligibility can remove an initial example without WTI history;
+raw rows, nulls and the reason remain retained. A delayed withdrawal can also
+restore a row excluded on the original clock, so additions, removals and changed
+active labels are all recorded. At least 150 examples and both classes are
+required for every fit. The entire candidate schedule is checked before fitting;
+no development forecast can be silently dropped or given a fallback prediction.
+
+The original 310 forecast IDs/dates, five-business-day targets and 301 scored
+outcomes plus nine unscored states remain fixed. Before candidate fitting, source
+bytes are authenticated, ALFRED observation/vintage date gates precede value
+decoding, and all 607 original WTI input/eligibility projections must reconstruct
+exactly from bounded source history. All five expanding controls must reproduce
+the selected authenticated C=0.1 reference, including full training/provenance and
+model outputs. Native runtime fingerprints must match before fitting.
+
+The dedicated `oil_eval.delay_runner` writes a separate immutable run containing
+original inventory inputs, all delayed raw inputs, per-fit selected row IDs and
+active label states, hashes, exclusions, aggregate/yearly metrics and paired
+comparisons. The six preceding protocol configurations remain unchanged. See
+[reproducibility](reproducibility.md) for an explicit-reference command without
+historical local run IDs. This protocol is checkpointed before the real delayed
+candidate result is computed.
