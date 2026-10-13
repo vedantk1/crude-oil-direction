@@ -1,6 +1,6 @@
 # Crude oil direction research
 
-A free, local WTI direction forecasting project with an audited historical dataset and chronological model comparisons over **five fixed US business days**. WTI-only, WTI/Brent, and WTI/inventory logistic regressions have been evaluated on the same development dates. The 2023-onward final holdout remains closed.
+A free, local WTI direction forecasting project with an audited historical dataset and chronological model comparisons over **five fixed US business days**. WTI-only, WTI/Brent, and WTI/inventory logistic regressions, including one stronger inventory penalty, have been evaluated on the same development dates. The 2023-onward final holdout remains closed.
 
 Read the [data audit](docs/data-audit.md) for the findings, evidence limits, and recommended historical availability rules. The audit supports a qualified replay of ALFRED's recorded history from 2011-04-06 onward. Current EIA downloads alone do not preserve that history.
 
@@ -63,10 +63,11 @@ On the same 301 scored development outcomes:
 | WTI-only logistic | 49.50% | 0.2578 | 0.7179 |
 | WTI + Brent logistic | 51.16% | 0.2666 | 0.7336 |
 | WTI + inventory logistic | 52.49% | 0.2574 | 0.7174 |
+| WTI + inventory logistic, C=0.1 | 53.16% | 0.2563 | 0.7126 |
 
-Against WTI-only, Brent adds five correct predictions (**+1.66 percentage points**) while worsening probability scores. Inventories add nine (**+2.99 points**) with very small Brier/log-loss improvements. Inventory accuracy improves in four of six development years. All three fitted models trail always-up on accuracy and constant 0.5 on probability scores. The constant direction rules each have 50% balanced accuracy; always-up's 55.81% headline score reflects the development set's greater number of up outcomes.
+Against WTI-only, Brent adds five correct predictions (**+1.66 percentage points**) while worsening probability scores. Inventories add nine (**+2.99 points**) with very small Brier/log-loss improvements. Inventory accuracy improves in four of six development years. The fixed `C=0.1` inventory candidate adds two more correct predictions (**+0.66 points versus C=1**) and improves Brier/log loss in all six years, while aggregate AUC declines slightly. All fitted models still trail always-up on accuracy and constant 0.5 on probability scores. The constant direction rules each have 50% balanced accuracy; always-up's 55.81% headline score reflects the development set's greater number of up outcomes.
 
-See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison](reports/brent_comparison.json), [inventory comparison](reports/inventory_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **285 tests pass** in the documented working runtime, including inventory feature, preprocessing, cohort, provenance, regularization, and native-build checks. The WTI command above records a new reproduction report while preserving the original reference.
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison](reports/brent_comparison.json), [inventory comparison](reports/inventory_comparison.json), [regularization comparison](reports/inventory_regularization.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **285 tests pass** in the documented working runtime, including inventory feature, preprocessing, cohort, provenance, regularization, and native-build checks. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -122,6 +123,8 @@ This single predefined candidate changes only the eleven-input inventory model's
 
 The retained local SciPy wheel currently fails native loading. An isolated official wheel of the same pinned version works but changes numerical results, so this experiment uses refreshed controls in that common runtime. Follow the [compatible-runtime recipe](docs/evaluation.md#compatible-runtime-and-refreshed-controls), which supplies all three reference flags and preserves historical artifacts. Both selected model references must record the candidate's native runtime fingerprint; the default historical reports predate those fingerprints and cannot serve directly as this experiment's controls.
 
+The protocol was committed as `5a90916` before computing the candidate. Run `21e67f2c5ee9e4c216d6` retains all 310 dates and 301 scored outcomes, reproduces the selected controls exactly, and preserves raw nulls/provenance. The historical runtime check finds no changed class predictions and inventory probability differences no larger than `1.31e-13`. Stronger regularization modestly improves probability quality, but still provides no demonstrated forecasting edge over the simple benchmarks.
+
 ## Reproduce the saved audit offline
 
 These commands use the evidence retained from the 2026-10-13 audit. They check source hashes before reading values.
@@ -166,7 +169,7 @@ The older `vintages.snapshot` helper remains an audit primitive: `strict=False` 
 
 ## Next experiment and checkpoints
 
-Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison, constant benchmarks, inventory archive audit, and inventory comparison on identical development dates with explicit missingness. The next fixed experiment changes inventory regularization to `C=0.1`. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
+Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison, constant benchmarks, inventory archive audit, inventory comparison with explicit missingness, and the single `C=0.1` regularization comparison on identical development dates. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 

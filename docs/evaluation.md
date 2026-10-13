@@ -287,4 +287,36 @@ The saved [runtime control check](../reports/regularization_runtime_check.json) 
 
 All **285 tests pass** before the regularization result, covering native-build identities, strict selected-reference fingerprints, authenticated controls, null inputs, training-only preprocessing, paired metrics, prefit schedule failures, holdout rejection and historical artifact protection.
 
+## Inventory regularization results
+
+The protocol, implementation, tests and historical runtime check were committed as `5a90916` before computing the candidate. Run `21e67f2c5ee9e4c216d6` compares `C=0.1` with the refreshed `C=1` inventory reference `e908d9c3437095815a70`. Both selected references have exactly the candidate's native runtime fingerprint. All **310 development forecasts, 301 scored outcomes, nine unscored states, 295–596-example training windows, and 607 frozen inventory rows** are unchanged.
+
+| Model / benchmark | Correct / scored | Accuracy | Balanced accuracy | ROC AUC | Brier score | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| WTI-only logistic | 149 / 301 | 49.50% | 49.12% | 0.4879 | 0.2578 | 0.7179 |
+| WTI + inventory, C=1 | 158 / 301 | 52.49% | 52.11% | 0.5111 | 0.2574 | 0.7174 |
+| WTI + inventory, C=0.1 | 160 / 301 | 53.16% | 52.87% | 0.5077 | 0.2563 | 0.7126 |
+| Training-majority / prevalence | 149 / 301 | 49.50% | 51.71% | 0.4864 | 0.2512 | 0.6955 |
+| Five-day momentum | 151 / 301 | 50.17% | 49.72% | — | — | — |
+| Always up | 168 / 301 | 55.81% | 50.00% | — | — | — |
+| Always not up | 133 / 301 | 44.19% | 50.00% | — | — | — |
+| Constant probability 0.5 | 168 / 301 | 55.81% | 50.00% | 0.5000 | 0.2500 | 0.6931 |
+
+Relative to `C=1`, the candidate adds **two correct predictions (+0.66 percentage points)**. Both are correct on 155 dates and wrong on 138; the candidate alone is correct on five and the control alone on three. Balanced accuracy improves by 0.75 points. Brier decreases by 0.00108 and log loss by 0.00483, while aggregate AUC falls by 0.00336. Lower probability loss does not imply better ranking discrimination.
+
+| Year | Scored | C=1 accuracy | C=0.1 accuracy | Additional correct | Brier difference C=0.1 minus C=1 | Log-loss difference |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2017 | 52 | 51.92% | 51.92% | 0 | -0.00048 | -0.00119 |
+| 2018 | 50 | 46.00% | 50.00% | +2 | -0.00028 | -0.00067 |
+| 2019 | 50 | 48.00% | 50.00% | +1 | -0.00274 | -0.00577 |
+| 2020 | 50 | 56.00% | 54.00% | -1 | -0.00178 | -0.01834 |
+| 2021 | 50 | 56.00% | 56.00% | 0 | -0.00028 | -0.00065 |
+| 2022 | 49 | 57.14% | 57.14% | 0 | -0.00092 | -0.00247 |
+
+Both probability losses improve in **all six years**, with the largest log-loss change in 2020. Accuracy improves in two years, worsens in one and ties in three. This supports a modest development improvement in probability quality from the stronger penalty, but the candidate still trails neutral and historical-prevalence probabilities, and trails always-up by eight correct predictions. It does not establish a useful forecasting edge, significance, profitability or final-holdout performance. No further settings were changed after observing this result.
+
+All selected controls reproduce exactly across 310 forecasts, including complete training records, raw inventory values/provenance, probabilities and diagnostics. Missingness remains unchanged: sixteen early rows without history, exact-lookback/definition gaps, and the quarantined forecast remain explicit. All three regressions converge, taking at most seven WTI, eleven `C=1` inventory and nine `C=0.1` iterations. The [regularization report](../reports/inventory_regularization.json) records aggregate/yearly metrics, paired comparisons, constant benchmarks and strict reference checks. Its immutable run also retains raw inputs and fitted diagnostics. The final holdout remains closed.
+
+Independent reconstruction verifies aggregate/yearly metrics, benchmark scores, all control payloads, artifact hashes, all 27 evaluation/audit code hashes against `5a90916`, and all 211 native-file hashes. Repeating the run produces byte-identical report, features, predictions, summary and manifest. A checksum comparison confirms all **696 pre-existing data/report files** remain unchanged. The timed repeat plus artifact-preservation checks took **13.13 seconds**, excluding imports; this includes source authentication, feature construction, 930 logistic fits, scoring and file checks, rather than measuring fitting alone. All 285 tests pass in this working runtime. No paid data, GPU or new source-data capture was used.
+
 Assess paired accuracy, balanced accuracy, AUC, Brier score and log loss, plus yearly stability. The main hypothesis is that stronger regularization improves probability quality relative to `C=1`; improvement beyond neutral and historical-prevalence probabilities would be more useful evidence. A gain caused only by approaching constant probabilities is not a discovered forecasting edge. No settings may be changed in response to this experiment's results, and no independent-sample significance claim is warranted. The 2023-onward final holdout stays closed.
