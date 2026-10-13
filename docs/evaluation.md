@@ -36,6 +36,49 @@ Training uses active historical label versions, including corrections and withdr
 
 The primary comparison is paired development accuracy, with probability quality and yearly stability reported alongside it. A few hundred weekly examples and potentially overlapping horizons do not justify independent-sample significance claims. Development performance is not final holdout performance, trading profitability, or a deployment claim.
 
-## Checkpoints
+## Development results
 
-The first evaluation checkpoint locks this protocol and tests the data boundary. The next adds the runner, models, tests, and measured development results. The final holdout remains closed at both checkpoints. Results and reproducible commands will be added here after the development run.
+The protocol and loader were committed as `13489cb` before the first real-data model comparison. The fixed experiment then produced 310 forecasts from **2017-01-06 through 2022-12-22**. Of those, **301 had a first-available outcome by the development scoring cutoff**; nine remain explicitly unscored. One later pre-holdout forecast was excluded because its target crossed into 2023. The 297 initial-history rows are for training rather than development scoring.
+
+| Model | Accuracy | Balanced accuracy | ROC AUC | Brier score | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Training-majority baseline | 49.50% | 51.71% | 0.4864 | 0.2512 | 0.6955 |
+| Five-day momentum | 50.17% | 49.72% | — | — | — |
+| WTI logistic regression | 49.50% | 49.12% | 0.4879 | 0.2578 | 0.7179 |
+
+The same 301 outcomes are used for every row in the table. They contain 168 up and 133 not-up outcomes. Logistic regression and majority each classify 149 correctly; momentum classifies 151 correctly. Against majority, logistic alone is correct on 85 dates and majority alone on another 85. Against momentum, logistic alone is correct on 42 dates and momentum alone on 44. These paired counts do not establish a meaningful gain from logistic regression. Its Brier and log-loss scores are also worse than the historical-prevalence baseline.
+
+| Development year | Scored outcomes | Majority accuracy | Momentum accuracy | Logistic accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| 2017 | 52 | 44.23% | 51.92% | 42.31% |
+| 2018 | 50 | 52.00% | 46.00% | 48.00% |
+| 2019 | 50 | 38.00% | 64.00% | 48.00% |
+| 2020 | 50 | 50.00% | 56.00% | 54.00% |
+| 2021 | 50 | 64.00% | 46.00% | 52.00% |
+| 2022 | 49 | 48.98% | 36.73% | 53.06% |
+
+Yearly variation is substantial, and no model is consistently better across these small yearly samples. This result concerns this six-feature model and protocol; it does not prove that all oil-direction prediction is impossible. Parameters were not changed after seeing these results, and the final holdout was not evaluated.
+
+Training windows contained **295–596 eligible labelled examples**. All 310 logistic fits converged, taking at most seven solver iterations. No development forecast needed the missing-momentum fallback. Fits ran on the CPU with one numerical-library thread; no GPU or paid service was used.
+
+## Reproduction and verification
+
+Install the pinned dependencies from `requirements.txt`, then run from the workspace root:
+
+```sh
+.venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306
+.venv/bin/python -m unittest discover -s tests -q
+```
+
+The experiment consumes the existing immutable dataset rather than rebuilding it. It writes a content-addressed directory under `data/evaluations/`, containing:
+
+- `predictions.jsonl`: every development prediction, training-input checksum, training date and label-maturity bounds, model probabilities, fitted imputer/scaler/coefficients, and explicit scoring status.
+- `summary.json`: aggregate and yearly metrics on paired dates, exclusions, and the closed-holdout status.
+- `manifest.json`: source dataset hashes, fixed protocol, evaluation code hashes, pinned runtime versions, and artifact hashes.
+
+The current path and full numerical results are in [the committed report](../reports/development_evaluation.json). `--output-root` and `--report` can choose other workspace-relative destinations; there is no date-range override or holdout execution option. Different code, inputs, or recorded runtime versions create a new run identity. Conflicting bytes at an existing identity cause a failure.
+
+All **99 tests pass**. They cover holdout filtering before decoding, incompatible source conventions, future-feature/revision invariance, label withdrawals and maturity, target-boundary purging, preprocessing isolation, missing values, baseline tie rules, known metric cases, paired scoring, and artifact protection. A repeated real-data run produced identical prediction, summary, and manifest bytes. Hash and maturity checks passed for all 310 saved forecasts, with zero holdout predictions.
+
+The final holdout remains closed. A Brent comparison can be evaluated on the same development dates before deciding whether any model is ready for a separately authorized final holdout evaluation.

@@ -1,6 +1,6 @@
 # Crude oil direction research
 
-A free, local WTI direction forecasting project with an audited historical dataset. The experiment compares WTI-only inputs with WTI plus Brent over **five fixed US business days**. No model has been trained.
+A free, local WTI direction forecasting project with an audited historical dataset and an initial WTI-only model comparison over **five fixed US business days**. The 2023-onward final holdout remains closed; adding Brent is a future experiment.
 
 Read the [data audit](docs/data-audit.md) for the findings, evidence limits, and recommended historical availability rules. The audit supports a qualified replay of ALFRED's recorded history from 2011-04-06 onward. Current EIA downloads alone do not preserve that history.
 
@@ -40,6 +40,20 @@ Use the directory printed by your build if its content ID differs. `--as-of` mea
 
 Use `build --data-dir data/audit/vintages/<snapshot-directory>` for a newly downloaded snapshot. CLI paths must be workspace-relative. Do not train directly on the frozen evaluation-label file or on today's label state when simulating an older training cutoff.
 
+## Run the development evaluation
+
+```sh
+.venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306
+.venv/bin/python -m unittest discover -s tests -q
+```
+
+This runs on the CPU using the existing immutable dataset, with no new downloads or dataset rebuild. It starts training in 2011, refits before each 2017–2022 development forecast, and never predicts or scores the final holdout. Parameters and splits are fixed; there is no tuning or holdout CLI option.
+
+On 301 scored development outcomes, accuracy was **49.5% for logistic regression, 49.5% for the training-majority baseline, and 50.2% for momentum**. Logistic regression had worse Brier and log-loss scores than the majority baseline. This experiment does not establish an improvement from the six WTI inputs.
+
+See the [evaluation protocol and results](docs/evaluation.md) and [machine-readable report](reports/development_evaluation.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. A repeated run with identical inputs reuses identical artifacts. All 99 tests pass.
+
 ## Reproduce the saved audit offline
 
 These commands use the evidence retained from the 2026-10-13 audit. They check source hashes before reading values.
@@ -77,16 +91,14 @@ The ALFRED downloader submits the public download form and requests at most 450 
 - `labels`, `training`: versioned targets and cutoff-specific training selection.
 - `dataset`: reproducible artifacts, manifests, summary, and CLI.
 
+The separate `oil_eval` package contains the fixed protocol, holdout-filtered loader, models, metrics, chronological replay, and artifact runner. It consumes dataset artifacts without changing their source history.
+
 The older `vintages.snapshot` helper remains an audit primitive: `strict=False` reproduces recorded anomalies; `strict=True` excludes observations on or after its query date and quarantines predated records. The dataset uses `availability` instead: an observation dated on its archive cutoff can be used at the following business day's issuance. Neither lookup establishes an exact historical intraday publication time.
 
 ## Next experiment and checkpoints
 
-The data audit and reproducible dataset form the first completed checkpoint. The next planned milestones are:
-
-1. **Baseline evaluation:** define expanding chronological validation and a final holdout, then evaluate majority-class and momentum rules. Reconstruct training labels at each cutoff and keep the final holdout out of model selection.
-2. **First classifier:** train a small WTI-only logistic regression. Fit any imputation and scaling within each training fold and compare direction accuracy and probability quality with the baselines.
-3. **Brent comparison:** repeat the same evaluation with WTI plus Brent on matching forecast dates, then report the chosen experiment's final holdout results and limitations.
+Completed checkpoints cover the source audit and dataset, the fixed chronological protocol and holdout safeguards, and the baseline-versus-WTI-logistic development comparison. The next planned experiment is to add Brent using the same development dates and keep the final holdout closed during that comparison. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 
-The [chronological evaluation protocol](docs/evaluation.md) now fixes initial training through 2016, development from 2017–2022, and a closed final holdout from 2023 onward. All training and preprocessing must respect each historical cutoff.
+The [chronological evaluation protocol](docs/evaluation.md) fixes initial training through 2016, development from 2017–2022, and a closed final holdout from 2023 onward. All training and preprocessing must respect each historical cutoff.
