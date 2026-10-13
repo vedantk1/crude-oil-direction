@@ -8,7 +8,7 @@ The [dataset specification](docs/dataset.md) describes the implemented cutoff, f
 
 ## Setup
 
-Python 3.10 or later is required. These examples use Python 3.13. The only external package is the free `xlrd` reader for EIA's original XLS files.
+Python 3.10 or later is required. These examples use Python 3.13. Free dependencies are pinned in `requirements.txt`: `xlrd` reads EIA's XLS files, while NumPy, SciPy, and scikit-learn support local CPU model evaluation.
 
 ```sh
 python3.13 -m venv .venv
@@ -88,3 +88,5 @@ The data audit and reproducible dataset form the first completed checkpoint. The
 3. **Brent comparison:** repeat the same evaluation with WTI plus Brent on matching forecast dates, then report the chosen experiment's final holdout results and limitations.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
+
+The [chronological evaluation protocol](docs/evaluation.md) now fixes initial training through 2016, development from 2017–2022, and a closed final holdout from 2023 onward. All training and preprocessing must respect each historical cutoff.
