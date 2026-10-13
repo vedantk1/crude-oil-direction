@@ -44,3 +44,22 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(len(inventory["compared_feature_sets"]["logistic_wti_inventory"]), 11)
         self.assertIn("missing inventory never removes", inventory["training_cohort"])
         self.assertIn("no older-issue or PDF fallback", inventory["unusable_inventory_issue"])
+
+    def test_regularization_is_one_retrospective_candidate_with_unchanged_controls(self):
+        original = protocol_config("inventory-comparison")
+        candidate = protocol_config("inventory-regularization")
+        for key in ("initial_training_start", "development_start", "development_scoring_as_of",
+                    "holdout_start", "logistic", "minimum_training_rows", "feature_columns",
+                    "inventory_cutoff", "inventory_missing", "unusable_inventory_issue",
+                    "training_cohort", "forecast_cohort"):
+            self.assertEqual(original[key], candidate[key])
+        variants = candidate["logistic_variants"]
+        self.assertEqual(variants["logistic"], original["logistic"])
+        self.assertEqual(variants["logistic_wti_inventory"], original["logistic"])
+        self.assertEqual(variants["logistic_wti_inventory_c01"], {**original["logistic"], "C": 0.1})
+        self.assertEqual(candidate["compared_feature_sets"]["logistic_wti_inventory_c01"],
+                         original["compared_feature_sets"]["logistic_wti_inventory"])
+        self.assertIn("retrospective single predefined", candidate["candidate_selection"])
+        self.assertIn("Brier score and log loss", candidate["primary_comparison"])
+        self.assertIn("without a formal success threshold or significance claim", candidate["success_criteria"])
+        self.assertIn("no grid, feature, threshold, date or holdout changes", candidate["tuning"])

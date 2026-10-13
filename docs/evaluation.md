@@ -1,6 +1,6 @@
 # Chronological development evaluation
 
-The original protocol compares two simple rules with a WTI-only logistic regression. The fixed Brent extension below compares six WTI inputs with fourteen combined inputs on the same development dates. Each protocol is checkpointed before computing its first results. The underlying price target and availability convention remain those in the [dataset specification](dataset.md).
+The original protocol compares two simple rules with a WTI-only logistic regression. Later experiments add Brent, inventories, and one predefined stronger inventory-model penalty on the same development dates. Each protocol is checkpointed before computing its first results. The underlying price target and availability convention remain those in the [dataset specification](dataset.md).
 
 ## Time boundaries and final holdout
 
@@ -231,3 +231,60 @@ Raw nulls, missing reasons, source/reference dates and hashes, definition regime
 All 310 WTI training-input hashes and all original baseline/WTI model payloads reproduce exactly, including fitted diagnostics. Both regressions converged at every issuance: at most seven iterations for WTI and eleven for WTI/inventory. All 247 tests pass. Repeated runs produce identical feature, prediction, summary, and manifest bytes; independent metrics, historical feature reconstruction, source/provenance hashes, and label-maturity checks verify the saved outputs.
 
 The [inventory comparison report](../reports/inventory_comparison.json) contains aggregate/yearly metrics, paired disagreements, constant benchmarks, missingness counts, and reference reproduction. The immutable local run additionally contains all 607 raw inventory rows and per-forecast provenance. Original datasets, audits, reports, and earlier runs remain preserved. Execution used the existing CPU environment without downloads, paid services, or a GPU, and the final holdout remains closed.
+
+## Fixed inventory regularization experiment
+
+This retrospective development experiment changes only the WTI + inventory logistic model's L2 penalty from `C=1` to **`C=0.1`**. The candidate was chosen after reviewing the earlier development results, whose probability scores were worse than neutral and historical-prevalence probabilities. It is a model-selection experiment, not a previously unseen validation result. There is no grid, threshold search, feature change, new data capture, or holdout execution.
+
+The new `logistic_wti_inventory_c01` model retains the same eleven columns, ordered training examples and labels, expanding fit schedule, training-only median imputation and scaling, solver, iteration limit, class weights, and 0.5 decision threshold. The original WTI and inventory `C=1` regressions and both historical rules are replayed as controls. All fixed constant benchmarks are scored on the same available outcomes.
+
+Before fitting, the runner authenticates compatible WTI, inventory-audit, and `C=1` inventory-comparison references. Both selected model references must record the same native runtime fingerprint as the candidate's environment. Newly reconstructed raw inventory rows, including initial-history nulls and provenance, must have exactly the same bytes/hash as the reference's frozen feature artifact. Development dates, targets, scoring states and raw forecast inventory inputs must match the references. After replay, every reference control's complete training metadata, raw inputs/provenance, predictions, probabilities and fitted diagnostics must reproduce exactly. A mismatch stops the run. Historical runs without native fingerprints remain valid historical evidence, but this experiment requires refreshed controls; disclose historical numerical differences and never relax the exact checks.
+
+```sh
+.venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-regularization
+```
+
+Defaults are `reports/development_evaluation.json`, `reports/inventory_audit.json`, and `reports/inventory_comparison.json`. Override them with `--reference-report`, `--inventory-audit-report`, and `--inventory-reference-report` only for compatible authenticated runs. This command writes a separate `reports/inventory_regularization.json` and immutable local run; the original reports, dataset, audit and run artifacts are protected from replacement. These commands require the retained local evidence, as do the earlier comparisons.
+
+### Compatible runtime and refreshed controls
+
+The existing SciPy 1.15.3 macOS 14 arm64 wheel failed locally while importing PROPACK: its thread-local zero-fill section was rejected by the native loader. Installed binary hashes matched their package RECORD. An isolated, checksum-verified official macOS 12 arm64 wheel of **the same SciPy version** imports successfully, but its different numerical build cannot reproduce the saved historical controls bit-for-bit. The original installation and all historical artifacts remain preserved; no binary patch or relaxed comparison check is used. This local observation does not establish a universal wheel defect.
+
+The alternative wheel is available from [official PyPI files](https://pypi.org/project/scipy/1.15.3/#files), named `scipy-1.15.3-cp313-cp313-macosx_12_0_arm64.whl`, with SHA256 `7e11270a000969409d37ed399585ee530b9ef6aa99d50c019de4cb01e8e54e62`. Install it into ignored `.audit-deps/scipy-macos12` with `pip install --no-deps --target` after verifying its hash. Other pinned packages and Python remain unchanged. Prefix the commands below with `PYTHONPATH=.audit-deps/scipy-macos12` to select this isolated dependency.
+
+Establish matched controls using the retained evidence, without downloading data or replacing published reports:
+
+```sh
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --report data/regularization/wti-reference.json
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_audit.inventory \
+  --snapshot-dir data/audit/inventories/20261013T075852032262Z \
+  --reference-report data/regularization/wti-reference.json \
+  --evidence-manifest data/audit/inventory-evidence/20261013T081104639545Z/manifest.json \
+  --probe-manifest data/audit/inventory-probes/20261013T081558994391Z/manifest.json \
+  --quarantine-manifest data/audit/inventory-anomalies/20261013T082020828938Z/manifest.json \
+  --report data/regularization/inventory-audit-reference.json
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-comparison \
+  --reference-report data/regularization/wti-reference.json \
+  --inventory-audit-report data/regularization/inventory-audit-reference.json \
+  --report data/regularization/inventory-comparison-reference.json
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-regularization \
+  --reference-report data/regularization/wti-reference.json \
+  --inventory-audit-report data/regularization/inventory-audit-reference.json \
+  --inventory-reference-report data/regularization/inventory-comparison-reference.json
+```
+
+The final pair changes only `C` within this common working runtime. Separately compare refreshed `C=1` controls with the historical run for exact cohorts, labels, training metadata, raw inventory features/provenance and class predictions; disclose probability/diagnostic differences from the runtime build. Python/package version strings alone do not guarantee bitwise reproducibility across native wheels. New run identities therefore also hash NumPy, SciPy and scikit-learn wheel metadata and native libraries, using package-relative names rather than installation paths.
+
+The saved [runtime control check](../reports/regularization_runtime_check.json) verifies all 310 cohorts, labels, complete training records, raw inventory/provenance and both rule baselines exactly against historical run `8660d7d658d2fe7c8762`. The full frozen inventory artifact is byte-identical, and neither logistic model changes any class prediction. Maximum probability differences are `8.88e-16` for WTI and `1.31e-13` for inventory; median differences are zero. Accuracy, balanced accuracy and AUC are unchanged. Inventory Brier/log-loss differences are below `2e-15`. These are disclosed numerical differences, not a claim of historical bitwise reproduction. The refreshed WTI run is `95f93cf564c9cc55ede7`, inventory audit `090d8516fd820fbb1d34`, and `C=1` inventory run `e908d9c3437095815a70`.
+
+All **285 tests pass** before the regularization result, covering native-build identities, strict selected-reference fingerprints, authenticated controls, null inputs, training-only preprocessing, paired metrics, prefit schedule failures, holdout rejection and historical artifact protection.
+
+Assess paired accuracy, balanced accuracy, AUC, Brier score and log loss, plus yearly stability. The main hypothesis is that stronger regularization improves probability quality relative to `C=1`; improvement beyond neutral and historical-prevalence probabilities would be more useful evidence. A gain caused only by approaching constant probabilities is not a discovered forecasting edge. No settings may be changed in response to this experiment's results, and no independent-sample significance claim is warranted. The 2023-onward final holdout stays closed.

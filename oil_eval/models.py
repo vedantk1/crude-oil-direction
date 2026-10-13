@@ -22,12 +22,14 @@ from .inventory_features import INVENTORY_MODEL_COLUMNS
 MODEL_NAMES = ("majority", "momentum", "logistic")
 COMPARISON_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_brent",)
 INVENTORY_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_inventory",)
+INVENTORY_REGULARIZATION_MODEL_NAMES = INVENTORY_MODEL_NAMES + ("logistic_wti_inventory_c01",)
 LOGISTIC_PARAMETERS = {
     "C": 1.0,
     "solver": "lbfgs",
     "max_iter": 2000,
     "random_state": 0,
 }
+INVENTORY_REGULARIZATION_PARAMETERS = {**LOGISTIC_PARAMETERS, "C": 0.1}
 
 
 def _feature_vector(row: dict, feature_columns: tuple = WTI_FEATURE_COLUMNS) -> list[float]:
@@ -59,14 +61,14 @@ def _training_label(row: dict) -> int:
 
 
 def _fit_predict_logistic(training_rows: list[dict], forecast_row: dict,
-                          labels: list[int], feature_columns: tuple) -> dict:
-    """Use identical fitting settings for every predefined feature set."""
+                          labels: list[int], feature_columns: tuple, *, parameters=None) -> dict:
+    """Fit a predefined feature set with the fixed control or candidate settings."""
     train = np.asarray([_feature_vector(row, feature_columns) for row in training_rows], dtype=float)
     forecast = np.asarray([_feature_vector(forecast_row, feature_columns)], dtype=float)
     model = Pipeline([
         ("imputer", SimpleImputer(strategy="median", keep_empty_features=True)),
         ("scaler", StandardScaler()),
-        ("classifier", LogisticRegression(**LOGISTIC_PARAMETERS)),
+        ("classifier", LogisticRegression(**(LOGISTIC_PARAMETERS if parameters is None else parameters))),
     ])
     try:
         with warnings.catch_warnings():
@@ -147,6 +149,22 @@ def fit_predict_comparison_models(training_rows: list[dict], forecast_row: dict)
     return result
 
 
+def _fit_predict_inventory(training_rows, forecast_row, labels, *, parameters=None):
+    """Keep the inventory diagnostics identical for control and candidate fits."""
+    inventory = _fit_predict_logistic(training_rows, forecast_row, labels,
+                                     INVENTORY_MODEL_COLUMNS, parameters=parameters)
+    inventory["diagnostics"].update({
+        "training_missing_counts": {
+            column: sum(row["features"][column] is None for row in training_rows)
+            for column in INVENTORY_MODEL_COLUMNS
+        },
+        "forecast_missing_columns": [
+            column for column in INVENTORY_MODEL_COLUMNS if forecast_row["features"][column] is None
+        ],
+    })
+    return inventory
+
+
 def fit_predict_inventory_models(training_rows: list[dict], forecast_row: dict) -> dict:
     """Add five inventory inputs without removing any supplied WTI examples.
 
@@ -158,15 +176,19 @@ def fit_predict_inventory_models(training_rows: list[dict], forecast_row: dict) 
     """
     result = fit_predict_models(training_rows, forecast_row)
     labels = [_training_label(row) for row in training_rows]
-    inventory = _fit_predict_logistic(training_rows, forecast_row, labels, INVENTORY_MODEL_COLUMNS)
-    inventory["diagnostics"].update({
-        "training_missing_counts": {
-            column: sum(row["features"][column] is None for row in training_rows)
-            for column in INVENTORY_MODEL_COLUMNS
-        },
-        "forecast_missing_columns": [
-            column for column in INVENTORY_MODEL_COLUMNS if forecast_row["features"][column] is None
-        ],
-    })
-    result["logistic_wti_inventory"] = inventory
+    result["logistic_wti_inventory"] = _fit_predict_inventory(training_rows, forecast_row, labels)
+    return result
+
+
+def fit_predict_inventory_regularization_models(training_rows: list[dict], forecast_row: dict) -> dict:
+    """Add the single C=0.1 inventory candidate; reproduce every C=1 control.
+
+    There is no parameter selection, threshold change, or cohort filtering.
+    The candidate uses the same eleven inputs and training-only preprocessing
+    as the original inventory model, with the same missingness diagnostics.
+    """
+    result = fit_predict_inventory_models(training_rows, forecast_row)
+    labels = [_training_label(row) for row in training_rows]
+    result["logistic_wti_inventory_c01"] = _fit_predict_inventory(
+        training_rows, forecast_row, labels, parameters=INVENTORY_REGULARIZATION_PARAMETERS)
     return result

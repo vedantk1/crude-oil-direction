@@ -11,8 +11,10 @@ from sklearn.exceptions import ConvergenceWarning
 from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
 from oil_eval.inventory_features import INVENTORY_FEATURE_COLUMNS, INVENTORY_MODEL_COLUMNS
 from oil_eval.models import (
-    COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES, LOGISTIC_PARAMETERS, Pipeline,
-    fit_predict_comparison_models, fit_predict_inventory_models, fit_predict_models,
+    COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES, INVENTORY_REGULARIZATION_MODEL_NAMES,
+    INVENTORY_REGULARIZATION_PARAMETERS, LOGISTIC_PARAMETERS, Pipeline,
+    fit_predict_comparison_models, fit_predict_inventory_models,
+    fit_predict_inventory_regularization_models, fit_predict_models,
 )
 
 
@@ -350,6 +352,100 @@ class InventoryModelTests(unittest.TestCase):
         before = deepcopy((self.training, forecast))
         fit_predict_inventory_models(self.training, forecast)
         self.assertEqual((self.training, forecast), before)
+
+
+class InventoryRegularizationModelTests(unittest.TestCase):
+    def setUp(self):
+        self.training = [inventory_row(-30, -3, 0), inventory_row(10, None, 1),
+                         inventory_row(20, 1, 0), inventory_row(40, 5, 1)]
+
+    def test_original_four_payloads_and_inputs_are_unchanged(self):
+        forecast = inventory_row(12, None)
+        before = deepcopy((self.training, forecast, LOGISTIC_PARAMETERS))
+        expected = fit_predict_inventory_models(self.training, forecast)
+        actual = fit_predict_inventory_regularization_models(self.training, forecast)
+        self.assertEqual(tuple(actual), INVENTORY_REGULARIZATION_MODEL_NAMES)
+        self.assertEqual(expected, {name: actual[name] for name in INVENTORY_MODEL_NAMES})
+        self.assertEqual((self.training, forecast, LOGISTIC_PARAMETERS), before)
+        self.assertEqual(LOGISTIC_PARAMETERS["C"], 1.0)
+        self.assertEqual(INVENTORY_REGULARIZATION_PARAMETERS,
+                         {**LOGISTIC_PARAMETERS, "C": 0.1})
+
+    def test_only_candidate_C_changes_with_identical_rows_labels_and_preprocessing(self):
+        self.training[0]["features"].update(dict.fromkeys(INVENTORY_FEATURE_COLUMNS))
+        calls = []
+        original_fit = Pipeline.fit
+
+        def capture_fit(model, train, labels, *args, **kwargs):
+            calls.append((train.copy(), list(labels),
+                          model.named_steps["classifier"].get_params(),
+                          model.named_steps["imputer"].get_params(),
+                          model.named_steps["scaler"].get_params()))
+            return original_fit(model, train, labels, *args, **kwargs)
+
+        with patch("oil_eval.models.Pipeline.fit", new=capture_fit):
+            result = fit_predict_inventory_regularization_models(self.training, inventory_row(12, 2))
+        self.assertEqual(len(calls), 3)
+        wti, control, candidate = calls
+        np.testing.assert_allclose(control[0], candidate[0], equal_nan=True)
+        np.testing.assert_allclose(wti[0], candidate[0][:, :6], equal_nan=True)
+        self.assertEqual([call[1] for call in calls], [[0, 1, 0, 1]] * 3)
+        self.assertEqual([call[2]["C"] for call in calls], [1.0, 1.0, 0.1])
+        self.assertEqual(candidate[2], {**control[2], "C": 0.1})
+        self.assertEqual(wti[2], control[2])
+        self.assertEqual([call[3:] for call in calls], [control[3:]] * 3)
+        self.assertFalse(candidate[3]["add_indicator"])
+        self.assertEqual(candidate[0].shape, (4, 11))
+        left = result["logistic_wti_inventory"]["diagnostics"]
+        right = result["logistic_wti_inventory_c01"]["diagnostics"]
+        for key in ("feature_columns", "imputer_statistics", "scaler_mean", "scaler_scale",
+                    "training_missing_counts", "forecast_missing_columns"):
+            self.assertEqual(left[key], right[key])
+
+    def test_candidate_preprocessing_and_parameters_ignore_forecast_values(self):
+        low, high = inventory_row(None, None), inventory_row(100000, 5000)
+        low["features"].update(dict.fromkeys(INVENTORY_FEATURE_COLUMNS))
+        high["features"].update(dict.fromkeys(INVENTORY_FEATURE_COLUMNS, 100000))
+        left = fit_predict_inventory_regularization_models(self.training, low)["logistic_wti_inventory_c01"]
+        right = fit_predict_inventory_regularization_models(self.training, high)["logistic_wti_inventory_c01"]
+        self.assertEqual({key: value for key, value in left["diagnostics"].items()
+                          if key != "forecast_missing_columns"},
+                         {key: value for key, value in right["diagnostics"].items()
+                          if key != "forecast_missing_columns"})
+        empty_column = INVENTORY_FEATURE_COLUMNS[1]
+        self.assertEqual(left["diagnostics"]["imputer_statistics"][empty_column], 0)
+        self.assertEqual(left["diagnostics"]["training_missing_counts"][empty_column], 4)
+        self.assertEqual(left["prediction"], int(left["probability_up"] >= 0.5))
+        self.assertEqual(right["prediction"], int(right["probability_up"] >= 0.5))
+
+    def test_fixed_candidate_shrinks_coefficients_on_synthetic_separable_signal(self):
+        training = [inventory_row(10, 0, int(change > 0)) for change in (-5, -3, 3, 5)]
+        for example, change in zip(training, (-5, -3, 3, 5)):
+            example["features"][INVENTORY_FEATURE_COLUMNS[0]] = change
+        forecast = inventory_row(10, 0)
+        forecast["features"][INVENTORY_FEATURE_COLUMNS[0]] = 4
+        result = fit_predict_inventory_regularization_models(training, forecast)
+        control, candidate = result["logistic_wti_inventory"], result["logistic_wti_inventory_c01"]
+        norm = lambda output: sum(value ** 2 for value in output["diagnostics"]["coef"].values())
+        self.assertLess(norm(candidate), norm(control))
+        self.assertLess(candidate["probability_up"], control["probability_up"])
+        self.assertGreater(candidate["probability_up"], 0.5)
+
+    def test_candidate_convergence_failure_is_not_replaced_by_control(self):
+        count = 0
+        original_fit = Pipeline.fit
+
+        def candidate_fails(model, train, labels, *args, **kwargs):
+            nonlocal count
+            count += 1
+            if count == 3:
+                warnings.warn("candidate did not converge", ConvergenceWarning)
+            return original_fit(model, train, labels, *args, **kwargs)
+
+        with patch("oil_eval.models.Pipeline.fit", new=candidate_fails):
+            with self.assertRaisesRegex(RuntimeError, "did not converge"):
+                fit_predict_inventory_regularization_models(self.training, inventory_row(12, 2))
+        self.assertEqual(count, 3)
 
 
 if __name__ == "__main__":

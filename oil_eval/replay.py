@@ -12,15 +12,19 @@ from oil_audit.training import training_rows
 from .benchmarks import summarize_benchmarks
 from .metrics import classification_metrics
 from .inventory_features import INVENTORY_FEATURE_COLUMNS
-from .models import (COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES, MODEL_NAMES,
-                     fit_predict_comparison_models, fit_predict_inventory_models, fit_predict_models)
+from .models import (COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES,
+                     INVENTORY_REGULARIZATION_MODEL_NAMES, MODEL_NAMES,
+                     fit_predict_comparison_models, fit_predict_inventory_models,
+                     fit_predict_inventory_regularization_models, fit_predict_models)
 from .protocol import (HOLDOUT_START, MIN_TRAINING_ROWS, SCORING_AS_OF,
                        forecast_role, protocol_config)
-from .reference import validate_reference_schedule, verify_reference_reproduction
+from .reference import (validate_inventory_reference_schedule, validate_reference_schedule,
+                        verify_inventory_reference_reproduction, verify_reference_reproduction)
 
 
 def replay_development(feature_rows, label_events, scoring_labels, *,
-                       predictor=None, experiment="wti", reference_rows=None):
+                       predictor=None, experiment="wti", reference_rows=None,
+                       inventory_reference_rows=None):
     """Predict first, then attach development outcomes for scoring.
 
     Training eligibility follows each issuance's label state. The final
@@ -28,10 +32,13 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
     """
     protocol_config(experiment)
     brent = experiment == "brent-comparison"
-    inventory = experiment == "inventory-comparison"
+    regularization = experiment == "inventory-regularization"
+    inventory = experiment in ("inventory-comparison", "inventory-regularization")
     comparison = brent or inventory
-    model_names = COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES
-    predictor = predictor or (fit_predict_comparison_models if brent else
+    model_names = (INVENTORY_REGULARIZATION_MODEL_NAMES if regularization else
+                   COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES)
+    predictor = predictor or (fit_predict_inventory_regularization_models if regularization else
+                              fit_predict_comparison_models if brent else
                               fit_predict_inventory_models if inventory else fit_predict_models)
     boundary = HOLDOUT_START.isoformat()
     if any(row["forecast_date"] >= boundary for row in feature_rows):
@@ -53,6 +60,10 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
             if forecast_role(row) in ("initial_training", "development") and not all(
                     column in row["features"] for column in INVENTORY_FEATURE_COLUMNS):
                 raise ValueError("Missing declared inventory feature columns before fitting")
+    if regularization:
+        if inventory_reference_rows is None:
+            raise ValueError("Regularization comparison requires the verified inventory reference")
+        validate_inventory_reference_schedule(rows, scoring_labels, inventory_reference_rows)
     histories = defaultdict(list)
     for event in label_events:
         histories[event["row_id"]].append(event)
@@ -144,6 +155,9 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
         if inventory and not (summary["reference_reproduction"]["all_wti_training_inputs_identical"]
                               and summary["reference_reproduction"]["all_reference_model_outputs_identical"]):
             raise ValueError("Inventory comparison changed the original WTI training inputs or model outputs")
+    if regularization:
+        summary["inventory_reference_reproduction"] = verify_inventory_reference_reproduction(
+            predictions, inventory_reference_rows)
     return predictions, summary
 
 
@@ -158,10 +172,13 @@ def _metrics(rows, model_names=MODEL_NAMES):
 
 def summarize_predictions(predictions, excluded, *, experiment="wti"):
     brent = experiment == "brent-comparison"
-    inventory = experiment == "inventory-comparison"
+    regularization = experiment == "inventory-regularization"
+    inventory = experiment in ("inventory-comparison", "inventory-regularization")
     comparison = brent or inventory
-    model_names = COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES
+    model_names = (INVENTORY_REGULARIZATION_MODEL_NAMES if regularization else
+                   COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES)
     augmented_model = "logistic_wti_brent" if brent else "logistic_wti_inventory"
+    logistic_names = tuple(name for name in model_names if name.startswith("logistic"))
     scored = [row for row in predictions if row["scoring_status"] == "available"]
     if any(row["forecast_date"] >= HOLDOUT_START.isoformat()
            or row["target_date"] >= HOLDOUT_START.isoformat() for row in predictions):
@@ -203,8 +220,7 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
             "metrics": _metrics([row for row in predictions if row["forecast_date"].startswith(year)], model_names),
         } for year in years},
         "paired_accuracy_comparisons": paired,
-        "constant_benchmarks": summarize_benchmarks(
-            predictions, ("logistic", augmented_model) if comparison else ("logistic",)),
+        "constant_benchmarks": summarize_benchmarks(predictions, logistic_names),
         "holdout_evaluated": False,
     }
     if comparison:
@@ -233,7 +249,31 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
         }
         result["maximum_iterations_by_logistic_model"] = {
             name: max(row["models"][name]["diagnostics"]["iterations"] for row in predictions)
-            for name in ("logistic", augmented_model)}
+            for name in logistic_names}
+    if regularization:
+        candidate, control = "logistic_wti_inventory_c01", "logistic_wti_inventory"
+        counts = Counter()
+        for row in scored:
+            candidate_correct = row["models"][candidate]["prediction"] == row["label"]
+            control_correct = row["models"][control]["prediction"] == row["label"]
+            key = ("both_correct" if candidate_correct and control_correct else
+                   "both_wrong" if not candidate_correct and not control_correct else
+                   "candidate_only_correct" if candidate_correct else "control_only_correct")
+            counts[key] += 1
+
+        def metric_differences(metrics):
+            return {metric: (metrics[candidate][metric] - metrics[control][metric]
+                             if metrics[candidate][metric] is not None and metrics[control][metric] is not None
+                             else None)
+                    for metric in ("accuracy", "balanced_accuracy", "roc_auc", "brier_score", "log_loss")}
+
+        result["paired_inventory_regularization"] = {
+            **{key: counts[key] for key in
+               ("both_correct", "both_wrong", "candidate_only_correct", "control_only_correct")},
+            "metric_differences_candidate_minus_control": metric_differences(result["metrics"]),
+            "yearly_metric_differences_candidate_minus_control": {
+                year: metric_differences(group["metrics"]) for year, group in result["yearly"].items()},
+        }
     if inventory:
         result["development_inventory_missing_counts"] = {
             column: sum(row["inventory"]["features"][column] is None for row in predictions)

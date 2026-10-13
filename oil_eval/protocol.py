@@ -11,7 +11,7 @@ DEVELOPMENT_START = date(2017, 1, 1)
 HOLDOUT_START = date(2023, 1, 1)
 SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
-EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison")
+EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison", "inventory-regularization")
 
 
 def protocol_config(experiment: str = "wti") -> dict:
@@ -56,7 +56,7 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired WTI-plus-Brent minus WTI-only development accuracy; probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
         })
-    if experiment == "inventory-comparison":
+    if experiment in ("inventory-comparison", "inventory-regularization"):
         config.update({
             "protocol_id": "wti-inventory-development-v1",
             "feature_columns": list(INVENTORY_MODEL_COLUMNS),
@@ -74,6 +74,24 @@ def protocol_config(experiment: str = "wti") -> dict:
             "reference_reproduction": "require all original WTI training hashes and model payloads to reproduce exactly",
             "primary_comparison": "paired WTI-plus-inventory minus WTI-only development accuracy; constants and probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, threshold and dates fixed",
+        })
+    if experiment == "inventory-regularization":
+        config.update({
+            "protocol_id": "wti-inventory-regularization-development-v1",
+            "compared_feature_sets": {
+                **config["compared_feature_sets"],
+                "logistic_wti_inventory_c01": list(INVENTORY_MODEL_COLUMNS),
+            },
+            "logistic_variants": {
+                "logistic": dict(config["logistic"]),
+                "logistic_wti_inventory": dict(config["logistic"]),
+                "logistic_wti_inventory_c01": {**config["logistic"], "C": 0.1},
+            },
+            "candidate_selection": "retrospective single predefined C=0.1 candidate after observing earlier development results",
+            "reference_reproduction": "require exact selected authenticated WTI and C=1 inventory cohorts, training, inventory provenance and model payloads; native runtime fingerprints must match before fitting",
+            "primary_comparison": "paired development Brier score and log loss for C=0.1 minus C=1 inventory; accuracy and yearly stability also reported",
+            "success_criteria": "report aggregate Brier/log-loss differences against C=1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
+            "tuning": "one fixed regularization candidate; no grid, feature, threshold, date or holdout changes",
         })
     return config
 

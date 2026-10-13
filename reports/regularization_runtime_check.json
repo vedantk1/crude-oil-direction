@@ -1,0 +1,75 @@
+{
+  "all_cohorts_labels_training_inventory_and_baseline_rules_identical": true,
+  "class_prediction_changes": {
+    "logistic": 0,
+    "logistic_wti_inventory": 0
+  },
+  "forecast_count": 310,
+  "frozen_inventory_artifact_identical": true,
+  "historical_bitwise_reproduction": false,
+  "historical_reference": {
+    "manifest_sha256": "410f8682cc09c3c3f6cf3e0bdc0eb41f5c2b44b525025c94e601bb783d1cbf00",
+    "report": "reports/inventory_comparison.json",
+    "report_sha256": "39fe14962899a01a44329c684e1b04132c114fe4aa23fe683685cb40fef72ed7",
+    "run_id": "8660d7d658d2fe7c8762"
+  },
+  "holdout_evaluated": false,
+  "interpretation": "different official native build changes numerical payloads; original class predictions and cohorts are preserved; candidate must use refreshed exact controls in the same native runtime",
+  "maximum_absolute_diagnostic_differences": {
+    "logistic": 1.759703494030873e-14,
+    "logistic_wti_inventory": 2.2738278274148094e-13
+  },
+  "metric_differences_refreshed_minus_historical": {
+    "logistic": {
+      "accuracy": 0.0,
+      "balanced_accuracy": 0.0,
+      "brier_score": 0.0,
+      "log_loss": 0.0,
+      "roc_auc": 0.0
+    },
+    "logistic_wti_inventory": {
+      "accuracy": 0.0,
+      "balanced_accuracy": 0.0,
+      "brier_score": -7.771561172376096e-16,
+      "log_loss": -1.5543122344752192e-15,
+      "roc_auc": 0.0
+    }
+  },
+  "official_scipy_wheel": {
+    "filename": "scipy-1.15.3-cp313-cp313-macosx_12_0_arm64.whl",
+    "sha256": "7e11270a000969409d37ed399585ee530b9ef6aa99d50c019de4cb01e8e54e62"
+  },
+  "probability_absolute_differences": {
+    "logistic": {
+      "maximum": 8.881784197001252e-16,
+      "mean": 2.2875966354171573e-17,
+      "median": 0.0,
+      "nonzero_count": 51
+    },
+    "logistic_wti_inventory": {
+      "maximum": 1.3095080575453721e-13,
+      "mean": 8.483581221031867e-16,
+      "median": 0.0,
+      "nonzero_count": 128
+    }
+  },
+  "purpose": "historical versus refreshed C=1 controls; no C=0.1 results or final holdout evaluation",
+  "refreshed_reference": {
+    "manifest_sha256": "6d4348c75c1b0bf446b44fb70d2a21082b14dd6f480a29ecdbfbbba84e3ace5c",
+    "report": "data/regularization/inventory-comparison-reference.json",
+    "report_sha256": "4ed92078717cec8684d0045f74dcbdf52d8073f3c6a5eb8fa160efe01df0eae0",
+    "run_id": "e908d9c3437095815a70"
+  },
+  "runtime_versions": {
+    "joblib": "1.5.2",
+    "numpy": "2.2.6",
+    "python": "3.13.9",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.3",
+    "threadpoolctl": "3.6.0"
+  },
+  "scored_count": 301,
+  "selected_native_runtime_identical": true,
+  "selected_native_runtime_sha256": "4f67a7a6c4eb5a9a667cea1c904cdf7a907fd544c61a74682061841d6d2189e8",
+  "unscored_count": 9
+}
