@@ -16,10 +16,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
+from .inventory_features import INVENTORY_MODEL_COLUMNS
 
 
 MODEL_NAMES = ("majority", "momentum", "logistic")
 COMPARISON_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_brent",)
+INVENTORY_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_inventory",)
 LOGISTIC_PARAMETERS = {
     "C": 1.0,
     "solver": "lbfgs",
@@ -30,9 +32,10 @@ LOGISTIC_PARAMETERS = {
 
 def _feature_vector(row: dict, feature_columns: tuple = WTI_FEATURE_COLUMNS) -> list[float]:
     """Select a fixed feature allowlist; retain explicit nulls for imputation."""
-    if feature_columns not in (WTI_FEATURE_COLUMNS, FEATURE_COLUMNS):
+    if feature_columns not in (WTI_FEATURE_COLUMNS, FEATURE_COLUMNS, INVENTORY_MODEL_COLUMNS):
         raise ValueError("Unsupported logistic feature columns")
-    feature_set = "WTI" if feature_columns == WTI_FEATURE_COLUMNS else "WTI/Brent"
+    feature_set = {WTI_FEATURE_COLUMNS: "WTI", FEATURE_COLUMNS: "WTI/Brent",
+                   INVENTORY_MODEL_COLUMNS: "WTI/inventory"}[feature_columns]
     features = row["features"]
     result = []
     for column in feature_columns:
@@ -57,7 +60,7 @@ def _training_label(row: dict) -> int:
 
 def _fit_predict_logistic(training_rows: list[dict], forecast_row: dict,
                           labels: list[int], feature_columns: tuple) -> dict:
-    """Use identical fitting settings for either predefined feature set."""
+    """Use identical fitting settings for every predefined feature set."""
     train = np.asarray([_feature_vector(row, feature_columns) for row in training_rows], dtype=float)
     forecast = np.asarray([_feature_vector(forecast_row, feature_columns)], dtype=float)
     model = Pipeline([
@@ -141,4 +144,29 @@ def fit_predict_comparison_models(training_rows: list[dict], forecast_row: dict)
     labels = [_training_label(row) for row in training_rows]
     result["logistic_wti_brent"] = _fit_predict_logistic(
         training_rows, forecast_row, labels, FEATURE_COLUMNS)
+    return result
+
+
+def fit_predict_inventory_models(training_rows: list[dict], forecast_row: dict) -> dict:
+    """Add five inventory inputs without removing any supplied WTI examples.
+
+    Both regressions use the same rows and active labels in the supplied order.
+    Missing inventory inputs remain null until the training-only imputer; an
+    entirely missing training column uses zero. Missingness is recorded in
+    diagnostics, never appended as additional model inputs. Original WTI and
+    baseline payloads retain their existing shape and numerical values.
+    """
+    result = fit_predict_models(training_rows, forecast_row)
+    labels = [_training_label(row) for row in training_rows]
+    inventory = _fit_predict_logistic(training_rows, forecast_row, labels, INVENTORY_MODEL_COLUMNS)
+    inventory["diagnostics"].update({
+        "training_missing_counts": {
+            column: sum(row["features"][column] is None for row in training_rows)
+            for column in INVENTORY_MODEL_COLUMNS
+        },
+        "forecast_missing_columns": [
+            column for column in INVENTORY_MODEL_COLUMNS if forecast_row["features"][column] is None
+        ],
+    })
+    result["logistic_wti_inventory"] = inventory
     return result

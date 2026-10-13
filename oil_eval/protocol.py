@@ -3,6 +3,7 @@
 from datetime import date
 
 from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
+from .inventory_features import INVENTORY_MODEL_COLUMNS
 
 
 TRAIN_START = date(2011, 4, 7)
@@ -10,7 +11,7 @@ DEVELOPMENT_START = date(2017, 1, 1)
 HOLDOUT_START = date(2023, 1, 1)
 SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
-EXPERIMENTS = ("wti", "brent-comparison")
+EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison")
 
 
 def protocol_config(experiment: str = "wti") -> dict:
@@ -54,6 +55,25 @@ def protocol_config(experiment: str = "wti") -> dict:
             "reference_reproduction": "when WTI training inputs match, require exact reference model outputs",
             "primary_comparison": "paired WTI-plus-Brent minus WTI-only development accuracy; probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
+        })
+    if experiment == "inventory-comparison":
+        config.update({
+            "protocol_id": "wti-inventory-development-v1",
+            "feature_columns": list(INVENTORY_MODEL_COLUMNS),
+            "compared_feature_sets": {"logistic": list(WTI_FEATURE_COLUMNS),
+                                      "logistic_wti_inventory": list(INVENTORY_MODEL_COLUMNS)},
+            "inventory_sources": "audited EIA commercial-crude and Cushing issue archives; qualified archive replay",
+            "inventory_weekly_change": "published within-issue difference, million barrels",
+            "inventory_four_week_change": "current stock minus latest available exact observation 28 days earlier; same definition regime",
+            "inventory_report_age": "calendar days since actual latest eligible release; shared between both series",
+            "inventory_cutoff": "release date strictly before each historical forecast; freeze features at that issuance",
+            "inventory_missing": "retain nulls and explicit reasons; fit median imputation only on training rows; no missing-indicator inputs",
+            "unusable_inventory_issue": "all four changes null; known release metadata still supplies report age; no older-issue or PDF fallback",
+            "training_cohort": "exact original WTI-eligible rows and active labels; missing inventory never removes rows",
+            "forecast_cohort": "exact forecast IDs, dates, targets and scoring states from the verified WTI reference",
+            "reference_reproduction": "require all original WTI training hashes and model payloads to reproduce exactly",
+            "primary_comparison": "paired WTI-plus-inventory minus WTI-only development accuracy; constants and probability quality also reported",
+            "tuning": "none: keep the WTI experiment's parameters, threshold and dates fixed",
         })
     return config
 

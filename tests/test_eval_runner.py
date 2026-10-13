@@ -10,6 +10,65 @@ from oil_eval.runner import run
 
 
 class RunnerTests(unittest.TestCase):
+    def test_inventory_runner_freezes_only_admitted_rows_and_saves_null_inputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            reference = {"run_id": "original-wti", "evaluation_directory": "data/synthetic-reference"}
+            inventory_reference = {"audit_id": "inventory-source", "audit_directory": "data/synthetic-audit",
+                                   "reference_run": reference}
+            admitted = {"row_id": "one", "forecast_date": "2017-01-05", "target_date": "2017-01-12"}
+            crossing = {"row_id": "crossing", "forecast_date": "2022-12-29", "target_date": "2023-01-06"}
+            from oil_eval.inventory_features import INVENTORY_FEATURE_COLUMNS
+            augmented = {**admitted, "features": dict.fromkeys(INVENTORY_FEATURE_COLUMNS),
+                         "inventory_provenance": {"status": "no_earlier_release"}}
+            with patch("oil_eval.runner.load_development_data", return_value=({"dataset_id": "synthetic"}, [admitted, crossing], [], [])) as loader, \
+                 patch("oil_eval.runner.load_reference", return_value=(reference, [])), \
+                 patch("oil_eval.runner.load_inventory_reference", return_value=(inventory_reference, [], [])), \
+                 patch("oil_eval.runner.attach_inventory_features", return_value=([augmented], {"row_count": 1})) as attach, \
+                 patch("oil_eval.runner.replay_development", return_value=([], {"holdout_evaluated": False})) as replay:
+                result = run(root, root / "runs", root / "inventory.json", experiment="inventory-comparison")
+                loader.assert_called_once_with(root)
+                attach.assert_called_once_with([admitted], [], [])
+                replay.assert_called_once_with([augmented, crossing], [], [],
+                                               experiment="inventory-comparison", reference_rows=[])
+                self.assertEqual(result["inventory_audit_id"], inventory_reference["audit_id"])
+                destination = Path(result["evaluation_directory"])
+                saved = json.loads((destination / "inventory_features.jsonl").read_text())
+                self.assertEqual(saved["features"], dict.fromkeys(INVENTORY_FEATURE_COLUMNS))
+                manifest = json.loads((destination / "manifest.json").read_text())
+                self.assertEqual(manifest["inventory_reference"], inventory_reference)
+                self.assertIn("inventory_features.jsonl", manifest["artifacts"])
+
+    def test_inventory_reference_mismatch_stops_before_feature_build_and_replay(self):
+        with patch("oil_eval.runner.load_development_data", return_value=({}, [], [], [])), \
+             patch("oil_eval.runner.load_reference", return_value=({"run_id": "original", "evaluation_directory": "data/reference"}, [])), \
+             patch("oil_eval.runner.load_inventory_reference", return_value=({"reference_run": {"run_id": "other"}}, [], [])), \
+             patch("oil_eval.runner.attach_inventory_features") as attach, \
+             patch("oil_eval.runner.replay_development") as replay:
+            with self.assertRaisesRegex(ValueError, "do not share"):
+                run(Path("data/synthetic"), experiment="inventory-comparison")
+            attach.assert_not_called()
+            replay.assert_not_called()
+
+    def test_inventory_report_cannot_overwrite_historical_or_old_immutable_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            reference = {"run_id": "original-wti", "evaluation_directory": "data/reference"}
+            inventory_reference = {"audit_id": "inventory", "audit_directory": "data/inventory-audit",
+                                   "reference_run": reference}
+            destinations = [Path("reports/brent_comparison.json"), Path("reports/development_benchmarks.json"),
+                            Path("reports/inventory_audit.json"), Path("data/inventory-audit/records.jsonl"),
+                            root / "runs" / "old-run" / "inventory_features.jsonl"]
+            with patch("oil_eval.runner.load_development_data", return_value=({}, [], [], [])), \
+                 patch("oil_eval.runner.load_reference", return_value=(reference, [])), \
+                 patch("oil_eval.runner.load_inventory_reference", return_value=(inventory_reference, [], [])), \
+                 patch("oil_eval.runner.attach_inventory_features", return_value=([], {})), \
+                 patch("oil_eval.runner.replay_development") as replay:
+                for report in destinations:
+                    with self.subTest(report=str(report)), self.assertRaisesRegex(ValueError, "overwrite"):
+                        run(root, root / "runs", report, experiment="inventory-comparison")
+                replay.assert_not_called()
+
     def test_comparison_records_reference_and_routes_only_combined_development_data(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

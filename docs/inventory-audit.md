@@ -1,6 +1,6 @@
 # EIA inventory archive audit
 
-This audit concerns free historical inventory information for **2011–2022**, before the final model holdout. It captures EIA issue archives, checks their release and observation dates, parses the two inventory series, and measures their availability on the existing development forecast dates. It adds no inventory features to the price dataset and fits no model.
+This audit concerns free historical inventory information for **2011–2022**, before the final model holdout. It captures EIA issue archives, checks their release and observation dates, parses the two inventory series, and measures their availability on the existing development forecast dates. The audit fits no model. The subsequent [inventory comparison](evaluation.md#fixed-inventory-comparison) augments filtered WTI feature rows separately, preserving the original price dataset.
 
 The completed audit admits **596 of 597 intended issues** and covers **309 of the 310 original development forecast dates**. One stale July 2019 CSV is quarantined. Early 2011 publication coverage remains incomplete, and unchanged first-release values are not proved. Full results are in the [inventory audit report](../reports/inventory_audit.json).
 
@@ -28,7 +28,7 @@ Release counts are 23 in 2011; 53 each in 2014 and 2020; and 52 in every other y
 
 The overlap at the definition boundary confirms why regimes matter: the September 30, 2016 commercial stock is 499.740 million barrels in the October 5 release, then 469.108 in the October 13 release's prior-week column. The 30.632-million-barrel difference is classified as the definition adjustment, rather than an ordinary weekly draw. Finding no other overlap changes cannot establish that older files were never corrected in place.
 
-The coverage check deliberately requires the latest declared issue to be usable. It flags the July 5, 2019 forecast rather than silently substituting an older issue. This is an audit of availability, not a decision to drop that date from a future model comparison. A later feature experiment must retain the original dates and explicitly handle unavailable or separately recovered inputs.
+The coverage check deliberately requires the latest declared issue to be usable. It flags the July 5, 2019 forecast rather than silently substituting an older issue. The inventory comparison retains that forecast with null stock changes and known publication age; unavailable inputs are handled inside each training fit.
 
 ## Sources and coverage
 
@@ -67,7 +67,7 @@ Preserve a commercial-definition regime for each release. The audit separates re
 
 These are values **as preserved in EIA's issue archive at capture time**. Checksums preserve this capture; they do not prove that every archived file is an immutable original. Comparing repeated observations across releases can detect some changes, but cannot reveal every correction made directly to an older file. HTTP modification times are retained for provenance and do not establish historical publication or revision dates.
 
-The next model experiment should use a small, fixed inventory feature set only after accepting this qualification. Candidate inputs are the published weekly change, a compatible four-week change, and report age. A stock build or draw is not a consensus surprise: that would require separately verified historical expectations. The final holdout remains closed.
+The inventory comparison accepts this qualification and adds published weekly change and compatible four-week change for each series, plus shared report age. Raw missing inputs and their reasons are retained. A stock build or draw is not a consensus surprise: that would require separately verified historical expectations. The final holdout remains closed.
 
 ## July 2019 quarantine and possible fallback
 
@@ -109,4 +109,4 @@ Reproduce the completed audit offline:
 
 The audit authenticates the saved WTI development reference; it reads no source price dataset or final holdout rows. All admitted release dates and all coverage forecast/target dates precede 2023. The report points to `data/audits/inventories/3a01db73789436d8ea29/`, containing extracted inventory records, overlap changes, per-forecast availability, summary, and manifest. Source, auxiliary/probe/quarantine evidence, code, and output hashes are retained. Current and older audit artifacts and original model reports are protected against report-path overwrites.
 
-All **203 project tests pass**, including **49 inventory tests** for schema/date checks, immutable recovery, malformed-index completeness, delayed releases, checksum failures, missing inputs, definition transitions, historical joins, quarantine, and output protection. A repeated audit produced identical report and artifact bytes; independent hash, code-provenance, and date-bound checks passed. The original dataset, WTI report, and Brent report remain unchanged.
+The audit checkpoint passed **203 project tests**, including **49 inventory tests** for schema/date checks, immutable recovery, malformed-index completeness, delayed releases, checksum failures, missing inputs, definition transitions, historical joins, quarantine, and output protection. A repeated audit produced identical report and artifact bytes; independent hash, code-provenance, and date-bound checks passed. The original dataset, WTI report, and Brent report remain unchanged. See the [evaluation documentation](evaluation.md) for subsequent feature and comparison checks.

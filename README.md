@@ -65,7 +65,7 @@ On the same 301 scored development outcomes:
 
 Brent adds five correct predictions, a **1.66 percentage-point** accuracy increase, but worsens Brier score and log loss (lower is better). It improves accuracy in only two of six development years. Both fitted models also trail the always-up benchmark on accuracy and the constant 0.5 benchmark on probability scores. The constant direction rules each have 50% balanced accuracy; the 55.81% headline score reflects the development set's greater number of up outcomes.
 
-See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison report](reports/brent_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **203 project tests pass**, including 13 added benchmark tests and 49 inventory-audit tests. The WTI command above records a new reproduction report while preserving the original reference.
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison report](reports/brent_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **247 tests pass**, including inventory feature, preprocessing, cohort, and provenance checks. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -96,6 +96,18 @@ The audit adds no model inputs and fits no model. Its [report](reports/inventory
 ```
 
 Use the printed snapshot directory with `python -m oil_audit.inventory --snapshot-dir <directory>`. Optional evidence manifests add independent Table 1 comparisons, early-2011 failed probes, and quarantined bytes. Captures and audit artifacts remain under ignored `data/`; downloads need no credentials or payment.
+
+## Run the inventory comparison
+
+```sh
+.venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-comparison
+```
+
+The fixed eleven-input model adds weekly and four-week changes for commercial crude and Cushing, plus shared report age, to the original six WTI columns. It uses the same training examples and development dates as WTI-only. Early missing history and quarantined stock changes remain explicit nulls, with preprocessing fitted inside each training window. The saved WTI outputs must reproduce exactly. See the [protocol](docs/evaluation.md#fixed-inventory-comparison) for cutoff, definition, provenance, and missing-data rules.
+
+The implementation is checkpointed before its first model results. It consumes the existing source dataset and inventory audit offline, writes a separate `reports/inventory_comparison.json`, and preserves the final holdout and historical reports.
 
 ## Reproduce the saved audit offline
 
@@ -141,7 +153,7 @@ The older `vintages.snapshot` helper remains an audit primitive: `strict=False` 
 
 ## Next experiment and checkpoints
 
-Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison on identical development dates, constant benchmarks, and the inventory archive audit. A later inventory feature experiment must handle early missing history, the July 2019 quarantine or a separately validated PDF fallback, and archive-version qualifications. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
+Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison on identical development dates, constant benchmarks, and the inventory archive audit. The fixed inventory comparison is implemented with null handling for early history and the July 2019 quarantine, while retaining archive-version qualifications. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 

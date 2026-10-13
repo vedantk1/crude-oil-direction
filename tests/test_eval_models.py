@@ -9,9 +9,10 @@ import numpy as np
 from sklearn.exceptions import ConvergenceWarning
 
 from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
+from oil_eval.inventory_features import INVENTORY_FEATURE_COLUMNS, INVENTORY_MODEL_COLUMNS
 from oil_eval.models import (
-    COMPARISON_MODEL_NAMES, LOGISTIC_PARAMETERS, Pipeline,
-    fit_predict_comparison_models, fit_predict_models,
+    COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES, LOGISTIC_PARAMETERS, Pipeline,
+    fit_predict_comparison_models, fit_predict_inventory_models, fit_predict_models,
 )
 
 
@@ -26,6 +27,12 @@ def combined_row(price, momentum, label=0):
         FEATURE_COLUMNS[len(WTI_FEATURE_COLUMNS):],
         [50, 3, momentum, None, None, 0.8, 10, 3],
     )))
+    return result
+
+
+def inventory_row(price, momentum, label=0):
+    result = row(price, momentum, label)
+    result["features"].update(dict(zip(INVENTORY_FEATURE_COLUMNS, [momentum, None, 1, None, 2])))
     return result
 
 
@@ -212,6 +219,137 @@ class ComparisonModelTests(unittest.TestCase):
         del forecast["features"]["spread_age_calendar_days"]
         with self.assertRaisesRegex(ValueError, "Missing required WTI/Brent feature"):
             fit_predict_comparison_models(self.training, forecast)
+
+
+class InventoryModelTests(unittest.TestCase):
+    def setUp(self):
+        self.training = [inventory_row(-30, -3, 0), inventory_row(10, None, 1),
+                         inventory_row(20, 1, 0), inventory_row(40, 5, 1)]
+        for row_id, item in zip(("c", "a", "d", "b"), self.training):
+            item["row_id"] = row_id
+
+    def test_inventory_fit_reproduces_wti_and_baselines_exactly(self):
+        forecast = inventory_row(12, 2)
+        expected = fit_predict_models(self.training, forecast)
+        result = fit_predict_inventory_models(self.training, forecast)
+        self.assertEqual(tuple(result), INVENTORY_MODEL_NAMES)
+        self.assertEqual(expected, {name: result[name] for name in expected})
+        changed = deepcopy(self.training)
+        for index, item in enumerate(changed + [forecast]):
+            for column in INVENTORY_FEATURE_COLUMNS:
+                item["features"][column] = 100 * (index + 1)
+        result = fit_predict_inventory_models(changed, forecast)
+        self.assertEqual(expected, {name: result[name] for name in expected})
+        self.assertNotIn("training_missing_counts", result["logistic"]["diagnostics"])
+        self.assertNotIn("forecast_missing_columns", result["logistic"]["diagnostics"])
+
+    def test_missing_inventory_preserves_the_same_ordered_training_cohort(self):
+        for column in INVENTORY_FEATURE_COLUMNS:
+            self.training[0]["features"][column] = None
+        calls = []
+        original_fit = Pipeline.fit
+
+        def capture_fit(model, train, labels, *args, **kwargs):
+            calls.append((train.copy(), list(labels),
+                          model.named_steps["classifier"].get_params(),
+                          model.named_steps["imputer"].add_indicator))
+            return original_fit(model, train, labels, *args, **kwargs)
+
+        with patch("oil_eval.models.Pipeline.fit", new=capture_fit):
+            fit_predict_inventory_models(self.training, inventory_row(12, 2))
+        self.assertEqual(len(calls), 2)
+        wti, inventory = calls
+        self.assertEqual(wti[0].shape, (4, 6))
+        self.assertEqual(inventory[0].shape, (4, 11))
+        np.testing.assert_allclose(wti[0], inventory[0][:, :6], equal_nan=True)
+        self.assertTrue(np.isnan(inventory[0][0, 6:]).all())
+        self.assertEqual(wti[0][:, 0].tolist(), [-30, 10, 20, 40])
+        self.assertEqual(wti[1], [0, 1, 0, 1])
+        self.assertEqual(wti[1], inventory[1])
+        for _, _, parameters, missing_indicators in calls:
+            self.assertEqual({key: parameters[key] for key in LOGISTIC_PARAMETERS}, LOGISTIC_PARAMETERS)
+            self.assertFalse(missing_indicators)
+        self.assertEqual([item["row_id"] for item in self.training], ["c", "a", "d", "b"])
+
+    def test_forecast_inventory_does_not_fit_preprocessing_or_coefficients(self):
+        low, high = inventory_row(12, 2), inventory_row(12, 2)
+        for column in INVENTORY_FEATURE_COLUMNS:
+            low["features"][column] = None
+            high["features"][column] = 100000
+        low_result = fit_predict_inventory_models(self.training, low)
+        high_result = fit_predict_inventory_models(self.training, high)
+        left = low_result["logistic_wti_inventory"]["diagnostics"]
+        right = high_result["logistic_wti_inventory"]["diagnostics"]
+        self.assertEqual({key: value for key, value in left.items() if key != "forecast_missing_columns"},
+                         {key: value for key, value in right.items() if key != "forecast_missing_columns"})
+        self.assertTrue(set(INVENTORY_FEATURE_COLUMNS).issubset(left["forecast_missing_columns"]))
+        self.assertFalse(set(INVENTORY_FEATURE_COLUMNS).intersection(right["forecast_missing_columns"]))
+        weekly, four_week = INVENTORY_FEATURE_COLUMNS[:2]
+        self.assertEqual(left["imputer_statistics"][weekly], 1)
+        self.assertEqual(left["training_missing_counts"][weekly], 1)
+        self.assertEqual(left["imputer_statistics"][four_week], 0)
+        self.assertEqual(left["scaler_scale"][four_week], 1)
+        self.assertEqual(left["training_missing_counts"][four_week], len(self.training))
+
+    def test_missingness_diagnostics_cover_all_eleven_inputs_without_extra_features(self):
+        forecast = inventory_row(None, None)
+        result = fit_predict_inventory_models(self.training, forecast)
+        diagnostics = result["logistic_wti_inventory"]["diagnostics"]
+        self.assertEqual(tuple(diagnostics["feature_columns"]), INVENTORY_MODEL_COLUMNS)
+        self.assertEqual(len(diagnostics["coef"]), 11)
+        self.assertEqual(tuple(diagnostics["imputer_statistics"]), INVENTORY_MODEL_COLUMNS)
+        self.assertEqual(tuple(diagnostics["training_missing_counts"]), INVENTORY_MODEL_COLUMNS)
+        self.assertEqual(diagnostics["forecast_missing_columns"], [
+            column for column in INVENTORY_MODEL_COLUMNS if forecast["features"][column] is None])
+        self.assertEqual(diagnostics["training_missing_counts"]["wti_latest_price"], 0)
+        self.assertEqual(diagnostics["training_missing_counts"]["wti_change_5_business_days_usd"], 1)
+
+    def test_inventory_signal_can_change_combined_prediction_without_changing_wti(self):
+        column = INVENTORY_FEATURE_COLUMNS[0]
+        training = [inventory_row(10, 0, int(change > 0)) for change in (-5, -3, 3, 5)]
+        for item, change in zip(training, (-5, -3, 3, 5)):
+            item["features"][column] = change
+        low, high = inventory_row(10, 0), inventory_row(10, 0)
+        low["features"][column], high["features"][column] = -4, 4
+        low_result = fit_predict_inventory_models(training, low)
+        high_result = fit_predict_inventory_models(training, high)
+        self.assertEqual(low_result["logistic"], high_result["logistic"])
+        self.assertGreater(low_result["logistic_wti_inventory"]["diagnostics"]["coef"][column], 0)
+        self.assertLess(low_result["logistic_wti_inventory"]["probability_up"],
+                        high_result["logistic_wti_inventory"]["probability_up"])
+
+    def test_future_columns_and_outcome_metadata_are_not_model_inputs(self):
+        forecast = inventory_row(12, 2)
+        expected = fit_predict_inventory_models(self.training, forecast)
+        augmented = deepcopy(self.training)
+        for item in augmented + [forecast]:
+            item["features"].update({"future_inventory_change": 1e20, "label": -1e20,
+                                     "brent_latest_price": 1e20})
+            item["target_price"] = 9999
+            item["inventory_provenance"] = {"future_revision": 9999}
+        forecast["label"] = 999
+        self.assertEqual(expected, fit_predict_inventory_models(augmented, forecast))
+
+    def test_invalid_or_absent_inventory_inputs_fail_for_training_and_forecast(self):
+        column = INVENTORY_FEATURE_COLUMNS[0]
+        for malformed_training in (False, True):
+            for value in (float("nan"), float("inf"), "2", True):
+                training, forecast = deepcopy(self.training), inventory_row(12, 2)
+                target = training[0] if malformed_training else forecast
+                target["features"][column] = value
+                with self.subTest(training=malformed_training, value=value):
+                    with self.assertRaisesRegex(ValueError, "WTI/inventory feature.*finite numeric"):
+                        fit_predict_inventory_models(training, forecast)
+        forecast = inventory_row(12, 2)
+        del forecast["features"][column]
+        with self.assertRaisesRegex(ValueError, "Missing required WTI/inventory feature"):
+            fit_predict_inventory_models(self.training, forecast)
+
+    def test_inventory_fit_does_not_mutate_inputs(self):
+        forecast = inventory_row(None, None)
+        before = deepcopy((self.training, forecast))
+        fit_predict_inventory_models(self.training, forecast)
+        self.assertEqual((self.training, forecast), before)
 
 
 if __name__ == "__main__":

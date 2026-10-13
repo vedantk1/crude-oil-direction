@@ -151,3 +151,37 @@ WTI-only logistic scores 19 fewer outcomes correctly than always-up, a 6.31-perc
 The command authenticates the existing WTI and Brent reports, run identities, source/runtime agreement, original reference hashes, and all saved prediction artifacts. It independently recomputes the saved aggregate and yearly model metrics before scoring constants. Forecasts, targets, scoring availability, and labels must match between the two runs. Held-out forecasts are rejected before JSON decoding; future outcome availability is rejected before scoring. No model fitting or source-dataset read occurs.
 
 The [supplemental report](../reports/development_benchmarks.json) contains aggregate/yearly benchmark metrics and paired comparisons against both logistic models. Its content-addressed directory under `data/evaluations/` retains compact per-forecast benchmark outputs, the summary, provenance, and hashes. Original reports and immutable artifacts are protected against overwrite. Repeated runs produce identical outputs. The benchmark implementation adds **13 passing synthetic tests**, covering fixed predictions, metric cases, exact cohorts, integrity failures, holdout rejection, and artifact protection. Future replay summaries also include these constants without changing the original model family or frozen protocols.
+
+## Fixed inventory comparison
+
+The next experiment adds five inventory columns to the six WTI inputs, retaining the original logistic settings and all development dates. It uses the [audited EIA inventory archives](inventory-audit.md) and retains their qualification: archived values are not proved immutable first releases. No Brent inputs, parameter search, threshold search, or PDF fallback enter this comparison.
+
+| Added input | Definition |
+| --- | --- |
+| Commercial weekly inventory change | Published within-issue difference, million barrels |
+| Commercial four-week inventory change | Current level minus the exact observation 28 calendar days earlier, using the latest version available at issuance with the same definition regime |
+| Cushing weekly inventory change | Published within-issue difference, million barrels |
+| Cushing four-week inventory change | Same exact-date, historically available comparison for Cushing stocks |
+| Inventory report age | Calendar days since actual latest eligible publication, shared because both series use the same report |
+
+Each historical feature row is frozen at its own forecast cutoff, admitting only releases before that date and no later than the preceding calendar day. Four-week references can use current or prior-week columns of an already released issue. Subsequent releases and restatements cannot rewrite earlier training features. Commercial comparisons crossing the October 2016 definition boundary remain null unless both endpoint versions share the same definition.
+
+Before the first retained release, all five columns are null. If the latest declared issue is unusable, all four changes remain null; report age is still known from the release metadata. The July 5, 2019 forecast therefore stays in the cohort with missing changes. No older report is substituted, and the lower-precision PDF remains a possible separate experiment.
+
+Missing inventory never removes a training or forecast row. Values and missing reasons stay explicit in saved feature rows and prediction provenance. Training-only median imputation handles nulls; a column entirely absent in a training window uses zero. No missing-indicator model inputs are added. Each augmented fit records per-column training missing counts and forecast missing columns.
+
+The WTI and inventory models use exactly the same ordered WTI-eligible examples and active historical labels at every fit. All original six-column training hashes, baseline outputs, and WTI model payloads must reproduce exactly; any divergence fails the experiment. Forecast dates, targets, labels, and scored/unscored states are checked against the authenticated WTI reference before fitting. Boundary-crossing rows remain excluded, and inventory features are not constructed for those rows.
+
+The feature loader authenticates the saved inventory report, manifest, all four artifacts, original source snapshot, extracted records, overlaps, and availability summary. The audit must refer to the same authenticated WTI run as the comparison. Historical audit code hashes remain provenance; changed evaluation code does not invalidate the original audit's source evidence.
+
+```sh
+.venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-comparison
+```
+
+The default audit is `reports/inventory_audit.json` and reference is `reports/development_evaluation.json`. `--inventory-audit-report` and `--reference-report` select compatible authenticated inputs. The comparison writes a separate `reports/inventory_comparison.json` and content-addressed run under `data/evaluations/`. Its additional `inventory_features.jsonl` stores raw pre-holdout inventory values and missingness provenance for initial training and development; predictions also retain the raw inventory inputs. Original datasets, reports, source captures, and older run artifacts are preserved.
+
+This protocol and implementation are checkpointed before computing inventory model results. Evaluation remains restricted to 2017–2022, with the 2023-onward final holdout closed.
+
+All **247 tests pass** at the inventory protocol checkpoint. New checks cover authenticated audit/source failures, exact four-week lookbacks and revisions, historical feature freezing, definition changes, early missing history, quarantine with known age, training-only imputation, retained rows, strict WTI reproduction, prefit cohort validation, holdout boundaries, and preservation of historical reports/artifacts.

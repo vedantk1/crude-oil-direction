@@ -35,3 +35,12 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(len(comparison["compared_feature_sets"]["logistic_wti_brent"]), 14)
         with self.assertRaises(ValueError):
             protocol_config("holdout")
+
+    def test_inventory_protocol_preserves_original_cohorts_and_parameters(self):
+        original, inventory = protocol_config(), protocol_config("inventory-comparison")
+        for key in ("initial_training_start", "development_start", "development_scoring_as_of",
+                    "holdout_start", "logistic", "minimum_training_rows"):
+            self.assertEqual(original[key], inventory[key])
+        self.assertEqual(len(inventory["compared_feature_sets"]["logistic_wti_inventory"]), 11)
+        self.assertIn("missing inventory never removes", inventory["training_cohort"])
+        self.assertIn("no older-issue or PDF fallback", inventory["unusable_inventory_issue"])

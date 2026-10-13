@@ -11,8 +11,9 @@ from oil_audit.labels import select_label
 from oil_audit.training import training_rows
 from .benchmarks import summarize_benchmarks
 from .metrics import classification_metrics
-from .models import (COMPARISON_MODEL_NAMES, MODEL_NAMES,
-                     fit_predict_comparison_models, fit_predict_models)
+from .inventory_features import INVENTORY_FEATURE_COLUMNS
+from .models import (COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES, MODEL_NAMES,
+                     fit_predict_comparison_models, fit_predict_inventory_models, fit_predict_models)
 from .protocol import (HOLDOUT_START, MIN_TRAINING_ROWS, SCORING_AS_OF,
                        forecast_role, protocol_config)
 from .reference import validate_reference_schedule, verify_reference_reproduction
@@ -26,9 +27,12 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
     holdout is rejected at this layer even if a caller bypasses the loader.
     """
     protocol_config(experiment)
-    comparison = experiment == "brent-comparison"
-    model_names = COMPARISON_MODEL_NAMES if comparison else MODEL_NAMES
-    predictor = predictor or (fit_predict_comparison_models if comparison else fit_predict_models)
+    brent = experiment == "brent-comparison"
+    inventory = experiment == "inventory-comparison"
+    comparison = brent or inventory
+    model_names = COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES
+    predictor = predictor or (fit_predict_comparison_models if brent else
+                              fit_predict_inventory_models if inventory else fit_predict_models)
     boundary = HOLDOUT_START.isoformat()
     if any(row["forecast_date"] >= boundary for row in feature_rows):
         raise ValueError("Holdout features cannot enter development replay")
@@ -42,8 +46,13 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
         raise ValueError("Duplicate forecast dates")
     if comparison:
         if reference_rows is None:
-            raise ValueError("Brent comparison requires the verified WTI reference")
-        validate_reference_schedule(rows, scoring_labels, reference_rows)
+            raise ValueError("Comparison requires the verified WTI reference")
+        validate_reference_schedule(rows, scoring_labels, reference_rows, require_brent=brent)
+    if inventory:
+        for row in rows:
+            if forecast_role(row) in ("initial_training", "development") and not all(
+                    column in row["features"] for column in INVENTORY_FEATURE_COLUMNS):
+                raise ValueError("Missing declared inventory feature columns before fitting")
     histories = defaultdict(list)
     for event in label_events:
         histories[event["row_id"]].append(event)
@@ -68,7 +77,12 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
             wti_train = training_rows(past, label_events, issuance, SCORING_AS_OF, "wti")
             train = (training_rows([candidate for candidate in past if candidate["eligibility"]["wti"]],
                                    label_events, issuance, SCORING_AS_OF, "wti_brent")
-                     if comparison else wti_train)
+                     if brent else wti_train)
+            if inventory:
+                # These inputs were frozen at each example's own issuance.
+                train = [{**example, "features": {**example["features"], **{
+                    column: features_by_id[example["row_id"]]["features"][column]
+                    for column in INVENTORY_FEATURE_COLUMNS}}} for example in wti_train]
             # Keep this hash comparable to the original six-input WTI run.
             wti_projection = [{**example, "features": {
                 column: example["features"][column] for column in WTI_FEATURE_COLUMNS
@@ -107,9 +121,17 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
                     "input_sha256": sha256(json_bytes(wti_projection)),
                     **({"combined_input_sha256": sha256(json_bytes(train)),
                         "wti_eligible_count": len(wti_train),
-                        "rows_removed_vs_wti_eligible": len(wti_train) - len(train)} if comparison else {}),
+                        "rows_removed_vs_wti_eligible": len(wti_train) - len(train)} if brent else {}),
+                    **({"inventory_input_sha256": sha256(json_bytes(train)),
+                        "rows_removed_vs_wti_eligible": 0,
+                        "inventory_missing_counts": {column: sum(
+                            example["features"][column] is None for example in train)
+                            for column in INVENTORY_FEATURE_COLUMNS}} if inventory else {}),
                 },
                 "models": models,
+                **({"inventory": {"features": {column: row["features"][column]
+                                                for column in INVENTORY_FEATURE_COLUMNS},
+                                  "provenance": row.get("inventory_provenance")}} if inventory else {}),
                 "scoring_status": "available" if outcome else "unavailable_by_development_cutoff",
                 "label": outcome["label"] if outcome else None,
                 "label_available_from": outcome["available_from"] if outcome else None,
@@ -119,6 +141,9 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
     summary = summarize_predictions(predictions, dict(excluded), experiment=experiment)
     if comparison:
         summary["reference_reproduction"] = verify_reference_reproduction(predictions, reference_rows)
+        if inventory and not (summary["reference_reproduction"]["all_wti_training_inputs_identical"]
+                              and summary["reference_reproduction"]["all_reference_model_outputs_identical"]):
+            raise ValueError("Inventory comparison changed the original WTI training inputs or model outputs")
     return predictions, summary
 
 
@@ -132,8 +157,11 @@ def _metrics(rows, model_names=MODEL_NAMES):
 
 
 def summarize_predictions(predictions, excluded, *, experiment="wti"):
-    comparison = experiment == "brent-comparison"
-    model_names = COMPARISON_MODEL_NAMES if comparison else MODEL_NAMES
+    brent = experiment == "brent-comparison"
+    inventory = experiment == "inventory-comparison"
+    comparison = brent or inventory
+    model_names = COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES
+    augmented_model = "logistic_wti_brent" if brent else "logistic_wti_inventory"
     scored = [row for row in predictions if row["scoring_status"] == "available"]
     if any(row["forecast_date"] >= HOLDOUT_START.isoformat()
            or row["target_date"] >= HOLDOUT_START.isoformat() for row in predictions):
@@ -176,25 +204,25 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
         } for year in years},
         "paired_accuracy_comparisons": paired,
         "constant_benchmarks": summarize_benchmarks(
-            predictions, ("logistic", "logistic_wti_brent") if comparison else ("logistic",)),
+            predictions, ("logistic", augmented_model) if comparison else ("logistic",)),
         "holdout_evaluated": False,
     }
     if comparison:
         counts = Counter()
         for row in scored:
             wti_correct = row["models"]["logistic"]["prediction"] == row["label"]
-            combined_correct = row["models"]["logistic_wti_brent"]["prediction"] == row["label"]
+            combined_correct = row["models"][augmented_model]["prediction"] == row["label"]
             key = ("both_correct" if wti_correct and combined_correct else
                    "both_wrong" if not wti_correct and not combined_correct else
                    "combined_only_correct" if combined_correct else "wti_only_correct")
             counts[key] += 1
-        result["paired_brent_comparison"] = {
+        result["paired_brent_comparison" if brent else "paired_inventory_comparison"] = {
             **{key: counts[key] for key in
                ("both_correct", "both_wrong", "combined_only_correct", "wti_only_correct")},
             "metric_differences_combined_minus_wti": {
-                metric: (result["metrics"]["logistic_wti_brent"][metric] - result["metrics"]["logistic"][metric]
+                metric: (result["metrics"][augmented_model][metric] - result["metrics"]["logistic"][metric]
                          if result["metrics"]["logistic"][metric] is not None
-                         and result["metrics"]["logistic_wti_brent"][metric] is not None else None)
+                         and result["metrics"][augmented_model][metric] is not None else None)
                 for metric in ("accuracy", "balanced_accuracy", "roc_auc", "brier_score", "log_loss")},
         }
         removed = [row["training"]["rows_removed_vs_wti_eligible"] for row in predictions]
@@ -205,5 +233,11 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
         }
         result["maximum_iterations_by_logistic_model"] = {
             name: max(row["models"][name]["diagnostics"]["iterations"] for row in predictions)
-            for name in ("logistic", "logistic_wti_brent")}
+            for name in ("logistic", augmented_model)}
+    if inventory:
+        result["development_inventory_missing_counts"] = {
+            column: sum(row["inventory"]["features"][column] is None for row in predictions)
+            for column in INVENTORY_FEATURE_COLUMNS}
+        result["development_forecasts_with_missing_inventory"] = sum(
+            any(value is None for value in row["inventory"]["features"].values()) for row in predictions)
     return result

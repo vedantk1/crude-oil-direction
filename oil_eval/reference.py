@@ -59,14 +59,14 @@ def load_reference(report_path: Path, source: dict, runtime: dict):
     return reference, rows
 
 
-def validate_reference_schedule(feature_rows, scoring_labels, reference_rows):
+def validate_reference_schedule(feature_rows, scoring_labels, reference_rows, *, require_brent=True):
     """Lock the entire comparison cohort before the first model fit."""
     labels = {row["row_id"]: row for row in scoring_labels}
     expected = []
     for row in sorted(feature_rows, key=lambda item: item["forecast_date"]):
         if forecast_role(row) != "development" or not row["eligibility"]["wti"]:
             continue
-        if not row["eligibility"].get("wti_brent", False):
+        if require_brent and not row["eligibility"].get("wti_brent", False):
             raise ValueError("Reference development date has no eligible Brent inputs: " + row["forecast_date"])
         outcome = labels.get(row["row_id"])
         expected.append({
