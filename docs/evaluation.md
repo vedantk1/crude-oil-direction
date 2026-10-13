@@ -408,3 +408,33 @@ The separate report is `reports/inventory_tree_comparison.json`, with immutable 
 Report paired accuracy, balanced accuracy, AUC, Brier/log loss, yearly differences and both simple probability benchmarks. The tree enters the constant-benchmark comparisons but not logistic solver-iteration summaries. This bounded model can still overfit the small, dependent development sample; its depth and leaf limits are controls on complexity, not guarantees. Retain the result if it underperforms, without changing settings, thresholds, features or dates afterward. The 2023-onward final holdout remains closed.
 
 All **331 tests pass** before computing the first tree result. New checks cover fixed constructor settings, train-only median imputation/all-missing columns, deterministic and finite probabilities, threshold ties, actual stage/depth/leaf limits, exact five-control reproduction, frozen nulls and historical label changes, scored/unscored cohorts, paired/constant probability metrics, selected references/native fingerprints, holdout rejection and historical report/artifact protection. All five earlier protocol configurations remain unchanged.
+
+## Small tree comparison results
+
+The fixed protocol and implementation were committed as `66d0eeb` before the first tree result. Run `7aa61161b53f99695fba` uses the selected expanding reference `21e67f2c5ee9e4c216d6`, the same authenticated source/audit/native runtime, and all **310 forecast dates, 301 scored outcomes, nine unscored states, 295–596-example training windows and 607 frozen inventory rows**. No training rows are removed.
+
+| Model / benchmark | Correct / scored | Accuracy | Balanced accuracy | ROC AUC | Brier score | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Inventory C=0.1, expanding | 160 / 301 | 53.16% | 52.87% | 0.5077 | 0.2563 | 0.7126 |
+| Small gradient-boosting model | 151 / 301 | 50.17% | 50.58% | 0.4981 | 0.2561 | 0.7057 |
+| Training-majority / prevalence | 149 / 301 | 49.50% | 51.71% | 0.4864 | 0.2512 | 0.6955 |
+| Five-day momentum | 151 / 301 | 50.17% | 49.72% | — | — | — |
+| Always up | 168 / 301 | 55.81% | 50.00% | — | — | — |
+| Constant probability 0.5 | 168 / 301 | 55.81% | 50.00% | 0.5000 | 0.2500 | 0.6931 |
+
+The tree loses **nine correct predictions (-2.99 percentage points)** versus `C=0.1`. Both are correct on 108 dates and wrong on 98; tree alone is correct on 43 and logistic alone on 52. Balanced accuracy falls by 2.29 points and AUC by 0.00958. Aggregate Brier improves by only 0.00026 and log loss by 0.00689, but both remain worse than neutral and historical-prevalence probabilities. The tree's probability scores are the best among the fitted candidates tested so far; that does not make them better than the simple benchmarks.
+
+| Year | Scored | C=0.1 accuracy | Tree accuracy | Additional correct, tree | Brier difference tree minus logistic | Log-loss difference |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2017 | 52 | 51.92% | 50.00% | -1 | +0.00081 | +0.00176 |
+| 2018 | 50 | 50.00% | 60.00% | +5 | -0.00881 | -0.01787 |
+| 2019 | 50 | 50.00% | 40.00% | -5 | +0.01297 | +0.02677 |
+| 2020 | 50 | 54.00% | 54.00% | 0 | -0.00886 | -0.05573 |
+| 2021 | 50 | 56.00% | 44.00% | -6 | +0.00611 | +0.01206 |
+| 2022 | 49 | 57.14% | 53.06% | -2 | -0.00391 | -0.00873 |
+
+Accuracy improves in one year, ties in one and deteriorates in four. Both probability losses improve in three years and worsen in three; 2020 accounts for the largest log-loss improvement. This is a mixed development result: modestly better aggregate probability estimation with worse direction accuracy and ranking. Retain expanding `C=0.1` as the stronger fitted direction candidate. Neither establishes a useful forecasting edge, profitability, significance or final-holdout performance. No tree settings, threshold or other inputs changed after these results.
+
+All five expanding model payloads, complete training metadata, raw inventory inputs/provenance and scoring states reproduce exactly. Every tree fit uses exactly 50 binary boosting stages; all 15,500 trees have depth at most two and three or four leaves, with 30–526 total training examples per leaf. Training-only imputation preserves all eleven inputs and explicit source nulls. Logistic controls converge with the same seven/eleven/nine maximum iteration counts. The [tree report](../reports/inventory_tree_comparison.json) records aggregate/yearly metrics, paired disagreements, constants, strict reference checks and bounded tree-fit diagnostics. The immutable local run retains all raw inventory features and per-forecast fitted diagnostics. Historical artifacts and the final holdout remain preserved.
+
+Independent reconstruction verifies all 310 causal training sets and input hashes, active-label maturity, fitted medians/missing counts, all 1,550 control payloads, all 607 raw inventory rows, aggregate/yearly/paired/benchmark scores, artifact hashes, all 28 code hashes against `66d0eeb`, and all 211 native-file hashes. Independent refits at three predetermined origins (first forecast, first 2020 forecast, and last forecast) reproduce tree probabilities exactly. All tree leaf counts sum to their training sample count and respect the committed limits. Repeating the run produces byte-identical reports/artifacts, and all **722 pre-existing data/report files** remain unchanged. The timed repeat plus preservation checks took **22.40 seconds**, excluding imports and including authentication, construction, 930 logistic fits, 310 ensembles with 15,500 shallow trees, scoring and file checks. All **331 tests pass**. No new downloads, paid data, GPU or holdout evaluation was used.

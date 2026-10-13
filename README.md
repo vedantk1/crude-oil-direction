@@ -1,6 +1,6 @@
 # Crude oil direction research
 
-A free, local WTI direction forecasting project with an audited historical dataset and chronological model comparisons over **five fixed US business days**. WTI-only, WTI/Brent, and WTI/inventory logistic regressions, including stronger inventory regularization and a rolling training policy, have been evaluated on the same development dates. The 2023-onward final holdout remains closed.
+A free, local WTI direction forecasting project with an audited historical dataset and chronological model comparisons over **five fixed US business days**. WTI-only, WTI/Brent, and WTI/inventory logistic regressions, stronger inventory regularization, a rolling training policy, and one small boosted-tree model have been evaluated on the same development dates. The 2023-onward final holdout remains closed.
 
 Read the [data audit](docs/data-audit.md) for the findings, evidence limits, and recommended historical availability rules. The audit supports a qualified replay of ALFRED's recorded history from 2011-04-06 onward. Current EIA downloads alone do not preserve that history.
 
@@ -65,12 +65,15 @@ On the same 301 scored development outcomes:
 | WTI + inventory logistic | 52.49% | 0.2574 | 0.7174 |
 | WTI + inventory logistic, C=0.1 | 53.16% | 0.2563 | 0.7126 |
 | WTI + inventory, C=0.1, four-year rolling | 50.83% | 0.2697 | 0.7866 |
+| WTI + inventory, small boosted trees | 50.17% | 0.2561 | 0.7057 |
 
 Against WTI-only, Brent adds five correct predictions (**+1.66 percentage points**) while worsening probability scores. Inventories add nine (**+2.99 points**) with very small Brier/log-loss improvements. Inventory accuracy improves in four of six development years. The fixed `C=0.1` inventory candidate adds two more correct predictions (**+0.66 points versus C=1**) and improves Brier/log loss in all six years, while aggregate AUC declines slightly. All fitted models still trail always-up on accuracy and constant 0.5 on probability scores. The constant direction rules each have 50% balanced accuracy; always-up's 55.81% headline score reflects the development set's greater number of up outcomes.
 
 The four-year rolling policy loses seven correct predictions (**-2.33 points versus expanding C=0.1**) and worsens aggregate Brier/log loss and AUC. The expanding `C=0.1` model remains the better development candidate, without demonstrated forecasting advantage over the simple probability benchmarks.
 
-See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison](reports/brent_comparison.json), [inventory comparison](reports/inventory_comparison.json), [regularization comparison](reports/inventory_regularization.json), [rolling-window comparison](reports/inventory_window_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **331 tests pass** in the documented working runtime, including inventory feature, preprocessing, cohort, provenance, regularization, rolling-window, tree-model, and native-build checks. The WTI command above records a new reproduction report while preserving the original reference.
+The small tree model loses nine correct predictions (**-2.99 points versus expanding C=0.1**). Aggregate Brier/log loss improve slightly, but improve in only three of six years and remain worse than neutral and historical-prevalence probabilities. Expanding `C=0.1` retains the highest fitted direction accuracy; the tree provides no demonstrated forecasting edge.
+
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison](reports/brent_comparison.json), [inventory comparison](reports/inventory_comparison.json), [regularization comparison](reports/inventory_regularization.json), [rolling-window comparison](reports/inventory_window_comparison.json), [tree comparison](reports/inventory_tree_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **331 tests pass** in the documented working runtime, including inventory feature, preprocessing, cohort, provenance, regularization, rolling-window, tree-model, and native-build checks. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -160,6 +163,8 @@ PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
 
 One fixed gradient-boosting candidate uses the same eleven inputs and expanding training examples as `C=0.1`: 50 shallow trees, depth at most two, at least 30 total examples per leaf, learning rate 0.05 and a fixed seed. It fits training-only median imputation, retains null provenance, and uses no scaling, early stopping, validation split or parameter search. All five expanding controls must reproduce exactly. The separate report is `reports/inventory_tree_comparison.json`; see the [tree protocol](docs/evaluation.md#fixed-small-tree-comparison). Historical artifacts and the final holdout remain preserved.
 
+The protocol was committed as `66d0eeb` before computing results. Run `7aa61161b53f99695fba` retains all 310 forecasts, 301 scored outcomes and original training cohorts, reproducing the five expanding controls exactly. Tree accuracy is 50.17%, versus 53.16% for `C=0.1`; Brier/log loss are 0.2561/0.7057 and AUC is 0.4981. All 50 trees per fit respect depth/leaf limits. No settings changed after this comparison.
+
 ## Reproduce the saved audit offline
 
 These commands use the evidence retained from the 2026-10-13 audit. They check source hashes before reading values.
@@ -204,7 +209,7 @@ The older `vintages.snapshot` helper remains an audit primitive: `strict=False` 
 
 ## Next experiment and checkpoints
 
-Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison, constant benchmarks, inventory archive audit, inventory comparison with explicit missingness, the single `C=0.1` regularization comparison, and four-year rolling versus expanding training on identical development dates. The rolling policy did not improve this setup. The next fixed experiment compares a small gradient-boosting model with expanding `C=0.1`. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
+Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison, constant benchmarks, inventory archive audit, inventory comparison with explicit missingness, the single `C=0.1` regularization comparison, four-year rolling versus expanding training, and one small tree comparison on identical development dates. Rolling worsened aggregate performance; the tree traded lower direction accuracy for slightly better probability scores. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 

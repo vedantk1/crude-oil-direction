@@ -1,0 +1,3069 @@
+{
+  "common_training_cohort": {
+    "fits_with_rows_removed": 0,
+    "rows_removed_per_fit_range": [
+      0,
+      0
+    ],
+    "sum_rows_removed_across_fits": 0
+  },
+  "constant_benchmarks": {
+    "comparator_metrics": {
+      "logistic": {
+        "accuracy": 0.4950166112956811,
+        "balanced_accuracy": 0.49122807017543857,
+        "brier_score": 0.25779660452395603,
+        "confusion_counts": {
+          "fn": 80,
+          "fp": 72,
+          "tn": 61,
+          "tp": 88
+        },
+        "count": 301,
+        "log_loss": 0.7178849108600788,
+        "roc_auc": 0.4878714643752238
+      },
+      "logistic_wti_inventory": {
+        "accuracy": 0.5249169435215947,
+        "balanced_accuracy": 0.5211466165413534,
+        "brier_score": 0.2574007646508948,
+        "confusion_counts": {
+          "fn": 75,
+          "fp": 68,
+          "tn": 65,
+          "tp": 93
+        },
+        "count": 301,
+        "log_loss": 0.7174256575563573,
+        "roc_auc": 0.5110544217687075
+      },
+      "logistic_wti_inventory_c01": {
+        "accuracy": 0.53156146179402,
+        "balanced_accuracy": 0.5286654135338347,
+        "brier_score": 0.2563239665069877,
+        "confusion_counts": {
+          "fn": 75,
+          "fp": 66,
+          "tn": 67,
+          "tp": 93
+        },
+        "count": 301,
+        "log_loss": 0.7125920177853583,
+        "roc_auc": 0.5076978159684926
+      },
+      "tree_wti_inventory": {
+        "accuracy": 0.5016611295681063,
+        "balanced_accuracy": 0.505795739348371,
+        "brier_score": 0.2560606354472986,
+        "confusion_counts": {
+          "fn": 89,
+          "fp": 61,
+          "tn": 72,
+          "tp": 79
+        },
+        "count": 301,
+        "log_loss": 0.7057003809808298,
+        "roc_auc": 0.4981203007518797
+      }
+    },
+    "holdout_evaluated": false,
+    "metrics": {
+      "always_not_up": {
+        "accuracy": 0.4418604651162791,
+        "balanced_accuracy": 0.5,
+        "brier_score": null,
+        "confusion_counts": {
+          "fn": 168,
+          "fp": 0,
+          "tn": 133,
+          "tp": 0
+        },
+        "count": 301,
+        "log_loss": null,
+        "roc_auc": null
+      },
+      "always_up": {
+        "accuracy": 0.5581395348837209,
+        "balanced_accuracy": 0.5,
+        "brier_score": null,
+        "confusion_counts": {
+          "fn": 0,
+          "fp": 133,
+          "tn": 0,
+          "tp": 168
+        },
+        "count": 301,
+        "log_loss": null,
+        "roc_auc": null
+      },
+      "constant_half": {
+        "accuracy": 0.5581395348837209,
+        "balanced_accuracy": 0.5,
+        "brier_score": 0.25,
+        "confusion_counts": {
+          "fn": 0,
+          "fp": 133,
+          "tn": 0,
+          "tp": 168
+        },
+        "count": 301,
+        "log_loss": 0.6931471805599453,
+        "roc_auc": 0.5
+      }
+    },
+    "paired_comparisons": {
+      "logistic": {
+        "always_not_up": {
+          "benchmark_only_correct": 72,
+          "both_correct": 61,
+          "both_wrong": 80,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": 0.05315614617940201,
+            "balanced_accuracy": -0.00877192982456143,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 88
+        },
+        "always_up": {
+          "benchmark_only_correct": 80,
+          "both_correct": 88,
+          "both_wrong": 72,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.06312292358803984,
+            "balanced_accuracy": -0.00877192982456143,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 61
+        },
+        "constant_half": {
+          "benchmark_only_correct": 80,
+          "both_correct": 88,
+          "both_wrong": 72,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.06312292358803984,
+            "balanced_accuracy": -0.00877192982456143,
+            "brier_score": 0.00779660452395603,
+            "log_loss": 0.024737730300133487,
+            "roc_auc": -0.012128535624776227
+          },
+          "model_only_correct": 61
+        }
+      },
+      "logistic_wti_inventory": {
+        "always_not_up": {
+          "benchmark_only_correct": 68,
+          "both_correct": 65,
+          "both_wrong": 75,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": 0.0830564784053156,
+            "balanced_accuracy": 0.021146616541353414,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 93
+        },
+        "always_up": {
+          "benchmark_only_correct": 75,
+          "both_correct": 93,
+          "both_wrong": 68,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.03322259136212624,
+            "balanced_accuracy": 0.021146616541353414,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 65
+        },
+        "constant_half": {
+          "benchmark_only_correct": 75,
+          "both_correct": 93,
+          "both_wrong": 68,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.03322259136212624,
+            "balanced_accuracy": 0.021146616541353414,
+            "brier_score": 0.007400764650894787,
+            "log_loss": 0.024278476996412057,
+            "roc_auc": 0.011054421768707523
+          },
+          "model_only_correct": 65
+        }
+      },
+      "logistic_wti_inventory_c01": {
+        "always_not_up": {
+          "benchmark_only_correct": 66,
+          "both_correct": 67,
+          "both_wrong": 75,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": 0.0897009966777409,
+            "balanced_accuracy": 0.02866541353383467,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 93
+        },
+        "always_up": {
+          "benchmark_only_correct": 75,
+          "both_correct": 93,
+          "both_wrong": 66,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.02657807308970095,
+            "balanced_accuracy": 0.02866541353383467,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 67
+        },
+        "constant_half": {
+          "benchmark_only_correct": 75,
+          "both_correct": 93,
+          "both_wrong": 66,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.02657807308970095,
+            "balanced_accuracy": 0.02866541353383467,
+            "brier_score": 0.006323966506987688,
+            "log_loss": 0.019444837225413014,
+            "roc_auc": 0.007697815968492616
+          },
+          "model_only_correct": 67
+        }
+      },
+      "tree_wti_inventory": {
+        "always_not_up": {
+          "benchmark_only_correct": 61,
+          "both_correct": 72,
+          "both_wrong": 89,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": 0.05980066445182719,
+            "balanced_accuracy": 0.005795739348370965,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 79
+        },
+        "always_up": {
+          "benchmark_only_correct": 89,
+          "both_correct": 79,
+          "both_wrong": 61,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.056478405315614655,
+            "balanced_accuracy": 0.005795739348370965,
+            "brier_score": null,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "model_only_correct": 72
+        },
+        "constant_half": {
+          "benchmark_only_correct": 89,
+          "both_correct": 79,
+          "both_wrong": 61,
+          "metric_differences_model_minus_benchmark": {
+            "accuracy": -0.056478405315614655,
+            "balanced_accuracy": 0.005795739348370965,
+            "brier_score": 0.0060606354472986235,
+            "log_loss": 0.01255320042088448,
+            "roc_auc": -0.0018796992481203145
+          },
+          "model_only_correct": 72
+        }
+      }
+    },
+    "policy": {
+      "always_not_up": {
+        "prediction": 0,
+        "probability_up": null
+      },
+      "always_up": {
+        "prediction": 1,
+        "probability_up": null
+      },
+      "benchmark_id": "fixed-development-constants-v1",
+      "constant_half": {
+        "prediction": 1,
+        "probability_up": 0.5,
+        "threshold": 0.5,
+        "tie_prediction": 1
+      },
+      "interpretation": "retrospective development diagnostic; not a newly selected model or holdout result",
+      "label_zero": "not up, including unchanged-price ties",
+      "scoring": "same first-available outcomes and development dates as the saved models",
+      "selection": "all three constants fixed independently of observed outcomes; no best-class selection"
+    },
+    "prediction_count": 310,
+    "scored_count": 301,
+    "scored_direction_counts": {
+      "not_up": 133,
+      "up": 168
+    },
+    "unscored_count": 9,
+    "yearly": {
+      "2017": {
+        "comparator_metrics": {
+          "logistic": {
+            "accuracy": 0.4230769230769231,
+            "balanced_accuracy": 0.43778110944527737,
+            "brier_score": 0.2569845339574493,
+            "confusion_counts": {
+              "fn": 20,
+              "fp": 10,
+              "tn": 13,
+              "tp": 9
+            },
+            "count": 52,
+            "log_loss": 0.7072565129327307,
+            "roc_auc": 0.47226386806596704
+          },
+          "logistic_wti_inventory": {
+            "accuracy": 0.5192307692307693,
+            "balanced_accuracy": 0.5239880059970015,
+            "brier_score": 0.25808421378881463,
+            "confusion_counts": {
+              "fn": 15,
+              "fp": 10,
+              "tn": 13,
+              "tp": 14
+            },
+            "count": 52,
+            "log_loss": 0.7098778933154202,
+            "roc_auc": 0.4752623688155922
+          },
+          "logistic_wti_inventory_c01": {
+            "accuracy": 0.5192307692307693,
+            "balanced_accuracy": 0.5284857571214393,
+            "brier_score": 0.25760249636722965,
+            "confusion_counts": {
+              "fn": 16,
+              "fp": 9,
+              "tn": 14,
+              "tp": 13
+            },
+            "count": 52,
+            "log_loss": 0.7086879125426961,
+            "roc_auc": 0.4767616191904048
+          },
+          "tree_wti_inventory": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.5292353823088456,
+            "brier_score": 0.25841275966896227,
+            "confusion_counts": {
+              "fn": 21,
+              "fp": 5,
+              "tn": 18,
+              "tp": 8
+            },
+            "count": 52,
+            "log_loss": 0.7104519200359167,
+            "roc_auc": 0.5097451274362819
+          }
+        },
+        "metrics": {
+          "always_not_up": {
+            "accuracy": 0.4423076923076923,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 29,
+              "fp": 0,
+              "tn": 23,
+              "tp": 0
+            },
+            "count": 52,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "always_up": {
+            "accuracy": 0.5576923076923077,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 23,
+              "tn": 0,
+              "tp": 29
+            },
+            "count": 52,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "constant_half": {
+            "accuracy": 0.5576923076923077,
+            "balanced_accuracy": 0.5,
+            "brier_score": 0.25,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 23,
+              "tn": 0,
+              "tp": 29
+            },
+            "count": 52,
+            "log_loss": 0.6931471805599453,
+            "roc_auc": 0.5
+          }
+        },
+        "paired_comparisons": {
+          "logistic": {
+            "always_not_up": {
+              "benchmark_only_correct": 10,
+              "both_correct": 13,
+              "both_wrong": 20,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.019230769230769218,
+                "balanced_accuracy": -0.06221889055472263,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 9
+            },
+            "always_up": {
+              "benchmark_only_correct": 20,
+              "both_correct": 9,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.13461538461538464,
+                "balanced_accuracy": -0.06221889055472263,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 13
+            },
+            "constant_half": {
+              "benchmark_only_correct": 20,
+              "both_correct": 9,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.13461538461538464,
+                "balanced_accuracy": -0.06221889055472263,
+                "brier_score": 0.0069845339574493015,
+                "log_loss": 0.014109332372785444,
+                "roc_auc": -0.02773613193403296
+              },
+              "model_only_correct": 13
+            }
+          },
+          "logistic_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 10,
+              "both_correct": 13,
+              "both_wrong": 15,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.07692307692307698,
+                "balanced_accuracy": 0.02398800599700146,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 14
+            },
+            "always_up": {
+              "benchmark_only_correct": 15,
+              "both_correct": 14,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.038461538461538436,
+                "balanced_accuracy": 0.02398800599700146,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 13
+            },
+            "constant_half": {
+              "benchmark_only_correct": 15,
+              "both_correct": 14,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.038461538461538436,
+                "balanced_accuracy": 0.02398800599700146,
+                "brier_score": 0.008084213788814631,
+                "log_loss": 0.016730712755474886,
+                "roc_auc": -0.024737631184407805
+              },
+              "model_only_correct": 13
+            }
+          },
+          "logistic_wti_inventory_c01": {
+            "always_not_up": {
+              "benchmark_only_correct": 9,
+              "both_correct": 14,
+              "both_wrong": 16,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.07692307692307698,
+                "balanced_accuracy": 0.028485757121439303,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 13
+            },
+            "always_up": {
+              "benchmark_only_correct": 16,
+              "both_correct": 13,
+              "both_wrong": 9,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.038461538461538436,
+                "balanced_accuracy": 0.028485757121439303,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 14
+            },
+            "constant_half": {
+              "benchmark_only_correct": 16,
+              "both_correct": 13,
+              "both_wrong": 9,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.038461538461538436,
+                "balanced_accuracy": 0.028485757121439303,
+                "brier_score": 0.00760249636722965,
+                "log_loss": 0.015540731982750855,
+                "roc_auc": -0.023238380809595227
+              },
+              "model_only_correct": 14
+            }
+          },
+          "tree_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 5,
+              "both_correct": 18,
+              "both_wrong": 21,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.05769230769230771,
+                "balanced_accuracy": 0.029235382308845592,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 8
+            },
+            "always_up": {
+              "benchmark_only_correct": 21,
+              "both_correct": 8,
+              "both_wrong": 5,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.05769230769230771,
+                "balanced_accuracy": 0.029235382308845592,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 18
+            },
+            "constant_half": {
+              "benchmark_only_correct": 21,
+              "both_correct": 8,
+              "both_wrong": 5,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.05769230769230771,
+                "balanced_accuracy": 0.029235382308845592,
+                "brier_score": 0.008412759668962266,
+                "log_loss": 0.017304739475971442,
+                "roc_auc": 0.009745127436281864
+              },
+              "model_only_correct": 18
+            }
+          }
+        },
+        "prediction_count": 52,
+        "scored_count": 52,
+        "scored_direction_counts": {
+          "not_up": 23,
+          "up": 29
+        },
+        "unscored_count": 0
+      },
+      "2018": {
+        "comparator_metrics": {
+          "logistic": {
+            "accuracy": 0.48,
+            "balanced_accuracy": 0.47596153846153844,
+            "brier_score": 0.25504292739528434,
+            "confusion_counts": {
+              "fn": 15,
+              "fp": 11,
+              "tn": 15,
+              "tp": 9
+            },
+            "count": 50,
+            "log_loss": 0.7035536122690977,
+            "roc_auc": 0.5112179487179487
+          },
+          "logistic_wti_inventory": {
+            "accuracy": 0.46,
+            "balanced_accuracy": 0.4567307692307692,
+            "brier_score": 0.2519644524003213,
+            "confusion_counts": {
+              "fn": 15,
+              "fp": 12,
+              "tn": 14,
+              "tp": 9
+            },
+            "count": 50,
+            "log_loss": 0.6973426753328659,
+            "roc_auc": 0.5272435897435898
+          },
+          "logistic_wti_inventory_c01": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.4967948717948718,
+            "brier_score": 0.25167956304721373,
+            "confusion_counts": {
+              "fn": 14,
+              "fp": 11,
+              "tn": 15,
+              "tp": 10
+            },
+            "count": 50,
+            "log_loss": 0.6966717317660545,
+            "roc_auc": 0.530448717948718
+          },
+          "tree_wti_inventory": {
+            "accuracy": 0.6,
+            "balanced_accuracy": 0.5993589743589745,
+            "brier_score": 0.24286645192361964,
+            "confusion_counts": {
+              "fn": 10,
+              "fp": 10,
+              "tn": 16,
+              "tp": 14
+            },
+            "count": 50,
+            "log_loss": 0.6788061510818956,
+            "roc_auc": 0.594551282051282
+          }
+        },
+        "metrics": {
+          "always_not_up": {
+            "accuracy": 0.52,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 24,
+              "fp": 0,
+              "tn": 26,
+              "tp": 0
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "always_up": {
+            "accuracy": 0.48,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 26,
+              "tn": 0,
+              "tp": 24
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "constant_half": {
+            "accuracy": 0.48,
+            "balanced_accuracy": 0.5,
+            "brier_score": 0.25,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 26,
+              "tn": 0,
+              "tp": 24
+            },
+            "count": 50,
+            "log_loss": 0.6931471805599453,
+            "roc_auc": 0.5
+          }
+        },
+        "paired_comparisons": {
+          "logistic": {
+            "always_not_up": {
+              "benchmark_only_correct": 11,
+              "both_correct": 15,
+              "both_wrong": 15,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.040000000000000036,
+                "balanced_accuracy": -0.024038461538461564,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 9
+            },
+            "always_up": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.0,
+                "balanced_accuracy": -0.024038461538461564,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 15
+            },
+            "constant_half": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.0,
+                "balanced_accuracy": -0.024038461538461564,
+                "brier_score": 0.005042927395284336,
+                "log_loss": 0.010406431709152453,
+                "roc_auc": 0.011217948717948678
+              },
+              "model_only_correct": 15
+            }
+          },
+          "logistic_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 12,
+              "both_correct": 14,
+              "both_wrong": 15,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.06,
+                "balanced_accuracy": -0.04326923076923078,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 9
+            },
+            "always_up": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.019999999999999962,
+                "balanced_accuracy": -0.04326923076923078,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 14
+            },
+            "constant_half": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.019999999999999962,
+                "balanced_accuracy": -0.04326923076923078,
+                "brier_score": 0.0019644524003212815,
+                "log_loss": 0.004195494772920583,
+                "roc_auc": 0.027243589743589758
+              },
+              "model_only_correct": 14
+            }
+          },
+          "logistic_wti_inventory_c01": {
+            "always_not_up": {
+              "benchmark_only_correct": 11,
+              "both_correct": 15,
+              "both_wrong": 14,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.020000000000000018,
+                "balanced_accuracy": -0.0032051282051281937,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 10
+            },
+            "always_up": {
+              "benchmark_only_correct": 14,
+              "both_correct": 10,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.020000000000000018,
+                "balanced_accuracy": -0.0032051282051281937,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 15
+            },
+            "constant_half": {
+              "benchmark_only_correct": 14,
+              "both_correct": 10,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.020000000000000018,
+                "balanced_accuracy": -0.0032051282051281937,
+                "brier_score": 0.001679563047213728,
+                "log_loss": 0.003524551206109172,
+                "roc_auc": 0.03044871794871795
+              },
+              "model_only_correct": 15
+            }
+          },
+          "tree_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 10,
+              "both_correct": 16,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.07999999999999996,
+                "balanced_accuracy": 0.09935897435897445,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 14
+            },
+            "always_up": {
+              "benchmark_only_correct": 10,
+              "both_correct": 14,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.12,
+                "balanced_accuracy": 0.09935897435897445,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 16
+            },
+            "constant_half": {
+              "benchmark_only_correct": 10,
+              "both_correct": 14,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.12,
+                "balanced_accuracy": 0.09935897435897445,
+                "brier_score": -0.007133548076380364,
+                "log_loss": -0.014341029478049716,
+                "roc_auc": 0.09455128205128205
+              },
+              "model_only_correct": 16
+            }
+          }
+        },
+        "prediction_count": 52,
+        "scored_count": 50,
+        "scored_direction_counts": {
+          "not_up": 26,
+          "up": 24
+        },
+        "unscored_count": 2
+      },
+      "2019": {
+        "comparator_metrics": {
+          "logistic": {
+            "accuracy": 0.48,
+            "balanced_accuracy": 0.4380305602716469,
+            "brier_score": 0.25310932103274125,
+            "confusion_counts": {
+              "fn": 12,
+              "fp": 14,
+              "tn": 5,
+              "tp": 19
+            },
+            "count": 50,
+            "log_loss": 0.6993882325953663,
+            "roc_auc": 0.44991511035653653
+          },
+          "logistic_wti_inventory": {
+            "accuracy": 0.48,
+            "balanced_accuracy": 0.4685908319185059,
+            "brier_score": 0.2633315923377155,
+            "confusion_counts": {
+              "fn": 15,
+              "fp": 11,
+              "tn": 8,
+              "tp": 16
+            },
+            "count": 50,
+            "log_loss": 0.7204205448095439,
+            "roc_auc": 0.41256366723259763
+          },
+          "logistic_wti_inventory_c01": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.4847198641765704,
+            "brier_score": 0.26059366997544986,
+            "confusion_counts": {
+              "fn": 14,
+              "fp": 11,
+              "tn": 8,
+              "tp": 17
+            },
+            "count": 50,
+            "log_loss": 0.7146493077045263,
+            "roc_auc": 0.4159592529711375
+          },
+          "tree_wti_inventory": {
+            "accuracy": 0.4,
+            "balanced_accuracy": 0.3938879456706282,
+            "brier_score": 0.27356399785315355,
+            "confusion_counts": {
+              "fn": 18,
+              "fp": 12,
+              "tn": 7,
+              "tp": 13
+            },
+            "count": 50,
+            "log_loss": 0.7414187284276875,
+            "roc_auc": 0.3073005093378608
+          }
+        },
+        "metrics": {
+          "always_not_up": {
+            "accuracy": 0.38,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 31,
+              "fp": 0,
+              "tn": 19,
+              "tp": 0
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "always_up": {
+            "accuracy": 0.62,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 19,
+              "tn": 0,
+              "tp": 31
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "constant_half": {
+            "accuracy": 0.62,
+            "balanced_accuracy": 0.5,
+            "brier_score": 0.25,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 19,
+              "tn": 0,
+              "tp": 31
+            },
+            "count": 50,
+            "log_loss": 0.6931471805599453,
+            "roc_auc": 0.5
+          }
+        },
+        "paired_comparisons": {
+          "logistic": {
+            "always_not_up": {
+              "benchmark_only_correct": 14,
+              "both_correct": 5,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.09999999999999998,
+                "balanced_accuracy": -0.061969439728353115,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 19
+            },
+            "always_up": {
+              "benchmark_only_correct": 12,
+              "both_correct": 19,
+              "both_wrong": 14,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.14,
+                "balanced_accuracy": -0.061969439728353115,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 5
+            },
+            "constant_half": {
+              "benchmark_only_correct": 12,
+              "both_correct": 19,
+              "both_wrong": 14,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.14,
+                "balanced_accuracy": -0.061969439728353115,
+                "brier_score": 0.0031093210327412524,
+                "log_loss": 0.006241052035421024,
+                "roc_auc": -0.05008488964346347
+              },
+              "model_only_correct": 5
+            }
+          },
+          "logistic_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 11,
+              "both_correct": 8,
+              "both_wrong": 15,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.09999999999999998,
+                "balanced_accuracy": -0.03140916808149408,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 16
+            },
+            "always_up": {
+              "benchmark_only_correct": 15,
+              "both_correct": 16,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.14,
+                "balanced_accuracy": -0.03140916808149408,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 8
+            },
+            "constant_half": {
+              "benchmark_only_correct": 15,
+              "both_correct": 16,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.14,
+                "balanced_accuracy": -0.03140916808149408,
+                "brier_score": 0.013331592337715525,
+                "log_loss": 0.027273364249598586,
+                "roc_auc": -0.08743633276740237
+              },
+              "model_only_correct": 8
+            }
+          },
+          "logistic_wti_inventory_c01": {
+            "always_not_up": {
+              "benchmark_only_correct": 11,
+              "both_correct": 8,
+              "both_wrong": 14,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.12,
+                "balanced_accuracy": -0.015280135823429575,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 17
+            },
+            "always_up": {
+              "benchmark_only_correct": 14,
+              "both_correct": 17,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.12,
+                "balanced_accuracy": -0.015280135823429575,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 8
+            },
+            "constant_half": {
+              "benchmark_only_correct": 14,
+              "both_correct": 17,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.12,
+                "balanced_accuracy": -0.015280135823429575,
+                "brier_score": 0.01059366997544986,
+                "log_loss": 0.021502127144580996,
+                "roc_auc": -0.0840407470288625
+              },
+              "model_only_correct": 8
+            }
+          },
+          "tree_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 12,
+              "both_correct": 7,
+              "both_wrong": 18,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.020000000000000018,
+                "balanced_accuracy": -0.10611205432937182,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 13
+            },
+            "always_up": {
+              "benchmark_only_correct": 18,
+              "both_correct": 13,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.21999999999999997,
+                "balanced_accuracy": -0.10611205432937182,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 7
+            },
+            "constant_half": {
+              "benchmark_only_correct": 18,
+              "both_correct": 13,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.21999999999999997,
+                "balanced_accuracy": -0.10611205432937182,
+                "brier_score": 0.02356399785315355,
+                "log_loss": 0.04827154786774224,
+                "roc_auc": -0.1926994906621392
+              },
+              "model_only_correct": 7
+            }
+          }
+        },
+        "prediction_count": 52,
+        "scored_count": 50,
+        "scored_direction_counts": {
+          "not_up": 19,
+          "up": 31
+        },
+        "unscored_count": 2
+      },
+      "2020": {
+        "comparator_metrics": {
+          "logistic": {
+            "accuracy": 0.54,
+            "balanced_accuracy": 0.54,
+            "brier_score": 0.26109586293047493,
+            "confusion_counts": {
+              "fn": 3,
+              "fp": 20,
+              "tn": 5,
+              "tp": 22
+            },
+            "count": 50,
+            "log_loss": 0.767963113241123,
+            "roc_auc": 0.5776
+          },
+          "logistic_wti_inventory": {
+            "accuracy": 0.56,
+            "balanced_accuracy": 0.56,
+            "brier_score": 0.2643651403636901,
+            "confusion_counts": {
+              "fn": 3,
+              "fp": 19,
+              "tn": 6,
+              "tp": 22
+            },
+            "count": 50,
+            "log_loss": 0.7754101584270039,
+            "roc_auc": 0.5328
+          },
+          "logistic_wti_inventory_c01": {
+            "accuracy": 0.54,
+            "balanced_accuracy": 0.54,
+            "brier_score": 0.26258687793921814,
+            "confusion_counts": {
+              "fn": 4,
+              "fp": 19,
+              "tn": 6,
+              "tp": 21
+            },
+            "count": 50,
+            "log_loss": 0.7570652719563076,
+            "roc_auc": 0.5328
+          },
+          "tree_wti_inventory": {
+            "accuracy": 0.54,
+            "balanced_accuracy": 0.54,
+            "brier_score": 0.253721894754317,
+            "confusion_counts": {
+              "fn": 7,
+              "fp": 16,
+              "tn": 9,
+              "tp": 18
+            },
+            "count": 50,
+            "log_loss": 0.7013347694122376,
+            "roc_auc": 0.52
+          }
+        },
+        "metrics": {
+          "always_not_up": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 25,
+              "fp": 0,
+              "tn": 25,
+              "tp": 0
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "always_up": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 25,
+              "tn": 0,
+              "tp": 25
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "constant_half": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.5,
+            "brier_score": 0.25,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 25,
+              "tn": 0,
+              "tp": 25
+            },
+            "count": 50,
+            "log_loss": 0.6931471805599453,
+            "roc_auc": 0.5
+          }
+        },
+        "paired_comparisons": {
+          "logistic": {
+            "always_not_up": {
+              "benchmark_only_correct": 20,
+              "both_correct": 5,
+              "both_wrong": 3,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 22
+            },
+            "always_up": {
+              "benchmark_only_correct": 3,
+              "both_correct": 22,
+              "both_wrong": 20,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 5
+            },
+            "constant_half": {
+              "benchmark_only_correct": 3,
+              "both_correct": 22,
+              "both_wrong": 20,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": 0.011095862930474931,
+                "log_loss": 0.0748159326811777,
+                "roc_auc": 0.0776
+              },
+              "model_only_correct": 5
+            }
+          },
+          "logistic_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 19,
+              "both_correct": 6,
+              "both_wrong": 3,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.06000000000000005,
+                "balanced_accuracy": 0.06000000000000005,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 22
+            },
+            "always_up": {
+              "benchmark_only_correct": 3,
+              "both_correct": 22,
+              "both_wrong": 19,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.06000000000000005,
+                "balanced_accuracy": 0.06000000000000005,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 6
+            },
+            "constant_half": {
+              "benchmark_only_correct": 3,
+              "both_correct": 22,
+              "both_wrong": 19,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.06000000000000005,
+                "balanced_accuracy": 0.06000000000000005,
+                "brier_score": 0.014365140363690077,
+                "log_loss": 0.0822629778670586,
+                "roc_auc": 0.03280000000000005
+              },
+              "model_only_correct": 6
+            }
+          },
+          "logistic_wti_inventory_c01": {
+            "always_not_up": {
+              "benchmark_only_correct": 19,
+              "both_correct": 6,
+              "both_wrong": 4,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 21
+            },
+            "always_up": {
+              "benchmark_only_correct": 4,
+              "both_correct": 21,
+              "both_wrong": 19,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 6
+            },
+            "constant_half": {
+              "benchmark_only_correct": 4,
+              "both_correct": 21,
+              "both_wrong": 19,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": 0.012586877939218144,
+                "log_loss": 0.06391809139636229,
+                "roc_auc": 0.03280000000000005
+              },
+              "model_only_correct": 6
+            }
+          },
+          "tree_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 16,
+              "both_correct": 9,
+              "both_wrong": 7,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 18
+            },
+            "always_up": {
+              "benchmark_only_correct": 7,
+              "both_correct": 18,
+              "both_wrong": 16,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 9
+            },
+            "constant_half": {
+              "benchmark_only_correct": 7,
+              "both_correct": 18,
+              "both_wrong": 16,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.040000000000000036,
+                "balanced_accuracy": 0.040000000000000036,
+                "brier_score": 0.003721894754317001,
+                "log_loss": 0.008187588852292316,
+                "roc_auc": 0.020000000000000018
+              },
+              "model_only_correct": 9
+            }
+          }
+        },
+        "prediction_count": 52,
+        "scored_count": 50,
+        "scored_direction_counts": {
+          "not_up": 25,
+          "up": 25
+        },
+        "unscored_count": 2
+      },
+      "2021": {
+        "comparator_metrics": {
+          "logistic": {
+            "accuracy": 0.52,
+            "balanced_accuracy": 0.4476190476190476,
+            "brier_score": 0.25645370228714126,
+            "confusion_counts": {
+              "fn": 13,
+              "fp": 11,
+              "tn": 4,
+              "tp": 22
+            },
+            "count": 50,
+            "log_loss": 0.7069517114279112,
+            "roc_auc": 0.43238095238095237
+          },
+          "logistic_wti_inventory": {
+            "accuracy": 0.56,
+            "balanced_accuracy": 0.49523809523809526,
+            "brier_score": 0.24680529579236538,
+            "confusion_counts": {
+              "fn": 12,
+              "fp": 10,
+              "tn": 5,
+              "tp": 23
+            },
+            "count": 50,
+            "log_loss": 0.6869479308145116,
+            "roc_auc": 0.5028571428571429
+          },
+          "logistic_wti_inventory_c01": {
+            "accuracy": 0.56,
+            "balanced_accuracy": 0.49523809523809526,
+            "brier_score": 0.24652281890880887,
+            "confusion_counts": {
+              "fn": 12,
+              "fp": 10,
+              "tn": 5,
+              "tp": 23
+            },
+            "count": 50,
+            "log_loss": 0.6862966827221939,
+            "roc_auc": 0.49142857142857144
+          },
+          "tree_wti_inventory": {
+            "accuracy": 0.44,
+            "balanced_accuracy": 0.37142857142857144,
+            "brier_score": 0.2526358190812108,
+            "confusion_counts": {
+              "fn": 16,
+              "fp": 12,
+              "tn": 3,
+              "tp": 19
+            },
+            "count": 50,
+            "log_loss": 0.6983607805955505,
+            "roc_auc": 0.41714285714285715
+          }
+        },
+        "metrics": {
+          "always_not_up": {
+            "accuracy": 0.3,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 35,
+              "fp": 0,
+              "tn": 15,
+              "tp": 0
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "always_up": {
+            "accuracy": 0.7,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 15,
+              "tn": 0,
+              "tp": 35
+            },
+            "count": 50,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "constant_half": {
+            "accuracy": 0.7,
+            "balanced_accuracy": 0.5,
+            "brier_score": 0.25,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 15,
+              "tn": 0,
+              "tp": 35
+            },
+            "count": 50,
+            "log_loss": 0.6931471805599453,
+            "roc_auc": 0.5
+          }
+        },
+        "paired_comparisons": {
+          "logistic": {
+            "always_not_up": {
+              "benchmark_only_correct": 11,
+              "both_correct": 4,
+              "both_wrong": 13,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.22000000000000003,
+                "balanced_accuracy": -0.05238095238095242,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 22
+            },
+            "always_up": {
+              "benchmark_only_correct": 13,
+              "both_correct": 22,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.17999999999999994,
+                "balanced_accuracy": -0.05238095238095242,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 4
+            },
+            "constant_half": {
+              "benchmark_only_correct": 13,
+              "both_correct": 22,
+              "both_wrong": 11,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.17999999999999994,
+                "balanced_accuracy": -0.05238095238095242,
+                "brier_score": 0.006453702287141261,
+                "log_loss": 0.013804530867965958,
+                "roc_auc": -0.06761904761904763
+              },
+              "model_only_correct": 4
+            }
+          },
+          "logistic_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 10,
+              "both_correct": 5,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.26000000000000006,
+                "balanced_accuracy": -0.004761904761904745,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 23
+            },
+            "always_up": {
+              "benchmark_only_correct": 12,
+              "both_correct": 23,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.1399999999999999,
+                "balanced_accuracy": -0.004761904761904745,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 5
+            },
+            "constant_half": {
+              "benchmark_only_correct": 12,
+              "both_correct": 23,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.1399999999999999,
+                "balanced_accuracy": -0.004761904761904745,
+                "brier_score": -0.0031947042076346244,
+                "log_loss": -0.0061992497454337325,
+                "roc_auc": 0.0028571428571428914
+              },
+              "model_only_correct": 5
+            }
+          },
+          "logistic_wti_inventory_c01": {
+            "always_not_up": {
+              "benchmark_only_correct": 10,
+              "both_correct": 5,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.26000000000000006,
+                "balanced_accuracy": -0.004761904761904745,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 23
+            },
+            "always_up": {
+              "benchmark_only_correct": 12,
+              "both_correct": 23,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.1399999999999999,
+                "balanced_accuracy": -0.004761904761904745,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 5
+            },
+            "constant_half": {
+              "benchmark_only_correct": 12,
+              "both_correct": 23,
+              "both_wrong": 10,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.1399999999999999,
+                "balanced_accuracy": -0.004761904761904745,
+                "brier_score": -0.003477181091191134,
+                "log_loss": -0.006850497837751379,
+                "roc_auc": -0.008571428571428563
+              },
+              "model_only_correct": 5
+            }
+          },
+          "tree_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 12,
+              "both_correct": 3,
+              "both_wrong": 16,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.14,
+                "balanced_accuracy": -0.12857142857142856,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 19
+            },
+            "always_up": {
+              "benchmark_only_correct": 16,
+              "both_correct": 19,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.25999999999999995,
+                "balanced_accuracy": -0.12857142857142856,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 3
+            },
+            "constant_half": {
+              "benchmark_only_correct": 16,
+              "both_correct": 19,
+              "both_wrong": 12,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": -0.25999999999999995,
+                "balanced_accuracy": -0.12857142857142856,
+                "brier_score": 0.0026358190812107996,
+                "log_loss": 0.005213600035605226,
+                "roc_auc": -0.08285714285714285
+              },
+              "model_only_correct": 3
+            }
+          }
+        },
+        "prediction_count": 52,
+        "scored_count": 50,
+        "scored_direction_counts": {
+          "not_up": 15,
+          "up": 35
+        },
+        "unscored_count": 2
+      },
+      "2022": {
+        "comparator_metrics": {
+          "logistic": {
+            "accuracy": 0.5306122448979592,
+            "balanced_accuracy": 0.5258333333333334,
+            "brier_score": 0.2642549288498225,
+            "confusion_counts": {
+              "fn": 17,
+              "fp": 6,
+              "tn": 19,
+              "tp": 7
+            },
+            "count": 49,
+            "log_loss": 0.7227180820348325,
+            "roc_auc": 0.425
+          },
+          "logistic_wti_inventory": {
+            "accuracy": 0.5714285714285714,
+            "balanced_accuracy": 0.5675,
+            "brier_score": 0.25987606118768064,
+            "confusion_counts": {
+              "fn": 15,
+              "fp": 6,
+              "tn": 19,
+              "tp": 9
+            },
+            "count": 49,
+            "log_loss": 0.7148042245482747,
+            "roc_auc": 0.4816666666666667
+          },
+          "logistic_wti_inventory_c01": {
+            "accuracy": 0.5714285714285714,
+            "balanced_accuracy": 0.5675,
+            "brier_score": 0.2589599513055678,
+            "confusion_counts": {
+              "fn": 15,
+              "fp": 6,
+              "tn": 19,
+              "tp": 9
+            },
+            "count": 49,
+            "log_loss": 0.7123321672187461,
+            "roc_auc": 0.4716666666666667
+          },
+          "tree_wti_inventory": {
+            "accuracy": 0.5306122448979592,
+            "balanced_accuracy": 0.5258333333333334,
+            "brier_score": 0.25504856298440404,
+            "confusion_counts": {
+              "fn": 17,
+              "fp": 6,
+              "tn": 19,
+              "tp": 7
+            },
+            "count": 49,
+            "log_loss": 0.7035978236223172,
+            "roc_auc": 0.48833333333333334
+          }
+        },
+        "metrics": {
+          "always_not_up": {
+            "accuracy": 0.5102040816326531,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 24,
+              "fp": 0,
+              "tn": 25,
+              "tp": 0
+            },
+            "count": 49,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "always_up": {
+            "accuracy": 0.4897959183673469,
+            "balanced_accuracy": 0.5,
+            "brier_score": null,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 25,
+              "tn": 0,
+              "tp": 24
+            },
+            "count": 49,
+            "log_loss": null,
+            "roc_auc": null
+          },
+          "constant_half": {
+            "accuracy": 0.4897959183673469,
+            "balanced_accuracy": 0.5,
+            "brier_score": 0.25,
+            "confusion_counts": {
+              "fn": 0,
+              "fp": 25,
+              "tn": 0,
+              "tp": 24
+            },
+            "count": 49,
+            "log_loss": 0.6931471805599453,
+            "roc_auc": 0.5
+          }
+        },
+        "paired_comparisons": {
+          "logistic": {
+            "always_not_up": {
+              "benchmark_only_correct": 6,
+              "both_correct": 19,
+              "both_wrong": 17,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.020408163265306145,
+                "balanced_accuracy": 0.025833333333333375,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 7
+            },
+            "always_up": {
+              "benchmark_only_correct": 17,
+              "both_correct": 7,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.04081632653061229,
+                "balanced_accuracy": 0.025833333333333375,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 19
+            },
+            "constant_half": {
+              "benchmark_only_correct": 17,
+              "both_correct": 7,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.04081632653061229,
+                "balanced_accuracy": 0.025833333333333375,
+                "brier_score": 0.01425492884982249,
+                "log_loss": 0.029570901474887168,
+                "roc_auc": -0.07500000000000001
+              },
+              "model_only_correct": 19
+            }
+          },
+          "logistic_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 6,
+              "both_correct": 19,
+              "both_wrong": 15,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.061224489795918324,
+                "balanced_accuracy": 0.0675,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 9
+            },
+            "always_up": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.08163265306122447,
+                "balanced_accuracy": 0.0675,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 19
+            },
+            "constant_half": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.08163265306122447,
+                "balanced_accuracy": 0.0675,
+                "brier_score": 0.00987606118768064,
+                "log_loss": 0.02165704398832946,
+                "roc_auc": -0.018333333333333313
+              },
+              "model_only_correct": 19
+            }
+          },
+          "logistic_wti_inventory_c01": {
+            "always_not_up": {
+              "benchmark_only_correct": 6,
+              "both_correct": 19,
+              "both_wrong": 15,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.061224489795918324,
+                "balanced_accuracy": 0.0675,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 9
+            },
+            "always_up": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.08163265306122447,
+                "balanced_accuracy": 0.0675,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 19
+            },
+            "constant_half": {
+              "benchmark_only_correct": 15,
+              "both_correct": 9,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.08163265306122447,
+                "balanced_accuracy": 0.0675,
+                "brier_score": 0.008959951305567815,
+                "log_loss": 0.019184986658800862,
+                "roc_auc": -0.02833333333333332
+              },
+              "model_only_correct": 19
+            }
+          },
+          "tree_wti_inventory": {
+            "always_not_up": {
+              "benchmark_only_correct": 6,
+              "both_correct": 19,
+              "both_wrong": 17,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.020408163265306145,
+                "balanced_accuracy": 0.025833333333333375,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 7
+            },
+            "always_up": {
+              "benchmark_only_correct": 17,
+              "both_correct": 7,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.04081632653061229,
+                "balanced_accuracy": 0.025833333333333375,
+                "brier_score": null,
+                "log_loss": null,
+                "roc_auc": null
+              },
+              "model_only_correct": 19
+            },
+            "constant_half": {
+              "benchmark_only_correct": 17,
+              "both_correct": 7,
+              "both_wrong": 6,
+              "metric_differences_model_minus_benchmark": {
+                "accuracy": 0.04081632653061229,
+                "balanced_accuracy": 0.025833333333333375,
+                "brier_score": 0.005048562984404037,
+                "log_loss": 0.010450643062371867,
+                "roc_auc": -0.011666666666666659
+              },
+              "model_only_correct": 19
+            }
+          }
+        },
+        "prediction_count": 50,
+        "scored_count": 49,
+        "scored_direction_counts": {
+          "not_up": 25,
+          "up": 24
+        },
+        "unscored_count": 1
+      }
+    }
+  },
+  "dataset_id": "4abada098156b2b39306",
+  "development_forecasts_with_missing_inventory": 1,
+  "development_inventory_missing_counts": {
+    "commercial_inventory_change_1_week_million_barrels": 1,
+    "commercial_inventory_change_4_weeks_million_barrels": 1,
+    "cushing_inventory_change_1_week_million_barrels": 1,
+    "cushing_inventory_change_4_weeks_million_barrels": 1,
+    "inventory_report_age_calendar_days": 0
+  },
+  "evaluation_directory": "data/evaluations/7aa61161b53f99695fba",
+  "excluded_pre_holdout_rows": {
+    "crosses_holdout_boundary": 1,
+    "initial_training": 297
+  },
+  "forecast_date_range": [
+    "2017-01-06",
+    "2022-12-22"
+  ],
+  "holdout_evaluated": false,
+  "inventory_audit_id": "090d8516fd820fbb1d34",
+  "inventory_feature_summary": {
+    "feature_available_counts": {
+      "commercial_inventory_change_1_week_million_barrels": 590,
+      "commercial_inventory_change_4_weeks_million_barrels": 584,
+      "cushing_inventory_change_1_week_million_barrels": 590,
+      "cushing_inventory_change_4_weeks_million_barrels": 587,
+      "inventory_report_age_calendar_days": 591
+    },
+    "feature_missing_counts": {
+      "commercial_inventory_change_1_week_million_barrels": 17,
+      "commercial_inventory_change_4_weeks_million_barrels": 23,
+      "cushing_inventory_change_1_week_million_barrels": 17,
+      "cushing_inventory_change_4_weeks_million_barrels": 20,
+      "inventory_report_age_calendar_days": 16
+    },
+    "feature_missing_reasons": {
+      "commercial_inventory_change_1_week_million_barrels": {
+        "latest_declared_issue_unusable": 1,
+        "no_earlier_release": 16
+      },
+      "commercial_inventory_change_4_weeks_million_barrels": {
+        "definition_regime_mismatch": 3,
+        "latest_declared_issue_unusable": 1,
+        "no_available_reference_observation": 3,
+        "no_earlier_release": 16
+      },
+      "cushing_inventory_change_1_week_million_barrels": {
+        "latest_declared_issue_unusable": 1,
+        "no_earlier_release": 16
+      },
+      "cushing_inventory_change_4_weeks_million_barrels": {
+        "latest_declared_issue_unusable": 1,
+        "no_available_reference_observation": 3,
+        "no_earlier_release": 16
+      },
+      "inventory_report_age_calendar_days": {
+        "no_earlier_release": 16
+      }
+    },
+    "frozen_at_historical_issuance": true,
+    "information_cutoff": "release date strictly before each historical forecast; earliest eligible issuance no later than forecast",
+    "latest_issue_status_counts": {
+      "available": 590,
+      "latest_declared_issue_unusable": 1,
+      "no_earlier_release": 16
+    },
+    "row_count": 607
+  },
+  "inventory_reference_reproduction": {
+    "all_control_model_outputs_identical": true,
+    "all_inventory_forecast_inputs_identical": true,
+    "all_inventory_training_inputs_identical": true,
+    "forecast_cohort_identical": true,
+    "identical_control_model_output_count": 310,
+    "identical_inventory_forecast_input_count": 310,
+    "identical_inventory_training_input_count": 310
+  },
+  "inventory_reference_run_id": "e908d9c3437095815a70",
+  "maximum_iterations_by_logistic_model": {
+    "logistic": 7,
+    "logistic_wti_inventory": 11,
+    "logistic_wti_inventory_c01": 9
+  },
+  "maximum_logistic_iterations": 7,
+  "metrics": {
+    "logistic": {
+      "accuracy": 0.4950166112956811,
+      "balanced_accuracy": 0.49122807017543857,
+      "brier_score": 0.25779660452395603,
+      "confusion_counts": {
+        "fn": 80,
+        "fp": 72,
+        "tn": 61,
+        "tp": 88
+      },
+      "count": 301,
+      "log_loss": 0.7178849108600788,
+      "roc_auc": 0.4878714643752238
+    },
+    "logistic_wti_inventory": {
+      "accuracy": 0.5249169435215947,
+      "balanced_accuracy": 0.5211466165413534,
+      "brier_score": 0.2574007646508948,
+      "confusion_counts": {
+        "fn": 75,
+        "fp": 68,
+        "tn": 65,
+        "tp": 93
+      },
+      "count": 301,
+      "log_loss": 0.7174256575563573,
+      "roc_auc": 0.5110544217687075
+    },
+    "logistic_wti_inventory_c01": {
+      "accuracy": 0.53156146179402,
+      "balanced_accuracy": 0.5286654135338347,
+      "brier_score": 0.2563239665069877,
+      "confusion_counts": {
+        "fn": 75,
+        "fp": 66,
+        "tn": 67,
+        "tp": 93
+      },
+      "count": 301,
+      "log_loss": 0.7125920177853583,
+      "roc_auc": 0.5076978159684926
+    },
+    "majority": {
+      "accuracy": 0.4950166112956811,
+      "balanced_accuracy": 0.5170739348370927,
+      "brier_score": 0.25119701940263833,
+      "confusion_counts": {
+        "fn": 113,
+        "fp": 39,
+        "tn": 94,
+        "tp": 55
+      },
+      "count": 301,
+      "log_loss": 0.6955442389132205,
+      "roc_auc": 0.48643931256713213
+    },
+    "momentum": {
+      "accuracy": 0.5016611295681063,
+      "balanced_accuracy": 0.4971804511278195,
+      "brier_score": null,
+      "confusion_counts": {
+        "fn": 78,
+        "fp": 72,
+        "tn": 61,
+        "tp": 90
+      },
+      "count": 301,
+      "log_loss": null,
+      "roc_auc": null
+    },
+    "tree_wti_inventory": {
+      "accuracy": 0.5016611295681063,
+      "balanced_accuracy": 0.505795739348371,
+      "brier_score": 0.2560606354472986,
+      "confusion_counts": {
+        "fn": 89,
+        "fp": 61,
+        "tn": 72,
+        "tp": 79
+      },
+      "count": 301,
+      "log_loss": 0.7057003809808298,
+      "roc_auc": 0.4981203007518797
+    }
+  },
+  "momentum_missing_fallback_count": 0,
+  "paired_accuracy_comparisons": {
+    "majority": {
+      "accuracy_difference_logistic_minus_baseline": 0.0,
+      "baseline_only_correct": 85,
+      "both_correct": 64,
+      "both_wrong": 67,
+      "logistic_only_correct": 85
+    },
+    "momentum": {
+      "accuracy_difference_logistic_minus_baseline": -0.006644518272425249,
+      "baseline_only_correct": 44,
+      "both_correct": 107,
+      "both_wrong": 108,
+      "logistic_only_correct": 42
+    }
+  },
+  "paired_inventory_comparison": {
+    "both_correct": 127,
+    "both_wrong": 121,
+    "combined_only_correct": 31,
+    "metric_differences_combined_minus_wti": {
+      "accuracy": 0.029900332225913595,
+      "balanced_accuracy": 0.029918546365914844,
+      "brier_score": -0.00039583987306124335,
+      "log_loss": -0.0004592533037214297,
+      "roc_auc": 0.02318295739348375
+    },
+    "wti_only_correct": 22
+  },
+  "paired_inventory_regularization": {
+    "both_correct": 155,
+    "both_wrong": 138,
+    "candidate_only_correct": 5,
+    "control_only_correct": 3,
+    "metric_differences_candidate_minus_control": {
+      "accuracy": 0.006644518272425293,
+      "balanced_accuracy": 0.007518796992481258,
+      "brier_score": -0.0010767981439070984,
+      "log_loss": -0.004833639770999043,
+      "roc_auc": -0.003356605800214907
+    },
+    "yearly_metric_differences_candidate_minus_control": {
+      "2017": {
+        "accuracy": 0.0,
+        "balanced_accuracy": 0.004497751124437843,
+        "brier_score": -0.00048171742158498176,
+        "log_loss": -0.0011899807727240308,
+        "roc_auc": 0.0014992503748125774
+      },
+      "2018": {
+        "accuracy": 0.03999999999999998,
+        "balanced_accuracy": 0.04006410256410259,
+        "brier_score": -0.0002848893531075536,
+        "log_loss": -0.0006709435668114105,
+        "roc_auc": 0.0032051282051281937
+      },
+      "2019": {
+        "accuracy": 0.020000000000000018,
+        "balanced_accuracy": 0.016129032258064502,
+        "brier_score": -0.0027379223622656657,
+        "log_loss": -0.00577123710501759,
+        "roc_auc": 0.0033955857385398747
+      },
+      "2020": {
+        "accuracy": -0.020000000000000018,
+        "balanced_accuracy": -0.020000000000000018,
+        "brier_score": -0.0017782624244719325,
+        "log_loss": -0.01834488647069632,
+        "roc_auc": 0.0
+      },
+      "2021": {
+        "accuracy": 0.0,
+        "balanced_accuracy": 0.0,
+        "brier_score": -0.00028247688355650946,
+        "log_loss": -0.0006512480923176467,
+        "roc_auc": -0.011428571428571455
+      },
+      "2022": {
+        "accuracy": 0.0,
+        "balanced_accuracy": 0.0,
+        "brier_score": -0.0009161098821128255,
+        "log_loss": -0.0024720573295285986,
+        "roc_auc": -0.010000000000000009
+      }
+    }
+  },
+  "paired_inventory_tree_comparison": {
+    "both_correct": 108,
+    "both_wrong": 98,
+    "candidate_only_correct": 43,
+    "control_only_correct": 52,
+    "metric_differences_tree_minus_logistic": {
+      "accuracy": -0.029900332225913706,
+      "balanced_accuracy": -0.022869674185463706,
+      "brier_score": -0.0002633310596890648,
+      "log_loss": -0.006891636804528534,
+      "roc_auc": -0.00957751521661293
+    },
+    "yearly_metric_differences_tree_minus_logistic": {
+      "2017": {
+        "accuracy": -0.019230769230769273,
+        "balanced_accuracy": 0.0007496251874062887,
+        "brier_score": 0.0008102633017326166,
+        "log_loss": 0.0017640074932205874,
+        "roc_auc": 0.03298350824587709
+      },
+      "2018": {
+        "accuracy": 0.09999999999999998,
+        "balanced_accuracy": 0.10256410256410264,
+        "brier_score": -0.008813111123594092,
+        "log_loss": -0.017865580684158888,
+        "roc_auc": 0.0641025641025641
+      },
+      "2019": {
+        "accuracy": -0.09999999999999998,
+        "balanced_accuracy": -0.09083191850594224,
+        "brier_score": 0.012970327877703691,
+        "log_loss": 0.02676942072316124,
+        "roc_auc": -0.10865874363327671
+      },
+      "2020": {
+        "accuracy": 0.0,
+        "balanced_accuracy": 0.0,
+        "brier_score": -0.008864983184901143,
+        "log_loss": -0.05573050254406997,
+        "roc_auc": -0.012800000000000034
+      },
+      "2021": {
+        "accuracy": -0.12000000000000005,
+        "balanced_accuracy": -0.12380952380952381,
+        "brier_score": 0.006113000172401933,
+        "log_loss": 0.012064097873356605,
+        "roc_auc": -0.07428571428571429
+      },
+      "2022": {
+        "accuracy": -0.04081632653061218,
+        "balanced_accuracy": -0.04166666666666663,
+        "brier_score": -0.003911388321163778,
+        "log_loss": -0.008734343596428995,
+        "roc_auc": 0.016666666666666663
+      }
+    }
+  },
+  "prediction_count": 310,
+  "protocol": {
+    "boundary_rule": "forecast and target dates must both precede holdout start",
+    "candidate_selection": "retrospective single predefined small gradient-boosting candidate after earlier development results",
+    "compared_feature_sets": {
+      "logistic": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days"
+      ],
+      "logistic_wti_inventory": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days",
+        "commercial_inventory_change_1_week_million_barrels",
+        "commercial_inventory_change_4_weeks_million_barrels",
+        "cushing_inventory_change_1_week_million_barrels",
+        "cushing_inventory_change_4_weeks_million_barrels",
+        "inventory_report_age_calendar_days"
+      ],
+      "logistic_wti_inventory_c01": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days",
+        "commercial_inventory_change_1_week_million_barrels",
+        "commercial_inventory_change_4_weeks_million_barrels",
+        "cushing_inventory_change_1_week_million_barrels",
+        "cushing_inventory_change_4_weeks_million_barrels",
+        "inventory_report_age_calendar_days"
+      ],
+      "tree_wti_inventory": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days",
+        "commercial_inventory_change_1_week_million_barrels",
+        "commercial_inventory_change_4_weeks_million_barrels",
+        "cushing_inventory_change_1_week_million_barrels",
+        "cushing_inventory_change_4_weeks_million_barrels",
+        "inventory_report_age_calendar_days"
+      ]
+    },
+    "development_scoring_as_of": "2022-12-31",
+    "development_start": "2017-01-01",
+    "feature_columns": [
+      "wti_latest_price",
+      "wti_age_calendar_days",
+      "wti_change_5_business_days_usd",
+      "wti_change_20_business_days_usd",
+      "wti_change_std_20_business_days_usd",
+      "wti_coverage_20_business_days",
+      "commercial_inventory_change_1_week_million_barrels",
+      "commercial_inventory_change_4_weeks_million_barrels",
+      "cushing_inventory_change_1_week_million_barrels",
+      "cushing_inventory_change_4_weeks_million_barrels",
+      "inventory_report_age_calendar_days"
+    ],
+    "fit_schedule": "expand and refit at every development forecast",
+    "forecast_cohort": "exact forecast IDs, dates, targets and scoring states from the verified WTI reference",
+    "holdout_start": "2023-01-01",
+    "holdout_status": "closed: no fitting, prediction, scoring or tuning",
+    "initial_training_start": "2011-04-07",
+    "inventory_cutoff": "release date strictly before each historical forecast; freeze features at that issuance",
+    "inventory_four_week_change": "current stock minus latest available exact observation 28 days earlier; same definition regime",
+    "inventory_missing": "retain nulls and explicit reasons; fit median imputation only on training rows; no missing-indicator inputs",
+    "inventory_report_age": "calendar days since actual latest eligible release; shared between both series",
+    "inventory_sources": "audited EIA commercial-crude and Cushing issue archives; qualified archive replay",
+    "inventory_weekly_change": "published within-issue difference, million barrels",
+    "logistic": {
+      "C": 1.0,
+      "class_weight": null,
+      "imputer": "training median; all-missing training column uses zero",
+      "max_iter": 2000,
+      "penalty": "l2",
+      "random_state": 0,
+      "scaler": "training StandardScaler",
+      "solver": "lbfgs",
+      "threshold": 0.5,
+      "tie_prediction": 1
+    },
+    "logistic_variants": {
+      "logistic": {
+        "C": 1.0,
+        "class_weight": null,
+        "imputer": "training median; all-missing training column uses zero",
+        "max_iter": 2000,
+        "penalty": "l2",
+        "random_state": 0,
+        "scaler": "training StandardScaler",
+        "solver": "lbfgs",
+        "threshold": 0.5,
+        "tie_prediction": 1
+      },
+      "logistic_wti_inventory": {
+        "C": 1.0,
+        "class_weight": null,
+        "imputer": "training median; all-missing training column uses zero",
+        "max_iter": 2000,
+        "penalty": "l2",
+        "random_state": 0,
+        "scaler": "training StandardScaler",
+        "solver": "lbfgs",
+        "threshold": 0.5,
+        "tie_prediction": 1
+      },
+      "logistic_wti_inventory_c01": {
+        "C": 0.1,
+        "class_weight": null,
+        "imputer": "training median; all-missing training column uses zero",
+        "max_iter": 2000,
+        "penalty": "l2",
+        "random_state": 0,
+        "scaler": "training StandardScaler",
+        "solver": "lbfgs",
+        "threshold": 0.5,
+        "tie_prediction": 1
+      }
+    },
+    "majority": {
+      "probability": "training up-class frequency",
+      "tie_prediction": 1
+    },
+    "minimum_training_rows": 150,
+    "momentum": {
+      "feature": "wti_change_5_business_days_usd",
+      "missing_fallback": "majority prediction",
+      "probability": null,
+      "rule": "positive means up",
+      "zero_prediction": 0
+    },
+    "primary_comparison": "paired development Brier score and log loss for tree minus expanding C=0.1 inventory; accuracy and yearly stability also reported",
+    "protocol_id": "wti-inventory-tree-development-v1",
+    "reference_reproduction": "require exact authenticated WTI, C=1 inventory and expanding C=0.1 cohorts, training, inventory provenance and model payloads; native runtime fingerprints must match before fitting",
+    "required_training_classes": [
+      0,
+      1
+    ],
+    "scoring_labels": "first jointly available pair, available before holdout start",
+    "success_criteria": "report aggregate Brier/log-loss differences against expanding C=0.1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
+    "training_cohort": "exact original WTI-eligible rows and active labels; missing inventory never removes rows",
+    "training_labels": "active as of issuance under the preceding-calendar-day convention",
+    "tree": {
+      "calibration": null,
+      "class_weight": null,
+      "classifier": "GradientBoostingClassifier",
+      "early_stopping": "disabled; no validation subset is created",
+      "feature_importance": "normalized impurity decrease recorded as a fitted-model diagnostic, without causal interpretation",
+      "imputer": "training median; all-missing training column uses zero",
+      "missing_indicators": false,
+      "parameters": {
+        "ccp_alpha": 0.0,
+        "criterion": "friedman_mse",
+        "init": null,
+        "learning_rate": 0.05,
+        "loss": "log_loss",
+        "max_depth": 2,
+        "max_features": null,
+        "max_leaf_nodes": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 30,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "n_estimators": 50,
+        "n_iter_no_change": null,
+        "random_state": 0,
+        "subsample": 1.0,
+        "tol": 0.0001,
+        "validation_fraction": 0.1,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "sample_weight": null,
+      "scaler": null,
+      "threshold": 0.5,
+      "tie_prediction": 1
+    },
+    "tuning": "one fixed small tree candidate; no grid, calibration, parameter, feature, threshold, date or holdout changes",
+    "uncertainty": "descriptive yearly results; no independent-sample significance claim",
+    "unusable_inventory_issue": "all four changes null; known release metadata still supplies report age; no older-issue or PDF fallback"
+  },
+  "reference_reproduction": {
+    "all_reference_model_outputs_identical": true,
+    "all_wti_training_inputs_identical": true,
+    "forecast_cohort_identical": true,
+    "identical_reference_model_output_count": 310,
+    "identical_wti_training_input_count": 310
+  },
+  "reference_run_id": "95f93cf564c9cc55ede7",
+  "regularization_reference_reproduction": {
+    "all_control_model_outputs_identical": true,
+    "all_expanding_c01_model_outputs_identical": true,
+    "all_inventory_forecast_inputs_identical": true,
+    "all_inventory_training_inputs_identical": true,
+    "forecast_cohort_identical": true,
+    "identical_control_model_output_count": 310,
+    "identical_expanding_c01_model_output_count": 310,
+    "identical_inventory_forecast_input_count": 310,
+    "identical_inventory_training_input_count": 310
+  },
+  "regularization_reference_run_id": "21e67f2c5ee9e4c216d6",
+  "run_id": "7aa61161b53f99695fba",
+  "runtime_versions": {
+    "joblib": "1.5.2",
+    "numpy": "2.2.6",
+    "python": "3.13.9",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.3",
+    "threadpoolctl": "3.6.0"
+  },
+  "scored_count": 301,
+  "scored_direction_counts": {
+    "not_up": 133,
+    "up": 168
+  },
+  "training_count_range": [
+    295,
+    596
+  ],
+  "tree_fit_summary": {
+    "estimator_count_range": [
+      50,
+      50
+    ],
+    "fit_count": 310,
+    "leaf_count_range": [
+      3,
+      4
+    ],
+    "leaf_training_sample_count_range": [
+      30,
+      526
+    ],
+    "maximum_observed_depth": 2
+  },
+  "unscored_count": 9,
+  "yearly": {
+    "2017": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.4230769230769231,
+          "balanced_accuracy": 0.43778110944527737,
+          "brier_score": 0.2569845339574493,
+          "confusion_counts": {
+            "fn": 20,
+            "fp": 10,
+            "tn": 13,
+            "tp": 9
+          },
+          "count": 52,
+          "log_loss": 0.7072565129327307,
+          "roc_auc": 0.47226386806596704
+        },
+        "logistic_wti_inventory": {
+          "accuracy": 0.5192307692307693,
+          "balanced_accuracy": 0.5239880059970015,
+          "brier_score": 0.25808421378881463,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 10,
+            "tn": 13,
+            "tp": 14
+          },
+          "count": 52,
+          "log_loss": 0.7098778933154202,
+          "roc_auc": 0.4752623688155922
+        },
+        "logistic_wti_inventory_c01": {
+          "accuracy": 0.5192307692307693,
+          "balanced_accuracy": 0.5284857571214393,
+          "brier_score": 0.25760249636722965,
+          "confusion_counts": {
+            "fn": 16,
+            "fp": 9,
+            "tn": 14,
+            "tp": 13
+          },
+          "count": 52,
+          "log_loss": 0.7086879125426961,
+          "roc_auc": 0.4767616191904048
+        },
+        "majority": {
+          "accuracy": 0.4423076923076923,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.25449874237184533,
+          "confusion_counts": {
+            "fn": 29,
+            "fp": 0,
+            "tn": 23,
+            "tp": 0
+          },
+          "count": 52,
+          "log_loss": 0.7021594454949839,
+          "roc_auc": 0.44377811094452774
+        },
+        "momentum": {
+          "accuracy": 0.5192307692307693,
+          "balanced_accuracy": 0.514992503748126,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 13,
+            "fp": 12,
+            "tn": 11,
+            "tp": 16
+          },
+          "count": 52,
+          "log_loss": null,
+          "roc_auc": null
+        },
+        "tree_wti_inventory": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.5292353823088456,
+          "brier_score": 0.25841275966896227,
+          "confusion_counts": {
+            "fn": 21,
+            "fp": 5,
+            "tn": 18,
+            "tp": 8
+          },
+          "count": 52,
+          "log_loss": 0.7104519200359167,
+          "roc_auc": 0.5097451274362819
+        }
+      },
+      "prediction_count": 52
+    },
+    "2018": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.48,
+          "balanced_accuracy": 0.47596153846153844,
+          "brier_score": 0.25504292739528434,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 11,
+            "tn": 15,
+            "tp": 9
+          },
+          "count": 50,
+          "log_loss": 0.7035536122690977,
+          "roc_auc": 0.5112179487179487
+        },
+        "logistic_wti_inventory": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.4567307692307692,
+          "brier_score": 0.2519644524003213,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 12,
+            "tn": 14,
+            "tp": 9
+          },
+          "count": 50,
+          "log_loss": 0.6973426753328659,
+          "roc_auc": 0.5272435897435898
+        },
+        "logistic_wti_inventory_c01": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.4967948717948718,
+          "brier_score": 0.25167956304721373,
+          "confusion_counts": {
+            "fn": 14,
+            "fp": 11,
+            "tn": 15,
+            "tp": 10
+          },
+          "count": 50,
+          "log_loss": 0.6966717317660545,
+          "roc_auc": 0.530448717948718
+        },
+        "majority": {
+          "accuracy": 0.52,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.2504030481511101,
+          "confusion_counts": {
+            "fn": 24,
+            "fp": 0,
+            "tn": 26,
+            "tp": 0
+          },
+          "count": 50,
+          "log_loss": 0.6939539863226329,
+          "roc_auc": 0.35496794871794873
+        },
+        "momentum": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.45833333333333337,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 14,
+            "fp": 13,
+            "tn": 13,
+            "tp": 10
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        },
+        "tree_wti_inventory": {
+          "accuracy": 0.6,
+          "balanced_accuracy": 0.5993589743589745,
+          "brier_score": 0.24286645192361964,
+          "confusion_counts": {
+            "fn": 10,
+            "fp": 10,
+            "tn": 16,
+            "tp": 14
+          },
+          "count": 50,
+          "log_loss": 0.6788061510818956,
+          "roc_auc": 0.594551282051282
+        }
+      },
+      "prediction_count": 52
+    },
+    "2019": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.48,
+          "balanced_accuracy": 0.4380305602716469,
+          "brier_score": 0.25310932103274125,
+          "confusion_counts": {
+            "fn": 12,
+            "fp": 14,
+            "tn": 5,
+            "tp": 19
+          },
+          "count": 50,
+          "log_loss": 0.6993882325953663,
+          "roc_auc": 0.44991511035653653
+        },
+        "logistic_wti_inventory": {
+          "accuracy": 0.48,
+          "balanced_accuracy": 0.4685908319185059,
+          "brier_score": 0.2633315923377155,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 11,
+            "tn": 8,
+            "tp": 16
+          },
+          "count": 50,
+          "log_loss": 0.7204205448095439,
+          "roc_auc": 0.41256366723259763
+        },
+        "logistic_wti_inventory_c01": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.4847198641765704,
+          "brier_score": 0.26059366997544986,
+          "confusion_counts": {
+            "fn": 14,
+            "fp": 11,
+            "tn": 8,
+            "tp": 17
+          },
+          "count": 50,
+          "log_loss": 0.7146493077045263,
+          "roc_auc": 0.4159592529711375
+        },
+        "majority": {
+          "accuracy": 0.38,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.25295198600540714,
+          "confusion_counts": {
+            "fn": 31,
+            "fp": 0,
+            "tn": 19,
+            "tp": 0
+          },
+          "count": 50,
+          "log_loss": 0.6990526920351036,
+          "roc_auc": 0.47538200339558573
+        },
+        "momentum": {
+          "accuracy": 0.64,
+          "balanced_accuracy": 0.6281833616298811,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 10,
+            "fp": 8,
+            "tn": 11,
+            "tp": 21
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        },
+        "tree_wti_inventory": {
+          "accuracy": 0.4,
+          "balanced_accuracy": 0.3938879456706282,
+          "brier_score": 0.27356399785315355,
+          "confusion_counts": {
+            "fn": 18,
+            "fp": 12,
+            "tn": 7,
+            "tp": 13
+          },
+          "count": 50,
+          "log_loss": 0.7414187284276875,
+          "roc_auc": 0.3073005093378608
+        }
+      },
+      "prediction_count": 52
+    },
+    "2020": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.54,
+          "balanced_accuracy": 0.54,
+          "brier_score": 0.26109586293047493,
+          "confusion_counts": {
+            "fn": 3,
+            "fp": 20,
+            "tn": 5,
+            "tp": 22
+          },
+          "count": 50,
+          "log_loss": 0.767963113241123,
+          "roc_auc": 0.5776
+        },
+        "logistic_wti_inventory": {
+          "accuracy": 0.56,
+          "balanced_accuracy": 0.56,
+          "brier_score": 0.2643651403636901,
+          "confusion_counts": {
+            "fn": 3,
+            "fp": 19,
+            "tn": 6,
+            "tp": 22
+          },
+          "count": 50,
+          "log_loss": 0.7754101584270039,
+          "roc_auc": 0.5328
+        },
+        "logistic_wti_inventory_c01": {
+          "accuracy": 0.54,
+          "balanced_accuracy": 0.54,
+          "brier_score": 0.26258687793921814,
+          "confusion_counts": {
+            "fn": 4,
+            "fp": 19,
+            "tn": 6,
+            "tp": 21
+          },
+          "count": 50,
+          "log_loss": 0.7570652719563076,
+          "roc_auc": 0.5328
+        },
+        "majority": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.250664508937286,
+          "confusion_counts": {
+            "fn": 25,
+            "fp": 0,
+            "tn": 25,
+            "tp": 0
+          },
+          "count": 50,
+          "log_loss": 0.6944764201835142,
+          "roc_auc": 0.3824
+        },
+        "momentum": {
+          "accuracy": 0.56,
+          "balanced_accuracy": 0.56,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 10,
+            "fp": 12,
+            "tn": 13,
+            "tp": 15
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        },
+        "tree_wti_inventory": {
+          "accuracy": 0.54,
+          "balanced_accuracy": 0.54,
+          "brier_score": 0.253721894754317,
+          "confusion_counts": {
+            "fn": 7,
+            "fp": 16,
+            "tn": 9,
+            "tp": 18
+          },
+          "count": 50,
+          "log_loss": 0.7013347694122376,
+          "roc_auc": 0.52
+        }
+      },
+      "prediction_count": 52
+    },
+    "2021": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.52,
+          "balanced_accuracy": 0.4476190476190476,
+          "brier_score": 0.25645370228714126,
+          "confusion_counts": {
+            "fn": 13,
+            "fp": 11,
+            "tn": 4,
+            "tp": 22
+          },
+          "count": 50,
+          "log_loss": 0.7069517114279112,
+          "roc_auc": 0.43238095238095237
+        },
+        "logistic_wti_inventory": {
+          "accuracy": 0.56,
+          "balanced_accuracy": 0.49523809523809526,
+          "brier_score": 0.24680529579236538,
+          "confusion_counts": {
+            "fn": 12,
+            "fp": 10,
+            "tn": 5,
+            "tp": 23
+          },
+          "count": 50,
+          "log_loss": 0.6869479308145116,
+          "roc_auc": 0.5028571428571429
+        },
+        "logistic_wti_inventory_c01": {
+          "accuracy": 0.56,
+          "balanced_accuracy": 0.49523809523809526,
+          "brier_score": 0.24652281890880887,
+          "confusion_counts": {
+            "fn": 12,
+            "fp": 10,
+            "tn": 5,
+            "tp": 23
+          },
+          "count": 50,
+          "log_loss": 0.6862966827221939,
+          "roc_auc": 0.49142857142857144
+        },
+        "majority": {
+          "accuracy": 0.64,
+          "balanced_accuracy": 0.47619047619047616,
+          "brier_score": 0.2476810187850174,
+          "confusion_counts": {
+            "fn": 4,
+            "fp": 14,
+            "tn": 1,
+            "tp": 31
+          },
+          "count": 50,
+          "log_loss": 0.6885084423829645,
+          "roc_auc": 0.5123809523809524
+        },
+        "momentum": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.40476190476190477,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 16,
+            "fp": 11,
+            "tn": 4,
+            "tp": 19
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        },
+        "tree_wti_inventory": {
+          "accuracy": 0.44,
+          "balanced_accuracy": 0.37142857142857144,
+          "brier_score": 0.2526358190812108,
+          "confusion_counts": {
+            "fn": 16,
+            "fp": 12,
+            "tn": 3,
+            "tp": 19
+          },
+          "count": 50,
+          "log_loss": 0.6983607805955505,
+          "roc_auc": 0.41714285714285715
+        }
+      },
+      "prediction_count": 52
+    },
+    "2022": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.5306122448979592,
+          "balanced_accuracy": 0.5258333333333334,
+          "brier_score": 0.2642549288498225,
+          "confusion_counts": {
+            "fn": 17,
+            "fp": 6,
+            "tn": 19,
+            "tp": 7
+          },
+          "count": 49,
+          "log_loss": 0.7227180820348325,
+          "roc_auc": 0.425
+        },
+        "logistic_wti_inventory": {
+          "accuracy": 0.5714285714285714,
+          "balanced_accuracy": 0.5675,
+          "brier_score": 0.25987606118768064,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 6,
+            "tn": 19,
+            "tp": 9
+          },
+          "count": 49,
+          "log_loss": 0.7148042245482747,
+          "roc_auc": 0.4816666666666667
+        },
+        "logistic_wti_inventory_c01": {
+          "accuracy": 0.5714285714285714,
+          "balanced_accuracy": 0.5675,
+          "brier_score": 0.2589599513055678,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 6,
+            "tn": 19,
+            "tp": 9
+          },
+          "count": 49,
+          "log_loss": 0.7123321672187461,
+          "roc_auc": 0.4716666666666667
+        },
+        "majority": {
+          "accuracy": 0.4897959183673469,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.2508436763860642,
+          "confusion_counts": {
+            "fn": 0,
+            "fp": 25,
+            "tn": 0,
+            "tp": 24
+          },
+          "count": 49,
+          "log_loss": 0.694835667365907,
+          "roc_auc": 0.4533333333333333
+        },
+        "momentum": {
+          "accuracy": 0.3673469387755102,
+          "balanced_accuracy": 0.3675,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 16,
+            "tn": 9,
+            "tp": 9
+          },
+          "count": 49,
+          "log_loss": null,
+          "roc_auc": null
+        },
+        "tree_wti_inventory": {
+          "accuracy": 0.5306122448979592,
+          "balanced_accuracy": 0.5258333333333334,
+          "brier_score": 0.25504856298440404,
+          "confusion_counts": {
+            "fn": 17,
+            "fp": 6,
+            "tn": 19,
+            "tp": 7
+          },
+          "count": 49,
+          "log_loss": 0.7035978236223172,
+          "roc_auc": 0.48833333333333334
+        }
+      },
+      "prediction_count": 50
+    }
+  }
+}
