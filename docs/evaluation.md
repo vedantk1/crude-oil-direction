@@ -154,7 +154,7 @@ The [supplemental report](../reports/development_benchmarks.json) contains aggre
 
 ## Fixed inventory comparison
 
-The next experiment adds five inventory columns to the six WTI inputs, retaining the original logistic settings and all development dates. It uses the [audited EIA inventory archives](inventory-audit.md) and retains their qualification: archived values are not proved immutable first releases. No Brent inputs, parameter search, threshold search, or PDF fallback enter this comparison.
+The inventory experiment adds five columns to the six WTI inputs, retaining the original logistic settings and all development dates. It uses the [audited EIA inventory archives](inventory-audit.md) and retains their qualification: archived values are not proved immutable first releases. The model has only WTI and inventory inputs, with fixed parameters, threshold, and CSV source policy.
 
 | Added input | Definition |
 | --- | --- |
@@ -182,6 +182,52 @@ The feature loader authenticates the saved inventory report, manifest, all four 
 
 The default audit is `reports/inventory_audit.json` and reference is `reports/development_evaluation.json`. `--inventory-audit-report` and `--reference-report` select compatible authenticated inputs. The comparison writes a separate `reports/inventory_comparison.json` and content-addressed run under `data/evaluations/`. Its additional `inventory_features.jsonl` stores raw pre-holdout inventory values and missingness provenance for initial training and development; predictions also retain the raw inventory inputs. Original datasets, reports, source captures, and older run artifacts are preserved.
 
-This protocol and implementation are checkpointed before computing inventory model results. Evaluation remains restricted to 2017–2022, with the 2023-onward final holdout closed.
+This protocol and implementation were committed as `1ac70a8` before computing inventory model results. Evaluation remains restricted to 2017–2022, with the 2023-onward final holdout closed.
 
 All **247 tests pass** at the inventory protocol checkpoint. New checks cover authenticated audit/source failures, exact four-week lookbacks and revisions, historical feature freezing, definition changes, early missing history, quarantine with known age, training-only imputation, retained rows, strict WTI reproduction, prefit cohort validation, holdout boundaries, and preservation of historical reports/artifacts.
+
+## Inventory comparison results
+
+Run `8660d7d658d2fe7c8762` uses inventory audit `3a01db73789436d8ea29` and the original WTI reference `eaf91570f5aaab09a992`. Both models predict **all 310 original development dates**, with exactly **301 scored and nine unscored**. The original dates, targets, outcomes, availability states, and ordered training cohorts are preserved. Training windows remain 295–596 examples, with zero rows removed for missing inventory.
+
+| Model / benchmark | Correct / scored | Accuracy | Balanced accuracy | ROC AUC | Brier score | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| WTI-only logistic | 149 / 301 | 49.50% | 49.12% | 0.4879 | 0.2578 | 0.7179 |
+| WTI + inventory logistic | 158 / 301 | 52.49% | 52.11% | 0.5111 | 0.2574 | 0.7174 |
+| Always up | 168 / 301 | 55.81% | 50.00% | — | — | — |
+| Constant probability 0.5 | 168 / 301 | 55.81% | 50.00% | 0.5000 | 0.2500 | 0.6931 |
+
+Inventories add **nine correct predictions**, or **+2.99 percentage points** in accuracy. Both regressions are correct on 127 dates and wrong on 121; inventory alone is correct on 31 and WTI alone on 22. Balanced accuracy rises by 2.99 points and AUC by 0.0232. Brier score improves by only 0.0004 and log loss by 0.0005. The inventory model still trails always-up by ten correct predictions and has worse probability scores than the neutral 0.5 benchmark. The original majority and momentum baseline outputs also reproduce exactly.
+
+| Development year | Scored outcomes | WTI-only accuracy | WTI + inventory accuracy | Additional correct predictions |
+| --- | ---: | ---: | ---: | ---: |
+| 2017 | 52 | 42.31% | 51.92% | +5 |
+| 2018 | 50 | 48.00% | 46.00% | -1 |
+| 2019 | 50 | 48.00% | 48.00% | 0 |
+| 2020 | 50 | 54.00% | 56.00% | +1 |
+| 2021 | 50 | 52.00% | 56.00% | +2 |
+| 2022 | 49 | 53.06% | 57.14% | +2 |
+
+Accuracy improves in four years, ties in one, and declines in one. Probability quality improves in three years and worsens in three. This is a small development improvement over WTI-only, with little aggregate probability gain and no final holdout validation. No settings changed after these results.
+
+### Explicit missingness
+
+The saved feature artifact contains **607 rows: 297 initial-training opportunities and 310 development forecasts**. The one target crossing the holdout boundary is excluded from inventory construction. Missing counts below describe these frozen raw rows, before training-window imputation:
+
+| Inventory column | Missing initial + development rows | Missing development forecasts |
+| --- | ---: | ---: |
+| Commercial weekly change | 17 | 1 |
+| Commercial four-week change | 23 | 1 |
+| Cushing weekly change | 17 | 1 |
+| Cushing four-week change | 20 | 1 |
+| Shared report age | 16 | 0 |
+
+Sixteen early 2011 rows have no earlier retained release, so all inventory fields remain null. Three further rows lack the exact four-week reference for either series. Three commercial four-week comparisons have incompatible definitions across the October 2016 boundary. The July 5, 2019 forecast has four null stock changes and a known report age of two days; it remains predicted and scored. Once mature, its original label and frozen null inventory inputs also remain eligible for later training.
+
+Raw nulls, missing reasons, source/reference dates and hashes, definition regimes, fitted missing counts, imputer statistics, and forecast missing columns are saved. The augmented model's training-only imputation handles these inputs without dropping examples or rewriting source records.
+
+### Verification and artifacts
+
+All 310 WTI training-input hashes and all original baseline/WTI model payloads reproduce exactly, including fitted diagnostics. Both regressions converged at every issuance: at most seven iterations for WTI and eleven for WTI/inventory. All 247 tests pass. Repeated runs produce identical feature, prediction, summary, and manifest bytes; independent metrics, historical feature reconstruction, source/provenance hashes, and label-maturity checks verify the saved outputs.
+
+The [inventory comparison report](../reports/inventory_comparison.json) contains aggregate/yearly metrics, paired disagreements, constant benchmarks, missingness counts, and reference reproduction. The immutable local run additionally contains all 607 raw inventory rows and per-forecast provenance. Original datasets, audits, reports, and earlier runs remain preserved. Execution used the existing CPU environment without downloads, paid services, or a GPU, and the final holdout remains closed.
