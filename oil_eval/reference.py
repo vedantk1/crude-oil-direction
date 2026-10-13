@@ -7,7 +7,7 @@ import re
 from oil_audit.dataset import json_bytes, sha256, workspace_path
 from .data import _decode, _gate_date
 from .inventory_features import INVENTORY_FEATURE_COLUMNS
-from .models import INVENTORY_MODEL_NAMES, MODEL_NAMES
+from .models import INVENTORY_MODEL_NAMES, INVENTORY_REGULARIZATION_MODEL_NAMES, MODEL_NAMES
 from .protocol import HOLDOUT_START, forecast_role, protocol_config
 
 
@@ -21,7 +21,7 @@ def _load_run_reference(report_path, source, runtime, *, experiment="wti",
                         native_runtime=None):
     """Share byte authentication while retaining each fixed experiment contract."""
     expected_protocol = protocol_config(experiment)
-    inventory = experiment == "inventory-comparison"
+    inventory = experiment in ("inventory-comparison", "inventory-regularization")
     report_bytes = report_path.read_bytes()
     report = _decode(report_bytes)
     directory = workspace_path(report["evaluation_directory"])
@@ -133,6 +133,23 @@ def load_inventory_comparison_reference(report_path: Path, source: dict, runtime
                        "inventory_audit_id": inventory_reference["audit_id"]})
 
 
+def load_inventory_regularization_reference(report_path: Path, source: dict, runtime: dict,
+                                           wti_reference: dict, inventory_reference: dict,
+                                           inventory_features: dict, inventory_comparison_reference: dict,
+                                           *, native_runtime=None):
+    """Authenticate expanding C=0.1 controls and their complete reference chain."""
+    return _load_run_reference(
+        report_path, source, runtime, experiment="inventory-regularization",
+        model_names=INVENTORY_REGULARIZATION_MODEL_NAMES,
+        identity_fields={"reference": wti_reference, "inventory_reference": inventory_reference,
+                         "inventory_features": inventory_features,
+                         "inventory_comparison_reference": inventory_comparison_reference},
+        native_runtime=native_runtime,
+        report_fields={"reference_run_id": wti_reference["run_id"],
+                       "inventory_audit_id": inventory_reference["audit_id"],
+                       "inventory_reference_run_id": inventory_comparison_reference["run_id"]})
+
+
 def validate_reference_schedule(feature_rows, scoring_labels, reference_rows, *, require_brent=True):
     """Lock the entire comparison cohort before the first model fit."""
     labels = {row["row_id"]: row for row in scoring_labels}
@@ -206,3 +223,13 @@ def verify_inventory_reference_reproduction(predictions, inventory_reference_row
             "all_inventory_training_inputs_identical": True,
             "all_inventory_forecast_inputs_identical": True,
             "all_control_model_outputs_identical": True}
+
+
+def verify_regularization_reference_reproduction(predictions, regularization_reference_rows) -> dict:
+    """Require all expanding control outputs, including the selected C=0.1 fit."""
+    result = verify_inventory_reference_reproduction(predictions, regularization_reference_rows)
+    for row, reference in zip(predictions, regularization_reference_rows):
+        if row["models"]["logistic_wti_inventory_c01"] != reference["models"]["logistic_wti_inventory_c01"]:
+            raise ValueError("Expanding C=0.1 model outputs differ from the regularization reference")
+    return {**result, "identical_expanding_c01_model_output_count": len(predictions),
+            "all_expanding_c01_model_outputs_identical": True}

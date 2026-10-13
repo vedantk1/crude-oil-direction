@@ -23,6 +23,7 @@ MODEL_NAMES = ("majority", "momentum", "logistic")
 COMPARISON_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_brent",)
 INVENTORY_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_inventory",)
 INVENTORY_REGULARIZATION_MODEL_NAMES = INVENTORY_MODEL_NAMES + ("logistic_wti_inventory_c01",)
+INVENTORY_WINDOW_MODEL_NAMES = INVENTORY_REGULARIZATION_MODEL_NAMES + ("logistic_wti_inventory_c01_rolling",)
 LOGISTIC_PARAMETERS = {
     "C": 1.0,
     "solver": "lbfgs",
@@ -191,4 +192,24 @@ def fit_predict_inventory_regularization_models(training_rows: list[dict], forec
     labels = [_training_label(row) for row in training_rows]
     result["logistic_wti_inventory_c01"] = _fit_predict_inventory(
         training_rows, forecast_row, labels, parameters=INVENTORY_REGULARIZATION_PARAMETERS)
+    return result
+
+
+def fit_predict_inventory_window_models(expanding_rows: list[dict], rolling_rows: list[dict],
+                                       forecast_row: dict) -> dict:
+    """Reproduce expanding controls and fit C=0.1 on the supplied rolling rows.
+
+    Replay selects the causal rolling subset and enforces the minimum history.
+    The candidate uses the same eleven inputs and parameters as its expanding
+    control, with imputation and scaling fitted only on that rolling subset.
+    Missing inventory values never remove a supplied row.
+    """
+    if not rolling_rows:
+        raise ValueError("Cannot fit rolling model without training rows")
+    labels = [_training_label(row) for row in rolling_rows]
+    if len(set(labels)) != 2:
+        raise ValueError("Rolling logistic regression requires both training label classes")
+    result = fit_predict_inventory_regularization_models(expanding_rows, forecast_row)
+    result["logistic_wti_inventory_c01_rolling"] = _fit_predict_inventory(
+        rolling_rows, forecast_row, labels, parameters=INVENTORY_REGULARIZATION_PARAMETERS)
     return result

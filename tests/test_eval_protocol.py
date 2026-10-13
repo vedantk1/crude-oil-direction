@@ -63,3 +63,22 @@ class ProtocolTests(unittest.TestCase):
         self.assertIn("Brier score and log loss", candidate["primary_comparison"])
         self.assertIn("without a formal success threshold or significance claim", candidate["success_criteria"])
         self.assertIn("no grid, feature, threshold, date or holdout changes", candidate["tuning"])
+
+    def test_window_changes_only_candidate_history_and_preserves_control_configuration(self):
+        original = protocol_config("inventory-regularization")
+        candidate = protocol_config("inventory-window-comparison")
+        for key in ("initial_training_start", "development_start", "development_scoring_as_of",
+                    "holdout_start", "logistic", "minimum_training_rows", "feature_columns",
+                    "inventory_cutoff", "inventory_missing", "unusable_inventory_issue", "forecast_cohort"):
+            self.assertEqual(original[key], candidate[key])
+        for name, parameters in original["logistic_variants"].items():
+            self.assertEqual(candidate["logistic_variants"][name], parameters)
+        self.assertEqual(candidate["logistic_variants"]["logistic_wti_inventory_c01_rolling"],
+                         original["logistic_variants"]["logistic_wti_inventory_c01"])
+        self.assertEqual(candidate["compared_feature_sets"]["logistic_wti_inventory_c01_rolling"],
+                         original["compared_feature_sets"]["logistic_wti_inventory_c01"])
+        self.assertEqual(candidate["rolling_window_years"], 4)
+        self.assertEqual(candidate["minimum_training_rows"], 150)
+        self.assertIn("capacity-only audit without model predictions", candidate["candidate_selection"])
+        self.assertIn("no duration grid", candidate["tuning"])
+        self.assertIn("without a formal success threshold or significance claim", candidate["success_criteria"])

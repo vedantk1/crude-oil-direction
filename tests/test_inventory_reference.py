@@ -1,4 +1,4 @@
-"""Synthetic authentication of the fixed C=1 inventory comparison reference."""
+"""Synthetic authentication of saved inventory comparison references."""
 
 from copy import deepcopy
 import json
@@ -50,10 +50,11 @@ class InventoryComparisonReferenceTests(unittest.TestCase):
         self.inventory_reference = {"audit_id": "audit-original", "audit_directory": str(self.root / "audit"),
                                     "reference_run": self.wti_reference, "manifest_sha256": "c" * 64}
 
-    def save(self, *, rows=None, feature_rows=None, identity_changes=None, summary_changes=None):
+    def save(self, *, rows=None, feature_rows=None, identity_changes=None, summary_changes=None,
+             experiment="inventory-comparison"):
         rows = inventory_reference_rows() if rows is None else rows
         feature_rows = frozen_rows() if feature_rows is None else feature_rows
-        summary = {"protocol": protocol_config("inventory-comparison"), "holdout_evaluated": False,
+        summary = {"protocol": protocol_config(experiment), "holdout_evaluated": False,
                    "prediction_count": len(rows),
                    "scored_count": sum(isinstance(row, dict) and row["scoring_status"] == "available" for row in rows)}
         summary.update(summary_changes or {})
@@ -62,7 +63,7 @@ class InventoryComparisonReferenceTests(unittest.TestCase):
                     "inventory_features.jsonl": serialize(feature_rows)}
         self.inventory_features = {"sha256": sha256(payloads["inventory_features.jsonl"]),
                                    "bytes": len(payloads["inventory_features.jsonl"])}
-        identity = {"source": self.source, "protocol": protocol_config("inventory-comparison"),
+        identity = {"source": self.source, "protocol": protocol_config(experiment),
                     "runtime_versions": self.runtime, "numeric_threads": 1,
                     "source_code_sha256": {"oil_eval/models.py": "d" * 64}, "requirements_sha256": "e" * 64,
                     "reference": self.wti_reference, "inventory_reference": self.inventory_reference,
@@ -78,6 +79,8 @@ class InventoryComparisonReferenceTests(unittest.TestCase):
                   "dataset_id": self.source["dataset_id"], "runtime_versions": self.runtime,
                   "reference_run_id": self.wti_reference["run_id"],
                   "inventory_audit_id": self.inventory_reference["audit_id"], **summary}
+        if experiment == "inventory-regularization":
+            report["inventory_reference_run_id"] = identity["inventory_comparison_reference"]["run_id"]
         self.report_path.write_bytes(json_bytes(report))
         return manifest, report
 
@@ -287,6 +290,130 @@ class InventoryComparisonReferenceTests(unittest.TestCase):
             self.save(rows=rows, summary_changes=change)
             with self.subTest(change=change, first=rows[0]["row_id"]), self.assertRaises(ValueError):
                 self.load()
+
+
+def regularization_reference_rows():
+    rows = inventory_reference_rows()
+    for row in rows:
+        row["models"]["logistic_wti_inventory_c01"] = {
+            "prediction": 1, "probability_up": 0.55, "diagnostics": {"iterations": 2}}
+    return rows
+
+
+class InventoryRegularizationReferenceTests(unittest.TestCase):
+    def setUp(self):
+        self.fixture = InventoryComparisonReferenceTests()
+        self.fixture.setUp()
+        self.addCleanup(self.fixture.doCleanups)
+        self.comparison_reference = {"run_id": "saved-c1", "evaluation_directory": str(self.fixture.root / "c1"),
+                                     "manifest_sha256": "f" * 64}
+        self.native = {"scipy": {"scipy/example.so": "a" * 64}}
+
+    def save(self, *, rows=None, identity_changes=None, **options):
+        identity = {"inventory_comparison_reference": self.comparison_reference,
+                    "native_runtime_sha256": self.native}
+        identity.update(identity_changes or {})
+        return self.fixture.save(rows=regularization_reference_rows() if rows is None else rows,
+                                 identity_changes=identity, experiment="inventory-regularization", **options)
+
+    def load(self):
+        from oil_eval.reference import load_inventory_regularization_reference
+        fixture = self.fixture
+        return load_inventory_regularization_reference(
+            fixture.report_path, fixture.source, fixture.runtime, fixture.wti_reference,
+            fixture.inventory_reference, fixture.inventory_features, self.comparison_reference,
+            native_runtime=self.native)
+
+    def test_authenticates_five_models_and_three_artifacts_without_fitting(self):
+        manifest, _ = self.save()
+        with patch("oil_eval.models.Pipeline.fit", side_effect=AssertionError("model fit")), \
+             patch("oil_eval.data.load_development_data", side_effect=AssertionError("raw dataset read")):
+            reference, rows = self.load()
+        self.assertEqual(rows, regularization_reference_rows())
+        self.assertTrue(all(len(row["models"]) == 5 for row in rows))
+        self.assertEqual(reference["artifacts"], manifest["artifacts"])
+        self.assertEqual(len(reference["artifacts"]), 3)
+        self.assertEqual(reference["manifest_sha256"], sha256((self.fixture.directory / "manifest.json").read_bytes()))
+
+    def test_reference_chain_runtime_and_native_fingerprints_must_match(self):
+        fixture = self.fixture
+        changes = (
+            {"source": {**fixture.source, "dataset_id": "different"}},
+            {"runtime_versions": {**fixture.runtime, "python": "different"}},
+            {"reference": {**fixture.wti_reference, "run_id": "different"}},
+            {"inventory_reference": {**fixture.inventory_reference, "audit_id": "different"}},
+            {"inventory_comparison_reference": {**self.comparison_reference, "manifest_sha256": "0" * 64}},
+            {"native_runtime_sha256": None},
+            {"native_runtime_sha256": {"scipy": {"scipy/example.so": "b" * 64}}},
+        )
+        for change in changes:
+            self.save(identity_changes=change)
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                self.load()
+
+    def test_all_artifact_corruption_and_changed_frozen_input_identity_fail(self):
+        for name in ("predictions.jsonl", "summary.json", "inventory_features.jsonl"):
+            self.save()
+            (self.fixture.directory / name).write_bytes(b"corrupt")
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, "checksum"):
+                self.load()
+        self.save()
+        self.fixture.inventory_features = {**self.fixture.inventory_features, "sha256": "b" * 64}
+        with self.assertRaises(ValueError):
+            self.load()
+
+    def test_holdout_features_predictions_and_future_outcomes_are_never_decoded(self):
+        holdout = b'{"forecast_date":"2023-01-03", forbidden_poison_cannot_decode}'
+        outcome = b'{"forecast_date":"2017-01-19", "label_available_from":"2023-01-03", forbidden_poison_cannot_decode}'
+        for options in ({"rows": [regularization_reference_rows()[0], holdout]},
+                        {"feature_rows": frozen_rows() + [holdout]},
+                        {"rows": [regularization_reference_rows()[0], outcome]}):
+            self.save(**options)
+
+            def guarded_decode(payload):
+                self.assertNotIn(b"forbidden_poison", payload)
+                return _decode(payload)
+
+            with self.subTest(options=list(options)), patch("oil_eval.reference._decode", side_effect=guarded_decode):
+                with self.assertRaises(ValueError):
+                    self.load()
+
+    def test_wrong_model_family_or_boundary_forecast_cannot_be_used_as_control(self):
+        for mutate in (
+            lambda row: row["models"].pop("logistic_wti_inventory_c01"),
+            lambda row: row["models"].update(unexpected_rolling_model={"prediction": 1}),
+            lambda row: row.update(forecast_date="2022-12-29", target_date="2023-01-06"),
+        ):
+            rows = regularization_reference_rows()
+            mutate(rows[-1])
+            self.save(rows=rows)
+            with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                self.load()
+
+    def test_saved_prediction_inventory_and_scoring_state_remain_authenticated(self):
+        for mutate in (
+            lambda row: row["inventory"]["features"].update({INVENTORY_FEATURE_COLUMNS[0]: 999}),
+            lambda row: row["inventory"]["provenance"].update(status="different"),
+            lambda row: row.update(label=1),
+            lambda row: row.update(label_available_from="2017-01-27"),
+        ):
+            rows = regularization_reference_rows()
+            mutate(rows[-1])
+            self.save(rows=rows)
+            with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                self.load()
+
+    def test_report_changes_and_undeclared_artifacts_fail(self):
+        manifest, report = self.save()
+        report["inventory_reference_run_id"] = "different-c1"
+        self.fixture.report_path.write_bytes(json_bytes(report))
+        with self.assertRaises(ValueError):
+            self.load()
+        manifest, _ = self.save()
+        manifest["artifacts"]["../outside.json"] = {"sha256": "a" * 64, "bytes": 0}
+        (self.fixture.directory / "manifest.json").write_bytes(json_bytes(manifest))
+        with self.assertRaisesRegex(ValueError, "Unexpected reference artifacts"):
+            self.load()
 
 
 if __name__ == "__main__":

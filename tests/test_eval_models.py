@@ -12,9 +12,9 @@ from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
 from oil_eval.inventory_features import INVENTORY_FEATURE_COLUMNS, INVENTORY_MODEL_COLUMNS
 from oil_eval.models import (
     COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES, INVENTORY_REGULARIZATION_MODEL_NAMES,
-    INVENTORY_REGULARIZATION_PARAMETERS, LOGISTIC_PARAMETERS, Pipeline,
+    INVENTORY_REGULARIZATION_PARAMETERS, INVENTORY_WINDOW_MODEL_NAMES, LOGISTIC_PARAMETERS, Pipeline,
     fit_predict_comparison_models, fit_predict_inventory_models,
-    fit_predict_inventory_regularization_models, fit_predict_models,
+    fit_predict_inventory_regularization_models, fit_predict_inventory_window_models, fit_predict_models,
 )
 
 
@@ -446,6 +446,102 @@ class InventoryRegularizationModelTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "did not converge"):
                 fit_predict_inventory_regularization_models(self.training, inventory_row(12, 2))
         self.assertEqual(count, 3)
+
+
+class InventoryWindowModelTests(unittest.TestCase):
+    def setUp(self):
+        self.expanding = [inventory_row(-30, -3, 0), inventory_row(10, 2, 1),
+                          inventory_row(20, None, 0), inventory_row(40, 5, 1)]
+        self.rolling = self.expanding[2:]
+
+    def test_expanding_controls_and_input_payloads_remain_exact(self):
+        forecast = inventory_row(12, None)
+        before = deepcopy((self.expanding, self.rolling, forecast))
+        expected = fit_predict_inventory_regularization_models(self.expanding, forecast)
+        actual = fit_predict_inventory_window_models(self.expanding, self.rolling, forecast)
+        self.assertEqual(tuple(actual), INVENTORY_WINDOW_MODEL_NAMES)
+        self.assertEqual({name: actual[name] for name in INVENTORY_REGULARIZATION_MODEL_NAMES}, expected)
+        self.assertEqual((self.expanding, self.rolling, forecast), before)
+
+    def test_candidate_uses_only_supplied_subset_and_same_fixed_parameters(self):
+        calls = []
+        original_fit = Pipeline.fit
+
+        def capture_fit(model, train, labels, *args, **kwargs):
+            calls.append((train.copy(), list(labels),
+                          model.named_steps["classifier"].get_params(),
+                          model.named_steps["imputer"].get_params(),
+                          model.named_steps["scaler"].get_params()))
+            return original_fit(model, train, labels, *args, **kwargs)
+
+        with patch("oil_eval.models.Pipeline.fit", new=capture_fit):
+            result = fit_predict_inventory_window_models(self.expanding, self.rolling, inventory_row(12, None))
+        self.assertEqual([call[0].shape for call in calls], [(4, 6), (4, 11), (4, 11), (2, 11)])
+        np.testing.assert_allclose(calls[-1][0], calls[-2][0][2:], equal_nan=True)
+        self.assertEqual(calls[-1][1], [0, 1])
+        self.assertEqual(calls[-1][2:], calls[-2][2:])
+        self.assertEqual(calls[-1][2]["C"], 0.1)
+        self.assertFalse(calls[-1][3]["add_indicator"])
+        diagnostics = result["logistic_wti_inventory_c01_rolling"]["diagnostics"]
+        self.assertEqual(tuple(diagnostics["feature_columns"]), INVENTORY_MODEL_COLUMNS)
+        self.assertEqual(diagnostics["imputer_statistics"]["wti_latest_price"], 30)
+        self.assertEqual(diagnostics["training_missing_counts"][INVENTORY_FEATURE_COLUMNS[0]], 1)
+
+    def test_excluded_history_cannot_fit_candidate_preprocessing_or_coefficients(self):
+        forecast = inventory_row(12, 2)
+        before = fit_predict_inventory_window_models(self.expanding, self.rolling, forecast)
+        changed = deepcopy(self.expanding)
+        for example in changed[:2]:
+            example["features"].update(dict.fromkeys(INVENTORY_MODEL_COLUMNS, 100000))
+            example["label"] = 1 - example["label"]
+        after = fit_predict_inventory_window_models(changed, changed[2:], forecast)
+        self.assertEqual(before["logistic_wti_inventory_c01_rolling"],
+                         after["logistic_wti_inventory_c01_rolling"])
+        self.assertNotEqual(before["logistic_wti_inventory_c01"], after["logistic_wti_inventory_c01"])
+
+    def test_missing_subset_inputs_use_subset_only_imputation_and_forecast_is_untouched(self):
+        column = INVENTORY_FEATURE_COLUMNS[0]
+        for example in self.rolling:
+            example["features"][column] = None
+        low, high = inventory_row(None, None), inventory_row(100000, 5000)
+        low["features"].update(dict.fromkeys(INVENTORY_FEATURE_COLUMNS))
+        high["features"].update(dict.fromkeys(INVENTORY_FEATURE_COLUMNS, 100000))
+        first = fit_predict_inventory_window_models(self.expanding, self.rolling, low)
+        second = fit_predict_inventory_window_models(self.expanding, self.rolling, high)
+        left, right = [output["logistic_wti_inventory_c01_rolling"]["diagnostics"]
+                       for output in (first, second)]
+        self.assertEqual({key: value for key, value in left.items() if key != "forecast_missing_columns"},
+                         {key: value for key, value in right.items() if key != "forecast_missing_columns"})
+        self.assertEqual(left["imputer_statistics"][column], 0)
+        self.assertEqual(left["training_missing_counts"][column], 2)
+        self.assertNotEqual(first["logistic_wti_inventory_c01"]["diagnostics"]["imputer_statistics"][column], 0)
+        self.assertIn(column, left["forecast_missing_columns"])
+        self.assertNotIn(column, right["forecast_missing_columns"])
+
+    def test_invalid_rolling_labels_and_empty_history_fail_before_any_fit(self):
+        invalid = deepcopy(self.rolling)
+        invalid[0]["label"] = 2
+        for rolling in ([], self.rolling[:1], invalid):
+            with self.subTest(rolling=rolling), patch("oil_eval.models.Pipeline.fit") as fitted:
+                with self.assertRaises(ValueError):
+                    fit_predict_inventory_window_models(self.expanding, rolling, inventory_row(12, 2))
+                fitted.assert_not_called()
+
+    def test_candidate_convergence_failure_stops_instead_of_returning_controls(self):
+        count = 0
+        original_fit = Pipeline.fit
+
+        def rolling_fails(model, train, labels, *args, **kwargs):
+            nonlocal count
+            count += 1
+            if count == 4:
+                warnings.warn("rolling candidate did not converge", ConvergenceWarning)
+            return original_fit(model, train, labels, *args, **kwargs)
+
+        with patch("oil_eval.models.Pipeline.fit", new=rolling_fails):
+            with self.assertRaisesRegex(RuntimeError, "did not converge"):
+                fit_predict_inventory_window_models(self.expanding, self.rolling, inventory_row(12, 2))
+        self.assertEqual(count, 4)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,8 @@ from .data import load_development_data
 from .inventory_features import (INVENTORY_FEATURE_COLUMNS, attach_inventory_features,
                                  load_inventory_reference)
 from .protocol import EXPERIMENTS, forecast_role, protocol_config
-from .reference import load_inventory_comparison_reference, load_reference
+from .reference import (load_inventory_comparison_reference,
+                        load_inventory_regularization_reference, load_reference)
 from .replay import replay_development
 
 
@@ -19,6 +20,7 @@ WTI_REPORT = Path("reports/development_evaluation.json")
 BRENT_REPORT = Path("reports/brent_comparison.json")
 INVENTORY_REPORT = Path("reports/inventory_comparison.json")
 INVENTORY_REGULARIZATION_REPORT = Path("reports/inventory_regularization.json")
+INVENTORY_WINDOW_REPORT = Path("reports/inventory_window_comparison.json")
 INVENTORY_AUDIT_REPORT = Path("reports/inventory_audit.json")
 
 
@@ -37,14 +39,16 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
         report: Path | None = None, *, experiment: str = "wti",
         reference_report: Path = WTI_REPORT,
         inventory_audit_report: Path = INVENTORY_AUDIT_REPORT,
-        inventory_reference_report: Path = INVENTORY_REPORT) -> dict:
+        inventory_reference_report: Path = INVENTORY_REPORT,
+        regularization_reference_report: Path = INVENTORY_REGULARIZATION_REPORT) -> dict:
     protocol = protocol_config(experiment)
-    regularization = experiment == "inventory-regularization"
+    window = experiment == "inventory-window-comparison"
+    regularization = experiment in ("inventory-regularization", "inventory-window-comparison")
     brent = experiment == "brent-comparison"
-    inventory = experiment in ("inventory-comparison", "inventory-regularization")
+    inventory = experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison")
     comparison = brent or inventory
     report = report if report is not None else (
-        INVENTORY_REGULARIZATION_REPORT if regularization else INVENTORY_REPORT if inventory
+        INVENTORY_WINDOW_REPORT if window else INVENTORY_REGULARIZATION_REPORT if regularization else INVENTORY_REPORT if inventory
         else BRENT_REPORT if brent else WTI_REPORT)
     source, features, events, labels = (
         load_development_data(dataset_dir, feature_set="wti_brent") if brent
@@ -62,6 +66,7 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
                 "numeric_threads": 1}
     reference_rows = None
     inventory_reference_rows = None
+    regularization_reference_rows = None
     inventory_payload = None
     inventory_summary = None
     if comparison:
@@ -81,6 +86,9 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
                       inventory_audit_report, Path("reports/inventory_audit.json")]
         if regularization:
             protected += [INVENTORY_REPORT, inventory_reference_report]
+        if window:
+            protected += [INVENTORY_REGULARIZATION_REPORT, regularization_reference_report,
+                          Path("reports/regularization_runtime_check.json")]
         audit_directory = Path(inventory_reference["audit_directory"])
         protected += [audit_directory / name for name in
                       ("manifest.json", "summary.json", "records.jsonl", "overlap_changes.jsonl", "development_coverage.jsonl")]
@@ -107,6 +115,17 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
             if report.resolve() in {path.resolve() for path in protected}:
                 raise ValueError("Regularization report cannot overwrite original inventory artifacts")
             identity["inventory_comparison_reference"] = control_reference
+        if window:
+            regularization_reference, regularization_reference_rows = load_inventory_regularization_reference(
+                regularization_reference_report, source, runtime, reference, inventory_reference,
+                identity["inventory_features"], control_reference,
+                native_runtime=identity["native_runtime_sha256"])
+            regularization_directory = Path(regularization_reference["evaluation_directory"])
+            protected += [regularization_directory / name for name in
+                          ("manifest.json", "summary.json", "predictions.jsonl", "inventory_features.jsonl")]
+            if report.resolve() in {path.resolve() for path in protected}:
+                raise ValueError("Window comparison report cannot overwrite regularization artifacts")
+            identity["inventory_regularization_reference"] = regularization_reference
     run_id = sha256(json_bytes(identity))[:20]
     destination = output_root / run_id
     if (report.resolve() in {(destination / name).resolve() for name in
@@ -117,6 +136,8 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
         raise ValueError("Report cannot overwrite an immutable evaluation artifact")
     if comparison:
         replay_options = {"inventory_reference_rows": inventory_reference_rows} if regularization else {}
+        if window:
+            replay_options["regularization_reference_rows"] = regularization_reference_rows
         predictions, summary = replay_development(
             features, events, labels, experiment=experiment, reference_rows=reference_rows,
             **replay_options)
@@ -146,6 +167,8 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
         result["inventory_audit_id"] = inventory_reference["audit_id"]
     if regularization:
         result["inventory_reference_run_id"] = control_reference["run_id"]
+    if window:
+        result["regularization_reference_run_id"] = regularization_reference["run_id"]
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_bytes(json_bytes(result))
     return result
@@ -163,12 +186,15 @@ def main():
     parser.add_argument("--inventory-audit-report", type=workspace_path, default=INVENTORY_AUDIT_REPORT,
                         help="authenticated, pre-holdout inventory audit for either inventory experiment")
     parser.add_argument("--inventory-reference-report", type=workspace_path, default=INVENTORY_REPORT,
-                        help="authenticated C=1 inventory comparison for inventory-regularization")
+                        help="authenticated C=1 inventory comparison for regularization/window experiments")
+    parser.add_argument("--regularization-reference-report", type=workspace_path, default=INVENTORY_REGULARIZATION_REPORT,
+                        help="authenticated expanding C=0.1 comparison for inventory-window-comparison")
     args = parser.parse_args()
     result = run(args.dataset_dir, args.output_root, args.report,
                  experiment=args.experiment, reference_report=args.reference_report,
                  inventory_audit_report=args.inventory_audit_report,
-                 inventory_reference_report=args.inventory_reference_report)
+                 inventory_reference_report=args.inventory_reference_report,
+                 regularization_reference_report=args.regularization_reference_report)
     print(json.dumps({key: result[key] for key in (
         "run_id", "evaluation_directory", "prediction_count", "scored_count", "unscored_count",
         "metrics", "holdout_evaluated")}, indent=2))

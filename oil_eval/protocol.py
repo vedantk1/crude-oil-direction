@@ -4,6 +4,7 @@ from datetime import date
 
 from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
 from .inventory_features import INVENTORY_MODEL_COLUMNS
+from .window import ROLLING_WINDOW_YEARS
 
 
 TRAIN_START = date(2011, 4, 7)
@@ -11,7 +12,8 @@ DEVELOPMENT_START = date(2017, 1, 1)
 HOLDOUT_START = date(2023, 1, 1)
 SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
-EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison", "inventory-regularization")
+EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison", "inventory-regularization",
+               "inventory-window-comparison")
 
 
 def protocol_config(experiment: str = "wti") -> dict:
@@ -56,7 +58,7 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired WTI-plus-Brent minus WTI-only development accuracy; probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
         })
-    if experiment in ("inventory-comparison", "inventory-regularization"):
+    if experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison"):
         config.update({
             "protocol_id": "wti-inventory-development-v1",
             "feature_columns": list(INVENTORY_MODEL_COLUMNS),
@@ -75,7 +77,7 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired WTI-plus-inventory minus WTI-only development accuracy; constants and probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, threshold and dates fixed",
         })
-    if experiment == "inventory-regularization":
+    if experiment in ("inventory-regularization", "inventory-window-comparison"):
         config.update({
             "protocol_id": "wti-inventory-regularization-development-v1",
             "compared_feature_sets": {
@@ -92,6 +94,29 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired development Brier score and log loss for C=0.1 minus C=1 inventory; accuracy and yearly stability also reported",
             "success_criteria": "report aggregate Brier/log-loss differences against C=1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
             "tuning": "one fixed regularization candidate; no grid, feature, threshold, date or holdout changes",
+        })
+    if experiment == "inventory-window-comparison":
+        config.update({
+            "protocol_id": "wti-inventory-window-development-v1",
+            "compared_feature_sets": {
+                **config["compared_feature_sets"],
+                "logistic_wti_inventory_c01_rolling": list(INVENTORY_MODEL_COLUMNS),
+            },
+            "logistic_variants": {
+                **config["logistic_variants"],
+                "logistic_wti_inventory_c01_rolling": dict(config["logistic_variants"]["logistic_wti_inventory_c01"]),
+            },
+            "fit_schedule": "refit expanding controls and one fixed rolling-window candidate at every development forecast",
+            "rolling_window_years": ROLLING_WINDOW_YEARS,
+            "rolling_window_boundary": "training forecast date at or after issuance minus four calendar years and strictly before issuance; clamp February 29 to February 28 if needed",
+            "rolling_window_selection": "filter the ordered expanding cohort only after causal eligibility; retain active labels, frozen features and missing values",
+            "training_cohort": "controls retain the exact expanding cohort; only the rolling C=0.1 candidate uses its fixed four-calendar-year subset, with minimum 150 and both classes unchanged",
+            "candidate_selection": "retrospective single predefined four-year window after earlier development results; duration chosen by capacity-only audit without model predictions",
+            "capacity_audit": "three years supplies 147-155 eligible rows and misses minimum 150 on 119 of 310 dates; four years supplies 197-207 rows and both classes on all 310 dates",
+            "reference_reproduction": "require exact authenticated WTI, C=1 inventory and expanding C=0.1 cohorts, training, inventory provenance and model payloads; native runtime fingerprints must match before fitting",
+            "primary_comparison": "paired development Brier score and log loss for rolling minus expanding C=0.1 inventory; accuracy and yearly stability also reported",
+            "success_criteria": "report aggregate Brier/log-loss differences against expanding C=0.1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
+            "tuning": "one fixed four-calendar-year window; no duration grid, parameter, feature, threshold, date or holdout changes",
         })
     return config
 

@@ -319,4 +319,38 @@ All selected controls reproduce exactly across 310 forecasts, including complete
 
 Independent reconstruction verifies aggregate/yearly metrics, benchmark scores, all control payloads, artifact hashes, all 27 evaluation/audit code hashes against `5a90916`, and all 211 native-file hashes. Repeating the run produces byte-identical report, features, predictions, summary and manifest. A checksum comparison confirms all **696 pre-existing data/report files** remain unchanged. The timed repeat plus artifact-preservation checks took **13.13 seconds**, excluding imports; this includes source authentication, feature construction, 930 logistic fits, scoring and file checks, rather than measuring fitting alone. All 285 tests pass in this working runtime. No paid data, GPU or new source-data capture was used.
 
+## Fixed rolling-window comparison
+
+Compare the expanding `C=0.1` inventory model with **one four-calendar-year rolling policy**, keeping all 310 development dates and the 301 first-available scored outcomes fixed. The window is chosen before computing predictions from a capacity-only check: three years yields 147–155 eligible examples and violates the unchanged 150-row minimum on 119 dates; four years yields 197–207 examples and both classes on every date. No accuracy or probability score informed this choice, and no window-duration search is performed.
+
+At each issuance, select the ordered, historically eligible expanding training rows first. The rolling model then retains only examples with forecast origins in `[issuance minus four calendar years, issuance)`, clamping February 29 to February 28 if the lower year has no leap day. Label maturity, current historical label state, and target-before-origin checks apply before this filtering. Do not reach farther back to replace withdrawn labels, drop rows with missing inventory, or move the lower boundary to meet a count. Insufficient history or a missing class fails the run.
+
+Both inventory variants use the same eleven inputs, `C=0.1`, solver and 0.5 threshold. Imputation and scaling are fitted separately on each model's own training rows; inventory inputs remain frozen at each example's original issuance. Fewer samples at the same `C` also change the penalty relative to average training loss. This tests the practical fixed-`C` rolling policy, including the smaller sample and refitted preprocessing; it does not isolate market recency alone.
+
+All five prior expanding control models are replayed and must reproduce the selected regularization reference exactly. The runner authenticates the WTI, inventory audit, `C=1` and expanding `C=0.1` reference chain, its identical frozen inventory artifact, and the common native runtime before fitting. Per-forecast `training` metadata retains the expanding run's exact shape and values; separate `rolling_training` metadata records the fixed bounds, count/up count, actual retained origin range, label-maturity bounds, WTI/inventory hashes, excluded old-row count, and inventory missing counts. Original datasets, source captures, reports and run artifacts are preserved.
+
+Use the existing documented working runtime and retained references:
+
+```sh
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-window-comparison \
+  --reference-report data/regularization/wti-reference.json \
+  --inventory-audit-report data/regularization/inventory-audit-reference.json \
+  --inventory-reference-report data/regularization/inventory-comparison-reference.json \
+  --regularization-reference-report reports/inventory_regularization.json
+```
+
+This writes a separate `reports/inventory_window_comparison.json` and content-addressed immutable run. `--regularization-reference-report` selects a compatible authenticated expanding `C=0.1` run. The default historical WTI/`C=1` references lack native fingerprints; use the explicit compatible references above or recreate the chain with the [runtime recipe](#compatible-runtime-and-refreshed-controls).
+
+Assess paired accuracy, balanced accuracy, AUC, Brier/log loss, yearly differences and the simple benchmarks on the same scored cohort. This is another retrospective development choice after earlier experiments, with growing model-selection exposure; it is not unseen validation. Report the result even if it deteriorates. No parameters, window duration, features, thresholds or dates may be changed in response to these results. The 2023-onward final holdout remains closed.
+
+All **314 tests pass** before computing rolling predictions. New checks cover calendar bounds, leap-day clamping, current/future-origin rejection, retained order and nulls, rolling-only preprocessing, active delayed/withdrawn labels, separate metadata/hashes, minimum-history/class failures without fallback, reference/native authentication, unchanged expanding controls, matched scored/unscored states, holdout boundaries, and historical artifact protection. The paired-score calculation is shared with the regularization comparison.
+
+### Data quality and predictive limits
+
+The observations are audited rather than assumed clean: historical versions, publication gaps, stale inventory bytes, definition changes and null inputs are explicitly recorded. That supports a qualified historical replay, with remaining first-release and exact-intraday availability uncertainty. It does not establish that the inputs contain a useful forecasting signal.
+
+Only 301 weekly development outcomes are scored, with potentially dependent horizons. Delayed spot benchmarks and a narrow eleven-input feature set also constrain the question. Inventory changes are measured levels/differences, not surprises relative to contemporary market expectations. The weak fitted results do not prove that the underlying prices or stock observations are bad; they show that this limited information set and model family have not demonstrated an edge. The rolling experiment tests a different history policy, not a repair of source quality.
+
 Assess paired accuracy, balanced accuracy, AUC, Brier score and log loss, plus yearly stability. The main hypothesis is that stronger regularization improves probability quality relative to `C=1`; improvement beyond neutral and historical-prevalence probabilities would be more useful evidence. A gain caused only by approaching constant probabilities is not a discovered forecasting edge. No settings may be changed in response to this experiment's results, and no independent-sample significance claim is warranted. The 2023-onward final holdout stays closed.
