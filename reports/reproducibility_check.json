@@ -1,0 +1,139 @@
+{
+  "availability_delay": {
+    "holdout_evaluated": false,
+    "independent_checks": {
+      "candidate_preprocessing_and_probabilities_verified": 310,
+      "causal_candidate_and_original_training_hashes_verified": 620,
+      "delayed_feature_rows_reconstructed": 607,
+      "exact_control_payloads_verified": 1550,
+      "heldout_values_decoded": false,
+      "maximum_probability_reconstruction_difference": 1.11e-16,
+      "native_runtime_files_verified": 211,
+      "no_new_fits_for_verification": true,
+      "result_artifact_hashes_verified": 4,
+      "source_code_hashes_matched_protocol_checkpoint": 34
+    },
+    "preserved_file_count": 727,
+    "repeat_and_preservation_seconds_excluding_imports": 22.63,
+    "repeated_run_id": "c51993a306cb72812a28",
+    "report_byte_identical": true,
+    "run_id": "c51993a306cb72812a28"
+  },
+  "checked_source_checkpoint": "f4ca7fa",
+  "ci": {
+    "configuration_added": true,
+    "hosted_run_performed": false,
+    "market_downloads": false
+  },
+  "clean_checkout": {
+    "copied_existing_evaluation_runs": false,
+    "dependency_chain_uses_new_references": true,
+    "development_and_training_rows": 607,
+    "development_prediction_count": 310,
+    "feature_rows": 608,
+    "first_available_labels": 597,
+    "heldout_evaluated": false,
+    "independent_artifact_hashes_verified": 25,
+    "label_event_rows": 1832,
+    "numerical_history_boundary": "2022-12-31",
+    "older_reference_direction_changes": 0,
+    "older_reference_max_probability_differences": {
+      "brent": 1.784e-13,
+      "inventory_c1": 1.31e-13,
+      "wti": 8.88e-16
+    },
+    "regularization_window_tree_predictions_byte_identical": true,
+    "retained_source_replay": "complete",
+    "scored_count": 301,
+    "stages": {
+      "benchmarks": {
+        "id": "dcf247b398a8f09bd1e5",
+        "report_sha256": "5784ee65724101f583a6a9fc93d6856d9053c75a7cfa73ab519486cd2eca389a"
+      },
+      "brent_comparison": {
+        "id": "446837af5d0c06f7fd34",
+        "report_sha256": "98efbe641f3e55512442c8c51feeb06349877e35f10f33618afd4f549418abf7"
+      },
+      "dataset": {
+        "id": "2fd19872aa087b5d1551",
+        "report_sha256": "8e3fa92f3bf4511c258711b49948e99154b118b9439d35389386d304d83dfe3a"
+      },
+      "inventory_audit": {
+        "id": "b5dddcea0ce838f671d1",
+        "report_sha256": "32a5fb5594f6345ef53ae1547422f6ec02d44241b20c0d24072c931fc2e24012"
+      },
+      "inventory_comparison": {
+        "id": "68f6a733e5c5e0f7b06e",
+        "report_sha256": "9af887b3dd199c3693e43a7d5aeb64ae5896b98b1e76daa0fca46ed97ab3cf7f"
+      },
+      "inventory_regularization": {
+        "id": "a161664512cb002bf499",
+        "report_sha256": "3fe716f4f53bf6eb1c38e9fafb88101ca2b998046ed699e237d96922ae8350f2"
+      },
+      "inventory_tree_comparison": {
+        "id": "2c6e414eb67c2e323fe0",
+        "report_sha256": "6bdac5898aca20f3497be060c3d333b3c5ea2804541d46c4b8683ddde29f6b2f"
+      },
+      "inventory_window_comparison": {
+        "id": "4ab6623909b9d055ae4b",
+        "report_sha256": "df16016b9bc3c87d3f101ae522417963b72f3702f4bad53057f93a74d96fbf1f"
+      },
+      "wti": {
+        "id": "537eede48e515d216bb2",
+        "report_sha256": "4770fd2aa8e96391149874775fc1865794bc38d3fff00c89000810e0ced4baf0"
+      }
+    },
+    "synthetic_demo_with_tree": "complete",
+    "tests_passed": 349,
+    "unscored_count": 9
+  },
+  "cost_scope": "free public data, pinned open-source CPU dependencies; no API keys or paid services",
+  "current_workspace_tests_passed": 375,
+  "delay_protocol_checkpoint": "b84a738",
+  "fresh_install": {
+    "bootstrap_succeeded": true,
+    "environment_modified_existing": false,
+    "python": "3.13.9",
+    "scipy_official_wheel_sha256": "7e11270a000969409d37ed399585ee530b9ef6aa99d50c019de4cb01e8e54e62"
+  },
+  "live_download_workflow": {
+    "all_stage_report_and_artifact_hashes_verified": true,
+    "development_prediction_count": 310,
+    "downloaded_inventory_tables": 596,
+    "failed_or_quarantined_inventory_tables": 1,
+    "holdout_evaluated": false,
+    "intended_inventory_issues": 597,
+    "inventory_manifest_sha256": "ba2044575a393e7e53f82b4caca23f33776cdfe4a613e24a7d41e6139b78e4fa",
+    "new_captures": true,
+    "regularization_predictions_byte_identical_to_retained": true,
+    "scored_count": 301,
+    "source_value_boundary": "2022-12-31",
+    "stages": {
+      "dataset": {
+        "id": "97be986d689104f31c86",
+        "report_sha256": "b14bf2fbcd32997b6cfb422f9c7b261ec18d0d2773856494b74a5b9dbef6035b"
+      },
+      "inventory_audit": {
+        "id": "e7b4f6caf74d2b8cee55",
+        "report_sha256": "c053539b97fd023b3e7f6081a98b04e1291acf5facce73952d281cb8974aa58c"
+      },
+      "inventory_comparison": {
+        "id": "58772fbba596eaa5660b",
+        "report_sha256": "3eff896873a471642e4b7655457f3a5c61b8923b108ed539d9ce61c7f1464c72"
+      },
+      "inventory_regularization": {
+        "id": "86ed47b6df08a7c391a1",
+        "report_sha256": "b8f5efbb7fa0493b81443448ae733d37e53f80466b0f46c207ef4d147fa14ea6"
+      },
+      "wti": {
+        "id": "6d78a77acda7e6cdee6a",
+        "report_sha256": "be1465678fa03cbfdcb60de858a4ae96728dad77867c6448d08d2b4b2c8948a2"
+      }
+    },
+    "status": "complete",
+    "unscored_count": 9,
+    "vintage_manifest_sha256": "9aeb50d4db76a62b101a23f776468bcdb9a337e42bb2676d5dc7f3520202c65a",
+    "workflow_manifest_sha256": "dcf358fb99ebd8dea34f1714b7500f5217ffaf877f810ad72c103e537f177526"
+  },
+  "schema_version": 1
+}

@@ -79,7 +79,10 @@ A future PDF fallback could recover this forecast's inventory inputs with an exp
 
 ## Reproduction
 
-Run from the workspace root with the existing pinned Python environment:
+For a fresh checkout, use the [bootstrap and complete workflow](reproducibility.md),
+which create new references without depending on the retained local IDs below.
+These low-level commands document source capture and historical reproduction.
+Run from the workspace root with a compatible pinned Python environment:
 
 ```sh
 .venv/bin/python -m oil_audit.inventory_sources

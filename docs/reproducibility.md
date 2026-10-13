@@ -112,3 +112,36 @@ inputs exactly, reproduces expanding controls, applies one extra US business-day
 delay to WTI, inventories and active training-label states, and retains original
 forecast dates and scoring targets. See [evaluation](evaluation.md) for the
 locked protocol and results.
+
+
+## Recorded verification
+
+Checkpoint `f4ca7fa` was extracted into a clean checkout with no saved datasets,
+evaluation runs or environment. The documented bootstrap installed the pinned
+runtime; all 349 tests at that checkpoint and the synthetic demo through tree
+comparison passed. Only then were copies of retained source captures supplied.
+The complete nine-stage replay built new IDs and references, retained all 310
+forecasts/301 scored outcomes, and reproduced every direction prediction.
+Regularization, rolling-window and tree prediction files were byte-identical to
+retained results. Older WTI/Brent/C=1 references differ only by tiny native-build
+floating-point amounts (maximum probability difference 1.784e-13), with no
+changed directions. Those older references predate native fingerprint recording.
+
+The final implementation passes 375 tests. The separately checkpointed delay
+result was independently verified and reproduced byte-identically. All 727
+pre-existing source/data/report files retain their checksums. CI configuration
+has been added; no hosted GitHub run or push was performed. The
+[verification report](../reports/reproducibility_check.json) records exact stage
+identities, checks and the live source-download check separately.
+
+
+The live `--download` workflow also completed with newly captured ALFRED archives
+and all 597 intended EIA inventory issues: 596 tables are usable, with the known
+stale July 2019 issue excluded. The pipeline created its own bounded dataset,
+WTI reference, inventory audit and C=1/C=0.1 references. All 310 development
+forecasts and 301 scored outcomes were retained. C=0.1 prediction bytes match
+the retained run exactly, while capture/dataset/run identities differ as expected.
+Every stage report and artifact checksum verifies. This demonstrates that the
+free download path worked at this check; it does not guarantee future source
+availability or erase the historical-publication limitations. The holdout stayed
+closed throughout numerical preparation and evaluation.

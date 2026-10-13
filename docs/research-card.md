@@ -43,11 +43,12 @@ Original retained datasets/results remain preserved under ignored local data.
   Some aggregate probability scores improved, but yearly behavior was mixed
   and simple probabilities remained better.
 - The one additional business-day availability check tests timing robustness
-  with unchanged forecasts and targets. Its result is recorded in
-  [evaluation](evaluation.md); it is not used to select a new winner.
+  with unchanged forecasts and targets. It scores 53.82% with slightly better aggregate probabilities, but changes
+  106 of 301 directions and has mixed yearly differences. Its result is recorded
+  in [evaluation](evaluation.md); it is not used to select a new winner.
 
-Expanding C=0.1 has the highest fitted direction accuracy among these selected
-experiments at 53.16%; always-up achieves 55.81% because outcomes skew upward.
+Original-clock expanding C=0.1 has the highest direction accuracy among the
+model-search experiments at 53.16%; always-up achieves 55.81% because outcomes skew upward.
 Accuracy alone does not establish useful skill. Repeated retrospective choices
 on the same development years further limit confirmatory claims. No significance
 or profitable-strategy claim is made.

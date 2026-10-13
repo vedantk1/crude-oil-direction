@@ -1,6 +1,6 @@
 # Chronological development evaluation
 
-The original protocol compares two simple rules with a WTI-only logistic regression. Later experiments add Brent, inventories, and one predefined stronger inventory-model penalty on the same development dates. Each protocol is checkpointed before computing its first results. The underlying price target and availability convention remain those in the [dataset specification](dataset.md).
+The original protocol compares two simple rules with a WTI-only logistic regression. Later experiments add Brent, inventories, stronger regularization, rolling training, a small tree model and one availability-delay sensitivity check on the same development dates. Each protocol is checkpointed before computing its first results. The underlying price target and original availability convention remain those in the [dataset specification](dataset.md). This research phase is now frozen; see the [research card](research-card.md).
 
 ## Time boundaries and final holdout
 
@@ -252,7 +252,7 @@ Defaults are `reports/development_evaluation.json`, `reports/inventory_audit.jso
 
 The existing SciPy 1.15.3 macOS 14 arm64 wheel failed locally while importing PROPACK: its thread-local zero-fill section was rejected by the native loader. Installed binary hashes matched their package RECORD. An isolated, checksum-verified official macOS 12 arm64 wheel of **the same SciPy version** imports successfully, but its different numerical build cannot reproduce the saved historical controls bit-for-bit. The original installation and all historical artifacts remain preserved; no binary patch or relaxed comparison check is used. This local observation does not establish a universal wheel defect.
 
-The alternative wheel is available from [official PyPI files](https://pypi.org/project/scipy/1.15.3/#files), named `scipy-1.15.3-cp313-cp313-macosx_12_0_arm64.whl`, with SHA256 `7e11270a000969409d37ed399585ee530b9ef6aa99d50c019de4cb01e8e54e62`. Install it into ignored `.audit-deps/scipy-macos12` with `pip install --no-deps --target` after verifying its hash. Other pinned packages and Python remain unchanged. Prefix the commands below with `PYTHONPATH=.audit-deps/scipy-macos12` to select this isolated dependency.
+The alternative wheel is available from [official PyPI files](https://pypi.org/project/scipy/1.15.3/#files), named `scipy-1.15.3-cp313-cp313-macosx_12_0_arm64.whl`, with SHA256 `7e11270a000969409d37ed399585ee530b9ef6aa99d50c019de4cb01e8e54e62`. Historical checkpoints used an isolated installation in ignored `.audit-deps/scipy-macos12`, selected by the `PYTHONPATH` prefix shown below. For fresh checkouts, use the [bootstrap and workflow](reproducibility.md), which install this compatible build into a new environment and create their own authenticated references. The commands below document retained historical runs, rather than the public quickstart.
 
 Establish matched controls using the retained evidence, without downloading data or replacing published reports:
 
@@ -479,3 +479,62 @@ comparisons. The six preceding protocol configurations remain unchanged. See
 [reproducibility](reproducibility.md) for an explicit-reference command without
 historical local run IDs. This protocol is checkpointed before the real delayed
 candidate result is computed.
+
+
+### Availability-delay result
+
+Protocol checkpoint `b84a738` preceded the first candidate result. Run
+`c51993a306cb72812a28` retains all 310 original forecasts, 301 scored outcomes
+and nine unscored states. The bounded archive reconstructs all 607 original WTI
+rows exactly. All five expanding controls reproduce the selected C=0.1 run
+exactly, using the same authenticated native runtime.
+
+| Variant | Correct | Accuracy | Balanced accuracy | AUC | Brier | Log loss |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Original expanding C=0.1 | 160 / 301 | 53.16% | 52.87% | 0.5077 | 0.2563 | 0.7126 |
+| Additional one-business-day delay | 162 / 301 | 53.82% | 53.23% | 0.5238 | 0.2555 | 0.7085 |
+| Constant probability 0.5 | 168 / 301 | 55.81% | 50.00% | 0.5000 | 0.2500 | 0.6931 |
+| Historical training prevalence | 149 / 301 | 49.50% | 51.71% | 0.4864 | 0.2512 | 0.6955 |
+
+The delayed variant gains two correct outcomes (+0.66 percentage points), with
+Brier lower by 0.00081 and log loss lower by 0.00413. It still loses to the simple
+probability benchmarks. Of scored outcomes, both variants are correct on 108,
+both wrong on 87, delayed alone correct on 54 and original alone correct on 52.
+Thus **106 of 301 directions change** despite a small net difference. The safety
+margin often excludes the newest weekly source update, making a full report
+older rather than merely adding a day to an age field.
+
+| Year | Scored | Delayed accuracy | Accuracy change, points | Brier change | Log-loss change |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 2017 | 52 | 46.15% | -5.77 | +0.00778 | +0.01574 |
+| 2018 | 50 | 54.00% | +4.00 | -0.00026 | -0.00069 |
+| 2019 | 50 | 54.00% | +4.00 | -0.01872 | -0.03844 |
+| 2020 | 50 | 50.00% | -4.00 | +0.00900 | -0.00199 |
+| 2021 | 50 | 56.00% | 0.00 | -0.00308 | -0.00654 |
+| 2022 | 49 | 63.27% | +6.12 | +0.00009 | +0.00656 |
+
+Timing assumptions materially change individual predictions and yearly behavior;
+this does not establish a useful signal or justify selecting the delayed clock
+for its slightly higher aggregate score. The research phase remains frozen.
+
+All 607 delayed raw rows remain explicit. The initial 2011-04-07 row has no
+numeric WTI observation at the delayed cutoff and is retained with nulls/reason,
+then excluded from training. Delayed training counts range from 293 to 594,
+versus 295 to 596 originally. There are 612 removed row occurrences across fits
+(repeated exclusions, not 612 distinct rows), no additions and no changed active
+binary labels in this captured sample. Revision/withdrawal behavior is covered
+by synthetic tests. Inventory missing values and exact-lookback gaps remain
+explicit; ages refer to actual forecast dates. Delayed regression converges at
+all forecasts with at most ten iterations.
+
+The [separate delay report](../reports/availability_delay.json) records full
+aggregate/yearly results and provenance. The repeat is byte-identical and all
+727 pre-existing source/data/report files retain their checksums. The timed
+repeat plus preservation verification took 22.63 seconds, excluding imports;
+this includes source authentication, feature reconstruction, 1,240 logistic
+fits, scoring and artifact checks rather than measuring fitting alone. Independent verification reconstructs all 607 delayed inventory rows, every
+active training-label selection and exclusion, 620 original/delayed input hashes,
+all 1,550 control outputs, preprocessing statistics and candidate probabilities
+(maximum arithmetic difference 1.11e-16). All four result artifact hashes, 34 code
+hashes against `b84a738`, and 211 native fingerprints verify. All 375 tests pass.
+No paid data, GPU, or final-holdout evaluation was used.

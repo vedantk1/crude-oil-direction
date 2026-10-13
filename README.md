@@ -76,8 +76,10 @@ do not establish forecasting skill or profitability.
 
 The predefined extra availability-delay check is recorded separately in
 [evaluation](docs/evaluation.md). It tests timing sensitivity without choosing a
-new model from the result. The original forecasts, targets and scoring labels
-stay fixed, while both inputs and training labels receive the safety margin.
+new model from the result. It scores 53.82% with slightly better probability scores, but changes 106 of
+301 scored directions and still trails the simple probability benchmarks. The
+original forecasts, targets and scoring labels stay fixed, while both inputs and
+training labels receive the safety margin. This result is not used for selection.
 
 ## Data and design
 
