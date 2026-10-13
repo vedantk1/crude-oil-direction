@@ -1,0 +1,599 @@
+{
+  "common_training_cohort": {
+    "fits_with_rows_removed": 0,
+    "rows_removed_per_fit_range": [
+      0,
+      0
+    ],
+    "sum_rows_removed_across_fits": 0
+  },
+  "dataset_id": "4abada098156b2b39306",
+  "evaluation_directory": "data/evaluations/d5c874bd369545258290",
+  "excluded_pre_holdout_rows": {
+    "crosses_holdout_boundary": 1,
+    "initial_training": 297
+  },
+  "forecast_date_range": [
+    "2017-01-06",
+    "2022-12-22"
+  ],
+  "holdout_evaluated": false,
+  "maximum_iterations_by_logistic_model": {
+    "logistic": 7,
+    "logistic_wti_brent": 32
+  },
+  "maximum_logistic_iterations": 7,
+  "metrics": {
+    "logistic": {
+      "accuracy": 0.4950166112956811,
+      "balanced_accuracy": 0.49122807017543857,
+      "brier_score": 0.25779660452395603,
+      "confusion_counts": {
+        "fn": 80,
+        "fp": 72,
+        "tn": 61,
+        "tp": 88
+      },
+      "count": 301,
+      "log_loss": 0.7178849108600788,
+      "roc_auc": 0.4878714643752238
+    },
+    "logistic_wti_brent": {
+      "accuracy": 0.5116279069767442,
+      "balanced_accuracy": 0.5170739348370927,
+      "brier_score": 0.2665725758959,
+      "confusion_counts": {
+        "fn": 89,
+        "fp": 58,
+        "tn": 75,
+        "tp": 79
+      },
+      "count": 301,
+      "log_loss": 0.7335755657245429,
+      "roc_auc": 0.4835750089509488
+    },
+    "majority": {
+      "accuracy": 0.4950166112956811,
+      "balanced_accuracy": 0.5170739348370927,
+      "brier_score": 0.25119701940263833,
+      "confusion_counts": {
+        "fn": 113,
+        "fp": 39,
+        "tn": 94,
+        "tp": 55
+      },
+      "count": 301,
+      "log_loss": 0.6955442389132205,
+      "roc_auc": 0.48643931256713213
+    },
+    "momentum": {
+      "accuracy": 0.5016611295681063,
+      "balanced_accuracy": 0.4971804511278195,
+      "brier_score": null,
+      "confusion_counts": {
+        "fn": 78,
+        "fp": 72,
+        "tn": 61,
+        "tp": 90
+      },
+      "count": 301,
+      "log_loss": null,
+      "roc_auc": null
+    }
+  },
+  "momentum_missing_fallback_count": 0,
+  "paired_accuracy_comparisons": {
+    "majority": {
+      "accuracy_difference_logistic_minus_baseline": 0.0,
+      "baseline_only_correct": 85,
+      "both_correct": 64,
+      "both_wrong": 67,
+      "logistic_only_correct": 85
+    },
+    "momentum": {
+      "accuracy_difference_logistic_minus_baseline": -0.006644518272425249,
+      "baseline_only_correct": 44,
+      "both_correct": 107,
+      "both_wrong": 108,
+      "logistic_only_correct": 42
+    }
+  },
+  "paired_brent_comparison": {
+    "both_correct": 116,
+    "both_wrong": 114,
+    "combined_only_correct": 38,
+    "metric_differences_combined_minus_wti": {
+      "accuracy": 0.01661129568106312,
+      "balanced_accuracy": 0.025845864661654172,
+      "brier_score": 0.00877597137194397,
+      "log_loss": 0.015690654864464082,
+      "roc_auc": -0.004296455424274981
+    },
+    "wti_only_correct": 33
+  },
+  "prediction_count": 310,
+  "protocol": {
+    "boundary_rule": "forecast and target dates must both precede holdout start",
+    "compared_feature_sets": {
+      "logistic": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days"
+      ],
+      "logistic_wti_brent": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days",
+        "brent_latest_price",
+        "brent_age_calendar_days",
+        "brent_change_5_business_days_usd",
+        "brent_change_20_business_days_usd",
+        "brent_change_std_20_business_days_usd",
+        "brent_coverage_20_business_days",
+        "brent_wti_spread_usd",
+        "spread_age_calendar_days"
+      ]
+    },
+    "development_scoring_as_of": "2022-12-31",
+    "development_start": "2017-01-01",
+    "feature_columns": [
+      "wti_latest_price",
+      "wti_age_calendar_days",
+      "wti_change_5_business_days_usd",
+      "wti_change_20_business_days_usd",
+      "wti_change_std_20_business_days_usd",
+      "wti_coverage_20_business_days",
+      "brent_latest_price",
+      "brent_age_calendar_days",
+      "brent_change_5_business_days_usd",
+      "brent_change_20_business_days_usd",
+      "brent_change_std_20_business_days_usd",
+      "brent_coverage_20_business_days",
+      "brent_wti_spread_usd",
+      "spread_age_calendar_days"
+    ],
+    "fit_schedule": "expand and refit at every development forecast",
+    "forecast_cohort": "exact forecast IDs, dates, targets and scoring states from the verified WTI reference",
+    "holdout_start": "2023-01-01",
+    "holdout_status": "closed: no fitting, prediction, scoring or tuning",
+    "ineligible_comparison_forecast": "fail before fitting; never silently drop reference dates",
+    "initial_training_start": "2011-04-07",
+    "logistic": {
+      "C": 1.0,
+      "class_weight": null,
+      "imputer": "training median; all-missing training column uses zero",
+      "max_iter": 2000,
+      "penalty": "l2",
+      "random_state": 0,
+      "scaler": "training StandardScaler",
+      "solver": "lbfgs",
+      "threshold": 0.5,
+      "tie_prediction": 1
+    },
+    "majority": {
+      "probability": "training up-class frequency",
+      "tie_prediction": 1
+    },
+    "minimum_training_rows": 150,
+    "momentum": {
+      "feature": "wti_change_5_business_days_usd",
+      "missing_fallback": "majority prediction",
+      "probability": null,
+      "rule": "positive means up",
+      "zero_prediction": 0
+    },
+    "primary_comparison": "paired WTI-plus-Brent minus WTI-only development accuracy; probability quality also reported",
+    "protocol_id": "wti-brent-development-v1",
+    "reference_reproduction": "when WTI training inputs match, require exact reference model outputs",
+    "required_training_classes": [
+      0,
+      1
+    ],
+    "scoring_labels": "first jointly available pair, available before holdout start",
+    "training_cohort": "same ordered, historically labelled WTI-and-Brent-eligible rows for all models",
+    "training_labels": "active as of issuance under the preceding-calendar-day convention",
+    "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
+    "uncertainty": "descriptive yearly results; no independent-sample significance claim"
+  },
+  "reference_reproduction": {
+    "all_reference_model_outputs_identical": true,
+    "all_wti_training_inputs_identical": true,
+    "forecast_cohort_identical": true,
+    "identical_reference_model_output_count": 310,
+    "identical_wti_training_input_count": 310
+  },
+  "reference_run_id": "eaf91570f5aaab09a992",
+  "run_id": "d5c874bd369545258290",
+  "runtime_versions": {
+    "joblib": "1.5.2",
+    "numpy": "2.2.6",
+    "python": "3.13.9",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.3",
+    "threadpoolctl": "3.6.0"
+  },
+  "scored_count": 301,
+  "scored_direction_counts": {
+    "not_up": 133,
+    "up": 168
+  },
+  "training_count_range": [
+    295,
+    596
+  ],
+  "unscored_count": 9,
+  "yearly": {
+    "2017": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.4230769230769231,
+          "balanced_accuracy": 0.43778110944527737,
+          "brier_score": 0.25698453395744925,
+          "confusion_counts": {
+            "fn": 20,
+            "fp": 10,
+            "tn": 13,
+            "tp": 9
+          },
+          "count": 52,
+          "log_loss": 0.7072565129327307,
+          "roc_auc": 0.47226386806596704
+        },
+        "logistic_wti_brent": {
+          "accuracy": 0.5576923076923077,
+          "balanced_accuracy": 0.5674662668665668,
+          "brier_score": 0.25325495366632333,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 8,
+            "tn": 15,
+            "tp": 14
+          },
+          "count": 52,
+          "log_loss": 0.7008365541162813,
+          "roc_auc": 0.568215892053973
+        },
+        "majority": {
+          "accuracy": 0.4423076923076923,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.25449874237184533,
+          "confusion_counts": {
+            "fn": 29,
+            "fp": 0,
+            "tn": 23,
+            "tp": 0
+          },
+          "count": 52,
+          "log_loss": 0.7021594454949839,
+          "roc_auc": 0.44377811094452774
+        },
+        "momentum": {
+          "accuracy": 0.5192307692307693,
+          "balanced_accuracy": 0.514992503748126,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 13,
+            "fp": 12,
+            "tn": 11,
+            "tp": 16
+          },
+          "count": 52,
+          "log_loss": null,
+          "roc_auc": null
+        }
+      },
+      "prediction_count": 52
+    },
+    "2018": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.48,
+          "balanced_accuracy": 0.47596153846153844,
+          "brier_score": 0.25504292739528434,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 11,
+            "tn": 15,
+            "tp": 9
+          },
+          "count": 50,
+          "log_loss": 0.7035536122690977,
+          "roc_auc": 0.5112179487179487
+        },
+        "logistic_wti_brent": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.4535256410256411,
+          "brier_score": 0.26494491652796665,
+          "confusion_counts": {
+            "fn": 17,
+            "fp": 10,
+            "tn": 16,
+            "tp": 7
+          },
+          "count": 50,
+          "log_loss": 0.7237726571097128,
+          "roc_auc": 0.41185897435897434
+        },
+        "majority": {
+          "accuracy": 0.52,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.2504030481511101,
+          "confusion_counts": {
+            "fn": 24,
+            "fp": 0,
+            "tn": 26,
+            "tp": 0
+          },
+          "count": 50,
+          "log_loss": 0.6939539863226329,
+          "roc_auc": 0.35496794871794873
+        },
+        "momentum": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.45833333333333337,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 14,
+            "fp": 13,
+            "tn": 13,
+            "tp": 10
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        }
+      },
+      "prediction_count": 52
+    },
+    "2019": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.48,
+          "balanced_accuracy": 0.4380305602716469,
+          "brier_score": 0.25310932103274125,
+          "confusion_counts": {
+            "fn": 12,
+            "fp": 14,
+            "tn": 5,
+            "tp": 19
+          },
+          "count": 50,
+          "log_loss": 0.6993882325953663,
+          "roc_auc": 0.44991511035653653
+        },
+        "logistic_wti_brent": {
+          "accuracy": 0.58,
+          "balanced_accuracy": 0.49830220713073003,
+          "brier_score": 0.24894511085141116,
+          "confusion_counts": {
+            "fn": 5,
+            "fp": 16,
+            "tn": 3,
+            "tp": 26
+          },
+          "count": 50,
+          "log_loss": 0.6907801030620773,
+          "roc_auc": 0.44142614601018676
+        },
+        "majority": {
+          "accuracy": 0.38,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.25295198600540714,
+          "confusion_counts": {
+            "fn": 31,
+            "fp": 0,
+            "tn": 19,
+            "tp": 0
+          },
+          "count": 50,
+          "log_loss": 0.6990526920351036,
+          "roc_auc": 0.47538200339558573
+        },
+        "momentum": {
+          "accuracy": 0.64,
+          "balanced_accuracy": 0.6281833616298811,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 10,
+            "fp": 8,
+            "tn": 11,
+            "tp": 21
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        }
+      },
+      "prediction_count": 52
+    },
+    "2020": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.54,
+          "balanced_accuracy": 0.54,
+          "brier_score": 0.26109586293047493,
+          "confusion_counts": {
+            "fn": 3,
+            "fp": 20,
+            "tn": 5,
+            "tp": 22
+          },
+          "count": 50,
+          "log_loss": 0.767963113241123,
+          "roc_auc": 0.5776
+        },
+        "logistic_wti_brent": {
+          "accuracy": 0.52,
+          "balanced_accuracy": 0.52,
+          "brier_score": 0.2743130769122275,
+          "confusion_counts": {
+            "fn": 5,
+            "fp": 19,
+            "tn": 6,
+            "tp": 20
+          },
+          "count": 50,
+          "log_loss": 0.7745319654303111,
+          "roc_auc": 0.5648
+        },
+        "majority": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.250664508937286,
+          "confusion_counts": {
+            "fn": 25,
+            "fp": 0,
+            "tn": 25,
+            "tp": 0
+          },
+          "count": 50,
+          "log_loss": 0.6944764201835142,
+          "roc_auc": 0.3824
+        },
+        "momentum": {
+          "accuracy": 0.56,
+          "balanced_accuracy": 0.56,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 10,
+            "fp": 12,
+            "tn": 13,
+            "tp": 15
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        }
+      },
+      "prediction_count": 52
+    },
+    "2021": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.52,
+          "balanced_accuracy": 0.4476190476190476,
+          "brier_score": 0.25645370228714126,
+          "confusion_counts": {
+            "fn": 13,
+            "fp": 11,
+            "tn": 4,
+            "tp": 22
+          },
+          "count": 50,
+          "log_loss": 0.7069517114279112,
+          "roc_auc": 0.43238095238095237
+        },
+        "logistic_wti_brent": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.5761904761904761,
+          "brier_score": 0.28203119442640695,
+          "confusion_counts": {
+            "fn": 25,
+            "fp": 2,
+            "tn": 13,
+            "tp": 10
+          },
+          "count": 50,
+          "log_loss": 0.7613230696305903,
+          "roc_auc": 0.5238095238095238
+        },
+        "majority": {
+          "accuracy": 0.64,
+          "balanced_accuracy": 0.47619047619047616,
+          "brier_score": 0.2476810187850174,
+          "confusion_counts": {
+            "fn": 4,
+            "fp": 14,
+            "tn": 1,
+            "tp": 31
+          },
+          "count": 50,
+          "log_loss": 0.6885084423829645,
+          "roc_auc": 0.5123809523809524
+        },
+        "momentum": {
+          "accuracy": 0.46,
+          "balanced_accuracy": 0.40476190476190477,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 16,
+            "fp": 11,
+            "tn": 4,
+            "tp": 19
+          },
+          "count": 50,
+          "log_loss": null,
+          "roc_auc": null
+        }
+      },
+      "prediction_count": 52
+    },
+    "2022": {
+      "metrics": {
+        "logistic": {
+          "accuracy": 0.5306122448979592,
+          "balanced_accuracy": 0.5258333333333334,
+          "brier_score": 0.2642549288498225,
+          "confusion_counts": {
+            "fn": 17,
+            "fp": 6,
+            "tn": 19,
+            "tp": 7
+          },
+          "count": 49,
+          "log_loss": 0.7227180820348325,
+          "roc_auc": 0.425
+        },
+        "logistic_wti_brent": {
+          "accuracy": 0.4897959183673469,
+          "balanced_accuracy": 0.4816666666666667,
+          "brier_score": 0.27668107792074437,
+          "confusion_counts": {
+            "fn": 22,
+            "fp": 3,
+            "tn": 22,
+            "tp": 2
+          },
+          "count": 49,
+          "log_loss": 0.7518847899470652,
+          "roc_auc": 0.37
+        },
+        "majority": {
+          "accuracy": 0.4897959183673469,
+          "balanced_accuracy": 0.5,
+          "brier_score": 0.2508436763860642,
+          "confusion_counts": {
+            "fn": 0,
+            "fp": 25,
+            "tn": 0,
+            "tp": 24
+          },
+          "count": 49,
+          "log_loss": 0.694835667365907,
+          "roc_auc": 0.4533333333333333
+        },
+        "momentum": {
+          "accuracy": 0.3673469387755102,
+          "balanced_accuracy": 0.3675,
+          "brier_score": null,
+          "confusion_counts": {
+            "fn": 15,
+            "fp": 16,
+            "tn": 9,
+            "tp": 9
+          },
+          "count": 49,
+          "log_loss": null,
+          "roc_auc": null
+        }
+      },
+      "prediction_count": 50
+    }
+  }
+}

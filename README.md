@@ -1,6 +1,6 @@
 # Crude oil direction research
 
-A free, local WTI direction forecasting project with an audited historical dataset and chronological model comparisons over **five fixed US business days**. The initial WTI-only comparison is complete; a fixed Brent comparison is implemented for the same development dates. The 2023-onward final holdout remains closed.
+A free, local WTI direction forecasting project with an audited historical dataset and chronological model comparisons over **five fixed US business days**. WTI-only and WTI/Brent logistic regressions have been compared on the same development dates. The 2023-onward final holdout remains closed.
 
 Read the [data audit](docs/data-audit.md) for the findings, evidence limits, and recommended historical availability rules. The audit supports a qualified replay of ALFRED's recorded history from 2011-04-06 onward. Current EIA downloads alone do not preserve that history.
 
@@ -44,15 +44,25 @@ Use `build --data-dir data/audit/vintages/<snapshot-directory>` for a newly down
 
 ```sh
 .venv/bin/python -m oil_eval \
-  --dataset-dir data/datasets/4abada098156b2b39306
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --report data/evaluations/wti_reproduction.json
 .venv/bin/python -m unittest discover -s tests -q
 ```
 
 This runs on the CPU using the existing immutable dataset, with no new downloads or dataset rebuild. It starts training in 2011, refits before each 2017–2022 development forecast, and never predicts or scores the final holdout. Parameters and splits are fixed; there is no tuning or holdout CLI option.
 
-On 301 scored development outcomes, accuracy was **49.5% for logistic regression, 49.5% for the training-majority baseline, and 50.2% for momentum**. Logistic regression had worse Brier and log-loss scores than the majority baseline. This experiment does not establish an improvement from the six WTI inputs.
+On the same 301 scored development outcomes:
 
-See the [evaluation protocol and results](docs/evaluation.md) and [machine-readable report](reports/development_evaluation.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. A repeated run with identical inputs reuses identical artifacts. The initial WTI checkpoint passed 99 tests; the Brent implementation adds checks for reference integrity and a shared comparison cohort.
+| Model | Accuracy | Brier score | Log loss |
+| --- | ---: | ---: | ---: |
+| Training-majority baseline | 49.50% | 0.2512 | 0.6955 |
+| Five-day momentum | 50.17% | — | — |
+| WTI-only logistic | 49.50% | 0.2578 | 0.7179 |
+| WTI + Brent logistic | 51.16% | 0.2666 | 0.7336 |
+
+Brent adds five correct predictions, a **1.66 percentage-point** accuracy increase, but worsens Brier score and log loss (lower is better). It improves accuracy in only two of six development years. This is a mixed development result, not evidence of a reliable forecasting edge.
+
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), and [Brent comparison report](reports/brent_comparison.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **141 tests pass**. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -62,7 +72,7 @@ The Brent comparison authenticates the saved WTI run and requires its exact fore
   --experiment brent-comparison
 ```
 
-It uses the same eligible historical rows for both logistic regressions, with six WTI inputs versus fourteen WTI/Brent inputs. The default result is `reports/brent_comparison.json`; the original WTI report and artifacts are preserved. The fixed protocol is checkpointed before computing the first Brent results.
+It uses the same eligible historical rows for both logistic regressions, with six WTI inputs versus fourteen WTI/Brent inputs. The default result is `reports/brent_comparison.json`; the original WTI report and artifacts are preserved. All 310 WTI training-input hashes and original model outputs reproduced exactly; Brent eligibility removed no historical training rows. The fixed protocol was committed as `77c24e9` before computing Brent results.
 
 ## Reproduce the saved audit offline
 
@@ -107,7 +117,7 @@ The older `vintages.snapshot` helper remains an audit primitive: `strict=False` 
 
 ## Next experiment and checkpoints
 
-Completed checkpoints cover the source audit and dataset, the fixed chronological protocol and holdout safeguards, and the baseline-versus-WTI-logistic development comparison. The Brent comparison is implemented with the same development dates and a closed final holdout; results will be recorded after the comparison protocol checkpoint. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
+Completed checkpoints cover the source audit and dataset, the fixed chronological protocol and holdout safeguards, the baseline-versus-WTI-logistic comparison, and the Brent comparison on identical development dates. Possible later development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 
