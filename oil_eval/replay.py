@@ -13,10 +13,11 @@ from .benchmarks import summarize_benchmarks
 from .metrics import classification_metrics
 from .inventory_features import INVENTORY_FEATURE_COLUMNS
 from .models import (COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES,
-                     INVENTORY_REGULARIZATION_MODEL_NAMES, INVENTORY_WINDOW_MODEL_NAMES, MODEL_NAMES,
+                     INVENTORY_REGULARIZATION_MODEL_NAMES, INVENTORY_WINDOW_MODEL_NAMES,
+                     INVENTORY_TREE_MODEL_NAMES, MODEL_NAMES,
                      fit_predict_comparison_models, fit_predict_inventory_models,
                      fit_predict_inventory_regularization_models, fit_predict_inventory_window_models,
-                     fit_predict_models)
+                     fit_predict_inventory_tree_models, fit_predict_models)
 from .protocol import (HOLDOUT_START, MIN_TRAINING_ROWS, SCORING_AS_OF,
                        forecast_role, protocol_config)
 from .reference import (validate_inventory_reference_schedule, validate_reference_schedule,
@@ -36,12 +37,14 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
     protocol_config(experiment)
     brent = experiment == "brent-comparison"
     window = experiment == "inventory-window-comparison"
-    regularization = experiment in ("inventory-regularization", "inventory-window-comparison")
-    inventory = experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison")
+    tree = experiment == "inventory-tree-comparison"
+    expanding_reference = window or tree
+    regularization = experiment in ("inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison")
+    inventory = experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison")
     comparison = brent or inventory
-    model_names = (INVENTORY_WINDOW_MODEL_NAMES if window else INVENTORY_REGULARIZATION_MODEL_NAMES if regularization else
+    model_names = (INVENTORY_TREE_MODEL_NAMES if tree else INVENTORY_WINDOW_MODEL_NAMES if window else INVENTORY_REGULARIZATION_MODEL_NAMES if regularization else
                    COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES)
-    predictor = predictor or (fit_predict_inventory_window_models if window else
+    predictor = predictor or (fit_predict_inventory_tree_models if tree else fit_predict_inventory_window_models if window else
                               fit_predict_inventory_regularization_models if regularization else
                               fit_predict_comparison_models if brent else
                               fit_predict_inventory_models if inventory else fit_predict_models)
@@ -69,9 +72,9 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
         if inventory_reference_rows is None:
             raise ValueError("Regularization comparison requires the verified inventory reference")
         validate_inventory_reference_schedule(rows, scoring_labels, inventory_reference_rows)
-    if window:
+    if expanding_reference:
         if regularization_reference_rows is None:
-            raise ValueError("Window comparison requires the verified regularization reference")
+            raise ValueError("Window/tree comparison requires the verified regularization reference")
         validate_inventory_reference_schedule(rows, scoring_labels, regularization_reference_rows)
     histories = defaultdict(list)
     for event in label_events:
@@ -198,7 +201,7 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
     if regularization:
         summary["inventory_reference_reproduction"] = verify_inventory_reference_reproduction(
             predictions, inventory_reference_rows)
-    if window:
+    if expanding_reference:
         summary["regularization_reference_reproduction"] = verify_regularization_reference_reproduction(
             predictions, regularization_reference_rows)
     return predictions, summary
@@ -216,13 +219,15 @@ def _metrics(rows, model_names=MODEL_NAMES):
 def summarize_predictions(predictions, excluded, *, experiment="wti"):
     brent = experiment == "brent-comparison"
     window = experiment == "inventory-window-comparison"
-    regularization = experiment in ("inventory-regularization", "inventory-window-comparison")
-    inventory = experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison")
+    tree = experiment == "inventory-tree-comparison"
+    regularization = experiment in ("inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison")
+    inventory = experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison")
     comparison = brent or inventory
-    model_names = (INVENTORY_WINDOW_MODEL_NAMES if window else INVENTORY_REGULARIZATION_MODEL_NAMES if regularization else
+    model_names = (INVENTORY_TREE_MODEL_NAMES if tree else INVENTORY_WINDOW_MODEL_NAMES if window else INVENTORY_REGULARIZATION_MODEL_NAMES if regularization else
                    COMPARISON_MODEL_NAMES if brent else INVENTORY_MODEL_NAMES if inventory else MODEL_NAMES)
     augmented_model = "logistic_wti_brent" if brent else "logistic_wti_inventory"
     logistic_names = tuple(name for name in model_names if name.startswith("logistic"))
+    benchmark_names = logistic_names + ("tree_wti_inventory",) if tree else logistic_names
     scored = [row for row in predictions if row["scoring_status"] == "available"]
     if any(row["forecast_date"] >= HOLDOUT_START.isoformat()
            or row["target_date"] >= HOLDOUT_START.isoformat() for row in predictions):
@@ -264,7 +269,7 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
             "metrics": _metrics([row for row in predictions if row["forecast_date"].startswith(year)], model_names),
         } for year in years},
         "paired_accuracy_comparisons": paired,
-        "constant_benchmarks": summarize_benchmarks(predictions, logistic_names),
+        "constant_benchmarks": summarize_benchmarks(predictions, benchmark_names),
         "holdout_evaluated": False,
     }
     if comparison:
@@ -313,11 +318,27 @@ def summarize_predictions(predictions, excluded, *, experiment="wti"):
         result["rolling_rows_excluded_per_fit_range"] = [
             min(row["rolling_training"]["rows_excluded_before_window"] for row in predictions),
             max(row["rolling_training"]["rows_excluded_before_window"] for row in predictions)]
+    if tree:
+        result["paired_inventory_tree_comparison"] = _paired_model_comparison(
+            scored, result["metrics"], result["yearly"],
+            "tree_wti_inventory", "logistic_wti_inventory_c01", "tree_minus_logistic")
+        diagnostics = [row["models"]["tree_wti_inventory"]["diagnostics"] for row in predictions]
+        leaf_counts = [count for fitted in diagnostics for count in fitted["estimator_leaf_counts"]]
+        leaf_samples = [count for fitted in diagnostics
+                        for stage in fitted["estimator_leaf_sample_counts"] for count in stage]
+        result["tree_fit_summary"] = {
+            "fit_count": len(diagnostics),
+            "estimator_count_range": [min(fitted["n_estimators_actual"] for fitted in diagnostics),
+                                      max(fitted["n_estimators_actual"] for fitted in diagnostics)],
+            "maximum_observed_depth": max(fitted["max_depth_actual"] for fitted in diagnostics),
+            "leaf_count_range": [min(leaf_counts), max(leaf_counts)],
+            "leaf_training_sample_count_range": [min(leaf_samples), max(leaf_samples)],
+        }
     return result
 
 
 def _paired_model_comparison(scored, metrics, yearly, candidate, control, difference_label):
-    """Use one paired metric contract for regularization and window policies."""
+    """Use one paired metric contract for the predefined candidate policies."""
     counts = Counter()
     for row in scored:
         candidate_correct = row["models"][candidate]["prediction"] == row["label"]

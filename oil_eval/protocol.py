@@ -13,7 +13,7 @@ HOLDOUT_START = date(2023, 1, 1)
 SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
 EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison", "inventory-regularization",
-               "inventory-window-comparison")
+               "inventory-window-comparison", "inventory-tree-comparison")
 
 
 def protocol_config(experiment: str = "wti") -> dict:
@@ -58,7 +58,8 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired WTI-plus-Brent minus WTI-only development accuracy; probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
         })
-    if experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison"):
+    if experiment in ("inventory-comparison", "inventory-regularization", "inventory-window-comparison",
+                      "inventory-tree-comparison"):
         config.update({
             "protocol_id": "wti-inventory-development-v1",
             "feature_columns": list(INVENTORY_MODEL_COLUMNS),
@@ -77,7 +78,7 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired WTI-plus-inventory minus WTI-only development accuracy; constants and probability quality also reported",
             "tuning": "none: keep the WTI experiment's parameters, threshold and dates fixed",
         })
-    if experiment in ("inventory-regularization", "inventory-window-comparison"):
+    if experiment in ("inventory-regularization", "inventory-window-comparison", "inventory-tree-comparison"):
         config.update({
             "protocol_id": "wti-inventory-regularization-development-v1",
             "compared_feature_sets": {
@@ -117,6 +118,36 @@ def protocol_config(experiment: str = "wti") -> dict:
             "primary_comparison": "paired development Brier score and log loss for rolling minus expanding C=0.1 inventory; accuracy and yearly stability also reported",
             "success_criteria": "report aggregate Brier/log-loss differences against expanding C=0.1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
             "tuning": "one fixed four-calendar-year window; no duration grid, parameter, feature, threshold, date or holdout changes",
+        })
+    if experiment == "inventory-tree-comparison":
+        config.update({
+            "protocol_id": "wti-inventory-tree-development-v1",
+            "compared_feature_sets": {
+                **config["compared_feature_sets"],
+                "tree_wti_inventory": list(INVENTORY_MODEL_COLUMNS),
+            },
+            "tree": {
+                "classifier": "GradientBoostingClassifier",
+                "imputer": "training median; all-missing training column uses zero",
+                "scaler": None, "missing_indicators": False, "class_weight": None,
+                "sample_weight": None, "calibration": None, "threshold": 0.5, "tie_prediction": 1,
+                "parameters": {
+                    "loss": "log_loss", "learning_rate": 0.05, "n_estimators": 50,
+                    "subsample": 1.0, "criterion": "friedman_mse", "min_samples_split": 2,
+                    "min_samples_leaf": 30, "min_weight_fraction_leaf": 0.0, "max_depth": 2,
+                    "min_impurity_decrease": 0.0, "init": None, "random_state": 0,
+                    "max_features": None, "verbose": 0, "max_leaf_nodes": None,
+                    "warm_start": False, "validation_fraction": 0.1, "n_iter_no_change": None,
+                    "tol": 0.0001, "ccp_alpha": 0.0,
+                },
+                "early_stopping": "disabled; no validation subset is created",
+                "feature_importance": "normalized impurity decrease recorded as a fitted-model diagnostic, without causal interpretation",
+            },
+            "candidate_selection": "retrospective single predefined small gradient-boosting candidate after earlier development results",
+            "reference_reproduction": "require exact authenticated WTI, C=1 inventory and expanding C=0.1 cohorts, training, inventory provenance and model payloads; native runtime fingerprints must match before fitting",
+            "primary_comparison": "paired development Brier score and log loss for tree minus expanding C=0.1 inventory; accuracy and yearly stability also reported",
+            "success_criteria": "report aggregate Brier/log-loss differences against expanding C=0.1 and both simple probability benchmarks; report each yearly difference descriptively, without a formal success threshold or significance claim",
+            "tuning": "one fixed small tree candidate; no grid, calibration, parameter, feature, threshold, date or holdout changes",
         })
     return config
 

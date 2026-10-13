@@ -9,6 +9,7 @@ from numbers import Integral, Real
 import warnings
 
 import numpy as np
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
@@ -24,6 +25,7 @@ COMPARISON_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_brent",)
 INVENTORY_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_inventory",)
 INVENTORY_REGULARIZATION_MODEL_NAMES = INVENTORY_MODEL_NAMES + ("logistic_wti_inventory_c01",)
 INVENTORY_WINDOW_MODEL_NAMES = INVENTORY_REGULARIZATION_MODEL_NAMES + ("logistic_wti_inventory_c01_rolling",)
+INVENTORY_TREE_MODEL_NAMES = INVENTORY_REGULARIZATION_MODEL_NAMES + ("tree_wti_inventory",)
 LOGISTIC_PARAMETERS = {
     "C": 1.0,
     "solver": "lbfgs",
@@ -31,6 +33,15 @@ LOGISTIC_PARAMETERS = {
     "random_state": 0,
 }
 INVENTORY_REGULARIZATION_PARAMETERS = {**LOGISTIC_PARAMETERS, "C": 0.1}
+TREE_PARAMETERS = {
+    "loss": "log_loss", "learning_rate": 0.05, "n_estimators": 50,
+    "subsample": 1.0, "criterion": "friedman_mse", "min_samples_split": 2,
+    "min_samples_leaf": 30, "min_weight_fraction_leaf": 0.0, "max_depth": 2,
+    "min_impurity_decrease": 0.0, "init": None, "random_state": 0,
+    "max_features": None, "verbose": 0, "max_leaf_nodes": None,
+    "warm_start": False, "validation_fraction": 0.1, "n_iter_no_change": None,
+    "tol": 0.0001, "ccp_alpha": 0.0,
+}
 
 
 def _feature_vector(row: dict, feature_columns: tuple = WTI_FEATURE_COLUMNS) -> list[float]:
@@ -212,4 +223,59 @@ def fit_predict_inventory_window_models(expanding_rows: list[dict], rolling_rows
     result = fit_predict_inventory_regularization_models(expanding_rows, forecast_row)
     result["logistic_wti_inventory_c01_rolling"] = _fit_predict_inventory(
         rolling_rows, forecast_row, labels, parameters=INVENTORY_REGULARIZATION_PARAMETERS)
+    return result
+
+
+def _fit_predict_inventory_tree(training_rows, forecast_row, labels):
+    """Fit the fixed tree candidate after training-only median imputation."""
+    columns = INVENTORY_MODEL_COLUMNS
+    train = np.asarray([_feature_vector(row, columns) for row in training_rows], dtype=float)
+    forecast = np.asarray([_feature_vector(forecast_row, columns)], dtype=float)
+    model = Pipeline([
+        ("imputer", SimpleImputer(strategy="median", keep_empty_features=True)),
+        ("classifier", GradientBoostingClassifier(**TREE_PARAMETERS)),
+    ])
+    model.fit(train, labels)
+    probability = float(model.predict_proba(forecast)[0, 1])
+    if not math.isfinite(probability) or not 0 <= probability <= 1:
+        raise RuntimeError("Gradient boosting produced an invalid probability")
+    imputer = model.named_steps["imputer"]
+    classifier = model.named_steps["classifier"]
+    estimators = classifier.estimators_.ravel()
+    depths = [int(estimator.get_depth()) for estimator in estimators]
+    return {
+        "prediction": int(probability >= 0.5),
+        "probability_up": probability,
+        "diagnostics": {
+            "feature_columns": list(columns),
+            "imputer_statistics": dict(zip(columns, imputer.statistics_.tolist())),
+            "training_missing_counts": {
+                column: sum(row["features"][column] is None for row in training_rows)
+                for column in columns
+            },
+            "forecast_missing_columns": [column for column in columns if forecast_row["features"][column] is None],
+            "n_estimators_actual": int(classifier.n_estimators_),
+            "max_depth_actual": max(depths),
+            "feature_importances": dict(zip(columns, classifier.feature_importances_.tolist())),
+            "estimator_depths": depths,
+            "estimator_leaf_counts": [int(estimator.get_n_leaves()) for estimator in estimators],
+            "estimator_leaf_sample_counts": [
+                estimator.tree_.n_node_samples[estimator.tree_.children_left == -1].tolist()
+                for estimator in estimators
+            ],
+        },
+    }
+
+
+def fit_predict_inventory_tree_models(training_rows: list[dict], forecast_row: dict) -> dict:
+    """Keep all five expanding controls and add one fixed small tree model.
+
+    The tree sees the same ordered eleven-input examples and active labels as
+    the expanding inventory regressions. Missing columns use training medians
+    or zero when wholly missing; no scaling, extra indicators, sample weights,
+    calibration, validation split or early stopping is used.
+    """
+    result = fit_predict_inventory_regularization_models(training_rows, forecast_row)
+    labels = [_training_label(row) for row in training_rows]
+    result["tree_wti_inventory"] = _fit_predict_inventory_tree(training_rows, forecast_row, labels)
     return result

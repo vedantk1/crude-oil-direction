@@ -49,6 +49,97 @@ def regularization_case(root, *, window=False):
 
 
 class RunnerTests(unittest.TestCase):
+    def test_tree_comparison_routes_shared_expanding_controls_native_build_and_cli_reference(self):
+        from oil_audit.dataset import jsonl_bytes, sha256
+        from oil_eval.inventory_features import INVENTORY_FEATURE_COLUMNS
+        from oil_eval.runner import INVENTORY_TREE_REPORT, main
+        self.assertEqual(INVENTORY_TREE_REPORT, Path("reports/inventory_tree_comparison.json"))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = root / "regularization-original.json"
+            with regularization_case(root, window=True) as case, \
+                 patch("oil_eval.runner.INVENTORY_TREE_REPORT", root / "tree.json"):
+                result = run(root, root / "runs", experiment="inventory-tree-comparison",
+                             regularization_reference_report=original)
+                mocks = case["mocks"]
+                mocks["load_development_data"].assert_called_once_with(root)
+                mocks["attach_inventory_features"].assert_called_once_with([case["admitted"]], [], [])
+                payload = jsonl_bytes([{**case["admitted"], "features": dict.fromkeys(INVENTORY_FEATURE_COLUMNS),
+                                        "provenance": case["augmented"]["inventory_provenance"]}])
+                feature_identity = {"sha256": sha256(payload), "bytes": len(payload)}
+                args = mocks["load_inventory_regularization_reference"].call_args.args
+                self.assertEqual(args[:2], (original, case["source"]))
+                self.assertEqual(args[3:], (case["wti_reference"], case["audit"], feature_identity,
+                                           case["inventory_reference"]))
+                for name in ("load_reference", "load_inventory_comparison_reference", "load_inventory_regularization_reference"):
+                    self.assertEqual(mocks[name].call_args.kwargs, {"native_runtime": case["native_runtime"]})
+                mocks["replay_development"].assert_called_once_with(
+                    [case["augmented"], case["crossing"]], [], [], experiment="inventory-tree-comparison",
+                    reference_rows=case["wti_rows"], inventory_reference_rows=case["inventory_rows"],
+                    regularization_reference_rows=case["regularization_rows"])
+                self.assertEqual(result["regularization_reference_run_id"], "original-regularization")
+                self.assertEqual(json.loads((root / "tree.json").read_bytes()), result)
+                destination = Path(result["evaluation_directory"])
+                manifest = json.loads((destination / "manifest.json").read_bytes())
+                self.assertEqual(manifest["inventory_regularization_reference"], case["regularization_reference"])
+                self.assertEqual(manifest["inventory_comparison_reference"], case["inventory_reference"])
+                self.assertEqual(manifest["inventory_features"], feature_identity)
+                self.assertEqual((destination / "inventory_features.jsonl").read_bytes(), payload)
+        output = {"run_id": "synthetic", "evaluation_directory": "data/synthetic", "prediction_count": 0,
+                  "scored_count": 0, "unscored_count": 0, "metrics": {}, "holdout_evaluated": False}
+        for flags, expected in (([], Path("reports/inventory_regularization.json")),
+                                (["--regularization-reference-report", "data/custom-c01.json"], Path("data/custom-c01.json"))):
+            argv = ["oil_eval", "--dataset-dir", "data/synthetic", "--experiment", "inventory-tree-comparison", *flags]
+            with self.subTest(flags=flags), patch.object(sys, "argv", argv), \
+                 patch("oil_eval.runner.run", return_value=output) as execute, patch("builtins.print"):
+                main()
+            self.assertEqual(execute.call_args.kwargs["experiment"], "inventory-tree-comparison")
+            self.assertEqual(execute.call_args.kwargs["regularization_reference_report"], expected)
+
+    def test_tree_comparison_missing_reference_stops_before_replay_or_writes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("load_reference", "load_inventory_reference", "load_inventory_comparison_reference",
+                         "load_inventory_regularization_reference"):
+                with self.subTest(reference=name), regularization_case(root, window=True) as case:
+                    case["mocks"][name].side_effect = FileNotFoundError("Missing synthetic reference")
+                    with self.assertRaisesRegex(FileNotFoundError, "Missing synthetic reference"):
+                        run(root, root / "runs", root / "tree.json", experiment="inventory-tree-comparison")
+                    case["mocks"]["replay_development"].assert_not_called()
+                    self.assertFalse((root / "runs").exists())
+                    self.assertFalse((root / "tree.json").exists())
+
+    def test_tree_comparison_protects_historical_reports_controls_and_old_tree_artifacts(self):
+        historical_reports = (
+            "brent_comparison.json", "dataset_summary.json", "development_benchmarks.json",
+            "development_evaluation.json", "inventory_audit.json", "inventory_comparison.json",
+            "inventory_regularization.json", "inventory_window_comparison.json", "price_audit.json",
+            "regularization_runtime_check.json", "source_reconciliation.json", "vintage_audit.json",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original_report = root / "regularization-original.json"
+            old_tree = root / "old-tree-output"
+            old_tree.mkdir()
+            names = ("manifest.json", "summary.json", "predictions.jsonl", "inventory_features.jsonl")
+            for name in names:
+                (old_tree / name).write_bytes(b"immutable synthetic tree artifact\n")
+            before = {path: path.read_bytes() for path in old_tree.iterdir()}
+            with regularization_case(root, window=True) as case:
+                # Stop before any write if a historical-path guard regresses.
+                case["mocks"]["replay_development"].side_effect = AssertionError("Protected destination reached replay")
+                destinations = [Path("reports") / name for name in historical_reports]
+                destinations += [original_report, root / "audit" / "records.jsonl"]
+                destinations += [root / subdirectory / name for subdirectory in
+                                 ("regularization-reference", "inventory-reference", "runs/older-tree", "old-tree-output")
+                                 for name in names]
+                for report in destinations:
+                    with self.subTest(report=str(report)), self.assertRaisesRegex(ValueError, "overwrite"):
+                        run(root, root / "runs", report, experiment="inventory-tree-comparison",
+                            regularization_reference_report=original_report)
+                case["mocks"]["replay_development"].assert_not_called()
+            self.assertEqual(before, {path: path.read_bytes() for path in before})
+
     def test_window_comparison_routes_all_three_control_references_and_shared_frozen_features(self):
         from oil_audit.dataset import jsonl_bytes, sha256
         from oil_eval.inventory_features import INVENTORY_FEATURE_COLUMNS

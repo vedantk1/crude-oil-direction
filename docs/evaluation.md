@@ -382,3 +382,29 @@ Accuracy improves in two years, ties in two and deteriorates in two, with the la
 All five expanding control payloads, complete training metadata, inventory inputs/provenance and scoring states reproduce exactly. Every rolling fit preserves the frozen null inputs and meets the unchanged minimum/class checks; it refits preprocessing only on its recent subset. All regressions converge, with at most seven WTI, eleven `C=1`, nine expanding `C=0.1` and nine rolling iterations. The [window-comparison report](../reports/inventory_window_comparison.json) contains matched aggregate/yearly metrics, paired disagreements, simple benchmarks, both training-count ranges and reference-reproduction checks. The immutable local run retains raw inventory features, per-forecast rolling metadata/hashes and fitted diagnostics. The final holdout remains closed.
 
 Independent reconstruction verifies all 310 causal rolling subsets and both training-input hashes, all 1,550 expanding control payloads, all 607 raw inventory rows, aggregate/yearly metrics and benchmark scores, artifact checksums, all 28 code hashes against `931d8bf`, and all 211 native-file hashes. The repeated report and all run artifacts are byte-identical. A checksum comparison confirms all **717 pre-existing data/report files** remain unchanged. The timed repeat plus preservation checks took **12.24 seconds**, excluding imports and including source authentication, construction, 1,240 logistic fits, scoring and file checks. All **314 tests pass**. The experiment uses the existing free data and CPU runtime with no new downloads or paid services.
+
+## Fixed small tree comparison
+
+Compare one predefined gradient-boosting model with expanding `C=0.1` inventory logistic regression on the same 310 development forecasts and 301 available outcomes. Both use the same eleven WTI/inventory columns, ordered active historical training labels, frozen inventory values, expanding 295–596-example cohorts and 0.5 decision threshold; exact ties predict up. This is a new nonlinear modeling hypothesis after earlier development results, not a previously unseen evaluation or a broad search.
+
+The fixed `GradientBoostingClassifier` uses **50 boosting stages**, learning rate **0.05**, maximum tree depth **2**, minimum **30 total training examples per leaf**, `subsample=1`, `loss=log_loss`, and `random_state=0`. All constructor defaults are explicitly recorded in the protocol. `n_iter_no_change=None` disables early stopping and its internal validation split; no warm start, sample/class weighting, calibration, feature or parameter search is used. The initial estimate is training prevalence (`init=None`). See the [pinned scikit-learn API](https://scikit-learn.org/1.7/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html).
+
+The tree pipeline fits median imputation only on each eligible training window and preserves all-missing columns with zero. It adds no missing indicators and needs no standard scaling; the logistic controls retain their existing training-only scaler. Nulls and source missingness remain explicit in raw artifacts. The tree receives every original training example, including those with missing inventory.
+
+The WTI, inventory audit, `C=1` and expanding `C=0.1` references must authenticate, share the exact frozen inventory artifact, and match the selected native runtime before fitting. All five expanding controls must reproduce exactly. Rolling results remain preserved but are not retrained as part of this comparison. Tree diagnostics retain feature columns, fitted imputer statistics, missing counts, all 50 estimators' depths, leaf counts and training samples per leaf, plus normalized impurity importances. These importances describe the fitted model; they do not establish causality or predictive value.
+
+```sh
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-tree-comparison \
+  --reference-report data/regularization/wti-reference.json \
+  --inventory-audit-report data/regularization/inventory-audit-reference.json \
+  --inventory-reference-report data/regularization/inventory-comparison-reference.json \
+  --regularization-reference-report reports/inventory_regularization.json
+```
+
+The separate report is `reports/inventory_tree_comparison.json`, with immutable artifacts under `data/evaluations/`. Historical reports, datasets, source captures and prior run artifacts remain preserved. The documented working runtime is unchanged; no new dependency or data downloads are needed.
+
+Report paired accuracy, balanced accuracy, AUC, Brier/log loss, yearly differences and both simple probability benchmarks. The tree enters the constant-benchmark comparisons but not logistic solver-iteration summaries. This bounded model can still overfit the small, dependent development sample; its depth and leaf limits are controls on complexity, not guarantees. Retain the result if it underperforms, without changing settings, thresholds, features or dates afterward. The 2023-onward final holdout remains closed.
+
+All **331 tests pass** before computing the first tree result. New checks cover fixed constructor settings, train-only median imputation/all-missing columns, deterministic and finite probabilities, threshold ties, actual stage/depth/leaf limits, exact five-control reproduction, frozen nulls and historical label changes, scored/unscored cohorts, paired/constant probability metrics, selected references/native fingerprints, holdout rejection and historical report/artifact protection. All five earlier protocol configurations remain unchanged.

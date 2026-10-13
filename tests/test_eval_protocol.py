@@ -82,3 +82,31 @@ class ProtocolTests(unittest.TestCase):
         self.assertIn("capacity-only audit without model predictions", candidate["candidate_selection"])
         self.assertIn("no duration grid", candidate["tuning"])
         self.assertIn("without a formal success threshold or significance claim", candidate["success_criteria"])
+
+    def test_fixed_small_tree_uses_expanding_inventory_protocol_and_unchanged_controls(self):
+        original = protocol_config("inventory-regularization")
+        candidate = protocol_config("inventory-tree-comparison")
+        for key in ("initial_training_start", "development_start", "development_scoring_as_of",
+                    "holdout_start", "logistic", "logistic_variants", "minimum_training_rows",
+                    "feature_columns", "inventory_cutoff", "inventory_missing", "unusable_inventory_issue",
+                    "forecast_cohort", "training_cohort", "fit_schedule"):
+            self.assertEqual(original[key], candidate[key])
+        self.assertEqual(candidate["compared_feature_sets"]["tree_wti_inventory"],
+                         original["compared_feature_sets"]["logistic_wti_inventory_c01"])
+        self.assertNotIn("rolling_window_years", candidate)
+        self.assertNotIn("logistic_wti_inventory_c01_rolling", candidate["compared_feature_sets"])
+        tree = candidate["tree"]
+        self.assertIsNone(tree["scaler"])
+        self.assertFalse(tree["missing_indicators"])
+        for key in ("sample_weight", "class_weight", "calibration"):
+            self.assertIsNone(tree[key])
+        self.assertEqual(tree["threshold"], 0.5)
+        self.assertEqual(tree["tie_prediction"], 1)
+        for key, value in {"n_estimators": 50, "learning_rate": 0.05, "max_depth": 2,
+                           "min_samples_leaf": 30, "subsample": 1.0, "random_state": 0,
+                           "loss": "log_loss", "n_iter_no_change": None, "warm_start": False}.items():
+            self.assertEqual(tree["parameters"][key], value)
+        self.assertIn("no validation subset", tree["early_stopping"])
+        self.assertIn("without causal interpretation", tree["feature_importance"])
+        self.assertIn("no grid, calibration", candidate["tuning"])
+        self.assertIn("without a formal success threshold or significance claim", candidate["success_criteria"])

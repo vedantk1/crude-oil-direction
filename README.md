@@ -70,7 +70,7 @@ Against WTI-only, Brent adds five correct predictions (**+1.66 percentage points
 
 The four-year rolling policy loses seven correct predictions (**-2.33 points versus expanding C=0.1**) and worsens aggregate Brier/log loss and AUC. The expanding `C=0.1` model remains the better development candidate, without demonstrated forecasting advantage over the simple probability benchmarks.
 
-See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison](reports/brent_comparison.json), [inventory comparison](reports/inventory_comparison.json), [regularization comparison](reports/inventory_regularization.json), [rolling-window comparison](reports/inventory_window_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **314 tests pass** in the documented working runtime, including inventory feature, preprocessing, cohort, provenance, regularization, rolling-window, and native-build checks. The WTI command above records a new reproduction report while preserving the original reference.
+See the [evaluation protocol and results](docs/evaluation.md), [original WTI report](reports/development_evaluation.json), [Brent comparison](reports/brent_comparison.json), [inventory comparison](reports/inventory_comparison.json), [regularization comparison](reports/inventory_regularization.json), [rolling-window comparison](reports/inventory_window_comparison.json), and [supplemental benchmarks](reports/development_benchmarks.json). Per-forecast predictions, fitted preprocessing diagnostics, and run hashes stay under ignored `data/evaluations/`. Repeated runs with identical inputs reuse identical artifacts. All **331 tests pass** in the documented working runtime, including inventory feature, preprocessing, cohort, provenance, regularization, rolling-window, tree-model, and native-build checks. The WTI command above records a new reproduction report while preserving the original reference.
 
 The Brent comparison authenticates the saved WTI run and requires its exact forecast dates and scoring labels before fitting:
 
@@ -146,6 +146,20 @@ The protocol was committed as `931d8bf` before computing results. Run `f4849ff22
 
 Our source auditing is stronger than the demonstrated predictive signal. The 301 weekly scored outcomes, delayed benchmarks, qualified archive history and narrow inputs limit this task. Weak results do not establish that the underlying observations are poor quality; see the [data-quality assessment](docs/evaluation.md#data-quality-and-predictive-limits).
 
+## Compare a small tree model
+
+```sh
+PYTHONPATH=.audit-deps/scipy-macos12 .venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment inventory-tree-comparison \
+  --reference-report data/regularization/wti-reference.json \
+  --inventory-audit-report data/regularization/inventory-audit-reference.json \
+  --inventory-reference-report data/regularization/inventory-comparison-reference.json \
+  --regularization-reference-report reports/inventory_regularization.json
+```
+
+One fixed gradient-boosting candidate uses the same eleven inputs and expanding training examples as `C=0.1`: 50 shallow trees, depth at most two, at least 30 total examples per leaf, learning rate 0.05 and a fixed seed. It fits training-only median imputation, retains null provenance, and uses no scaling, early stopping, validation split or parameter search. All five expanding controls must reproduce exactly. The separate report is `reports/inventory_tree_comparison.json`; see the [tree protocol](docs/evaluation.md#fixed-small-tree-comparison). Historical artifacts and the final holdout remain preserved.
+
 ## Reproduce the saved audit offline
 
 These commands use the evidence retained from the 2026-10-13 audit. They check source hashes before reading values.
@@ -190,7 +204,7 @@ The older `vintages.snapshot` helper remains an audit primitive: `strict=False` 
 
 ## Next experiment and checkpoints
 
-Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison, constant benchmarks, inventory archive audit, inventory comparison with explicit missingness, the single `C=0.1` regularization comparison, and four-year rolling versus expanding training on identical development dates. The rolling policy did not improve this setup. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
+Completed checkpoints cover the source audit and dataset, fixed chronological protocol and holdout safeguards, WTI/Brent comparison, constant benchmarks, inventory archive audit, inventory comparison with explicit missingness, the single `C=0.1` regularization comparison, and four-year rolling versus expanding training on identical development dates. The rolling policy did not improve this setup. The next fixed experiment compares a small gradient-boosting model with expanding `C=0.1`. Other possible development checks include a longer publication delay and scoring-policy sensitivity. Final holdout evaluation belongs to a later, explicitly authorized step after model selection is finished.
 
 Create a local commit after each coherent, verified milestone, with its relevant documentation updated. Keep source downloads and generated datasets under ignored `data/`. New branches and pushes require an explicit request.
 
