@@ -16,7 +16,7 @@ import re
 from zoneinfo import ZoneInfo
 
 from oil_audit.calendar import CALENDAR_ID, add_business_days, is_business_day
-from oil_audit.features import WTI_FEATURE_COLUMNS
+from oil_audit.features import FEATURE_SETS, WTI_FEATURE_COLUMNS
 from .protocol import HOLDOUT_START, SCORING_AS_OF, TRAIN_START
 
 
@@ -162,7 +162,7 @@ def _verify_artifacts(dataset_dir: Path, manifest: dict) -> dict:
     return verified
 
 
-def _validate_config(config) -> None:
+def _validate_config(config, feature_set: str) -> None:
     expected = {
         "schema_version": 1,
         "calendar_id": CALENDAR_ID,
@@ -179,18 +179,24 @@ def _validate_config(config) -> None:
     feature_sets = config.get("feature_sets")
     if not isinstance(feature_sets, dict) or feature_sets.get("wti") != list(WTI_FEATURE_COLUMNS):
         raise ValueError("Incompatible source dataset configuration: feature_sets.wti")
+    if feature_sets.get(feature_set) != list(FEATURE_SETS[feature_set]):
+        raise ValueError("Incompatible source dataset configuration: feature_sets." + feature_set)
 
 
-def load_development_data(dataset_dir: Path) -> tuple[dict, list[dict], list[dict], list[dict]]:
-    """Return source identity, WTI features, event history and frozen scoring labels.
+def load_development_data(dataset_dir: Path, feature_set: str = "wti"
+                          ) -> tuple[dict, list[dict], list[dict], list[dict]]:
+    """Return source identity, selected features, events and frozen scoring labels.
 
     Boundary-crossing feature rows are retained for the runner's explicit purge.
     No held-out JSON row is decoded. Source hashes cover held-out bytes without
     interpreting their contents and are used only for integrity verification.
     """
+    if not isinstance(feature_set, str) or feature_set not in FEATURE_SETS:
+        raise ValueError("Unknown feature set: " + str(feature_set))
+    columns = FEATURE_SETS[feature_set]
     manifest_bytes = (dataset_dir / "manifest.json").read_bytes()
     manifest = _decode(manifest_bytes)
-    _validate_config(manifest.get("config"))
+    _validate_config(manifest.get("config"), feature_set)
     artifacts = _verify_artifacts(dataset_dir, manifest)
     maximum = _date(manifest["config"]["maximum_supported_as_of_date"], "maximum_supported_as_of_date")
     if maximum < SCORING_AS_OF:
@@ -216,16 +222,25 @@ def load_development_data(dataset_dir: Path) -> tuple[dict, list[dict], list[dic
         if row.get("forecast_timestamp") != expected_timestamp:
             raise ValueError("Forecast timestamp must be 18:00 America/New_York on its forecast date")
         values = row.get("features")
-        if not isinstance(values, dict) or not all(column in values for column in WTI_FEATURE_COLUMNS):
-            raise ValueError("Missing WTI feature columns")
-        for column in WTI_FEATURE_COLUMNS:
+        if not isinstance(values, dict) or not all(column in values for column in columns):
+            raise ValueError("Missing " + feature_set.upper() + " feature columns")
+        for column in columns:
             _finite(values[column], column)
-        row["features"] = {column: values[column] for column in WTI_FEATURE_COLUMNS}
+        row["features"] = {column: values[column] for column in columns}
         eligibility = row.get("eligibility")
         if not isinstance(eligibility, dict) or type(eligibility.get("wti")) is not bool:
             raise ValueError("Missing WTI eligibility flag")
         if eligibility["wti"] != (values["wti_latest_price"] is not None):
             raise ValueError("WTI eligibility does not match available price")
+        if feature_set == "wti_brent":
+            if type(eligibility.get("wti_brent")) is not bool:
+                raise ValueError("Missing WTI/Brent eligibility flag")
+            combined_eligible = eligibility["wti"] and all(
+                values[column] is not None for column in
+                ("wti_latest_price", "brent_latest_price", "brent_wti_spread_usd")
+            )
+            if eligibility["wti_brent"] != combined_eligible:
+                raise ValueError("WTI/Brent eligibility does not match available prices and spread")
         features.append(row)
         by_id[row["row_id"]] = row
     if not features:

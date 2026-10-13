@@ -1,6 +1,6 @@
 # Chronological development evaluation
 
-This protocol compares two simple rules with a WTI-only logistic regression. It is fixed before computing the first model-comparison results. The underlying price target and availability convention remain those in the [dataset specification](dataset.md).
+The original protocol compares two simple rules with a WTI-only logistic regression. The fixed Brent extension below compares six WTI inputs with fourteen combined inputs on the same development dates. Each protocol is checkpointed before computing its first results. The underlying price target and availability convention remain those in the [dataset specification](dataset.md).
 
 ## Time boundaries and final holdout
 
@@ -79,6 +79,28 @@ The experiment consumes the existing immutable dataset rather than rebuilding it
 
 The current path and full numerical results are in [the committed report](../reports/development_evaluation.json). `--output-root` and `--report` can choose other workspace-relative destinations; there is no date-range override or holdout execution option. Different code, inputs, or recorded runtime versions create a new run identity. Conflicting bytes at an existing identity cause a failure.
 
-All **99 tests pass**. They cover holdout filtering before decoding, incompatible source conventions, future-feature/revision invariance, label withdrawals and maturity, target-boundary purging, preprocessing isolation, missing values, baseline tie rules, known metric cases, paired scoring, and artifact protection. A repeated real-data run produced identical prediction, summary, and manifest bytes. Hash and maturity checks passed for all 310 saved forecasts, with zero holdout predictions.
+The initial WTI checkpoint passed **99 tests**. They cover holdout filtering before decoding, incompatible source conventions, future-feature/revision invariance, label withdrawals and maturity, target-boundary purging, preprocessing isolation, missing values, baseline tie rules, known metric cases, paired scoring, and artifact protection. A repeated real-data run produced identical prediction, summary, and manifest bytes. Hash and maturity checks passed for all 310 saved forecasts, with zero holdout predictions.
 
-The final holdout remains closed. A Brent comparison can be evaluated on the same development dates before deciding whether any model is ready for a separately authorized final holdout evaluation.
+## Fixed Brent comparison
+
+The Brent comparison adds the existing six Brent features plus the aligned Brent-minus-WTI spread and its age, giving fourteen inputs versus the original six WTI inputs. Both logistic regressions retain the same regularization, solver, preprocessing, threshold, and chronological boundaries. No parameter search or final holdout evaluation is authorized by this comparison.
+
+The forecast IDs, dates, targets, scoring availability, and outcome labels must exactly match the original WTI development run. The entire cohort is checked before fitting. If any original forecast lacks eligible Brent inputs, the comparison fails instead of silently dropping dates. Optional missing lookbacks are still imputed within each training window.
+
+Both models use the same ordered historical training rows and active labels at each issuance: the intersection of WTI and combined-input eligibility. Any training rows removed from the original WTI cohort are reported. The WTI training-input hash retains its original six-feature definition. Whenever those hashes match the original run, the implementation must reproduce the original WTI, majority, and momentum outputs exactly, including fitted diagnostics.
+
+The prior development report, its immutable manifest, and both artifacts are verified by hash. The reference must match the source dataset, fixed WTI protocol, and recorded runtime. Original results are preserved; Brent results receive a separate report and run identity. Hash verification reads source bytes, but 2023-onward observations remain excluded from model fitting, prediction, scoring, and tuning.
+
+This comparison protocol is checkpointed before computing Brent results. The final holdout remains closed until a later explicitly authorized evaluation.
+
+Run the comparison against the retained WTI reference after installing the same pinned runtime:
+
+```sh
+.venv/bin/python -m oil_eval \
+  --dataset-dir data/datasets/4abada098156b2b39306 \
+  --experiment brent-comparison
+```
+
+The default reference is `reports/development_evaluation.json`. `--reference-report` may select another authenticated WTI report with the same dataset, protocol, and runtime. The comparison defaults to `reports/brent_comparison.json` and rejects any report destination that would overwrite the original reference or its artifacts. Preserve the original report when rerunning the WTI-only command after code changes: use `--report data/evaluations/wti_reproduction.json` to record that new run separately.
+
+All **141 tests pass** at the Brent protocol checkpoint. Additional synthetic tests cover combined-input validation, unchanged WTI model behavior, shared training rows, missing Brent lookbacks, exact reference dates and outcomes, integrity failures, and rejection before fitting. Future Brent values cannot alter earlier predictions. No real Brent metrics are used to choose the protocol or parameters.

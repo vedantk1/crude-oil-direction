@@ -24,3 +24,14 @@ class ProtocolTests(unittest.TestCase):
     def test_development_rejects_invalid_target_order(self):
         with self.assertRaises(ValueError):
             forecast_role({"forecast_date": "2020-01-02", "target_date": "2020-01-01"})
+
+    def test_brent_protocol_keeps_dates_and_parameters_fixed(self):
+        original = protocol_config()
+        comparison = protocol_config("brent-comparison")
+        for key in ("initial_training_start", "development_start", "development_scoring_as_of",
+                    "holdout_start", "logistic", "minimum_training_rows"):
+            self.assertEqual(original[key], comparison[key])
+        self.assertEqual(len(comparison["compared_feature_sets"]["logistic"]), 6)
+        self.assertEqual(len(comparison["compared_feature_sets"]["logistic_wti_brent"]), 14)
+        with self.assertRaises(ValueError):
+            protocol_config("holdout")

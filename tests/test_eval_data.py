@@ -10,11 +10,11 @@ import unittest
 from zoneinfo import ZoneInfo
 
 from oil_audit.calendar import CALENDAR_ID, add_business_days
-from oil_audit.features import WTI_FEATURE_COLUMNS
+from oil_audit.features import FEATURE_COLUMNS, FEATURE_SETS, WTI_FEATURE_COLUMNS
 from oil_eval.data import ARTIFACTS, load_development_data
 
 
-def feature(day="2011-04-07"):
+def feature(day="2011-04-07", feature_set="wti"):
     forecast = date.fromisoformat(day)
     return {
         "row_id": "wti-direction-" + forecast.strftime("%Y%m%d"),
@@ -23,8 +23,8 @@ def feature(day="2011-04-07"):
             forecast, time(18), tzinfo=ZoneInfo("America/New_York")).isoformat(),
         "target_date": add_business_days(forecast, 5).isoformat(),
         "information_cutoff_date": (forecast - timedelta(days=1)).isoformat(),
-        "features": {**dict.fromkeys(WTI_FEATURE_COLUMNS, 1.0), "brent_latest_price": 200.0},
-        "eligibility": {"wti": True},
+        "features": {**dict.fromkeys(FEATURE_SETS[feature_set], 1.0), "brent_latest_price": 200.0},
+        "eligibility": {"wti": True, **({"wti_brent": True} if feature_set == "wti_brent" else {})},
         "provenance": {"wti": {"latest_observation_date": "2011-04-06"}},
     }
 
@@ -45,8 +45,8 @@ def history(row):
     return [missing, available]
 
 
-def fixture():
-    row = feature()
+def fixture(feature_set="wti"):
+    row = feature(feature_set=feature_set)
     events = history(row)
     scoring = {key: value for key, value in events[-1].items() if key != "available_until"}
     return {"features.jsonl": [row], "label_events.jsonl": events,
@@ -67,7 +67,7 @@ def save(directory, content):
                     "calendar_id": CALENDAR_ID, "horizon_business_days": 5,
                     "forecast_time": "18:00", "forecast_timezone": "America/New_York",
                     "information_cutoff": "preceding calendar date, inclusive",
-                    "feature_sets": {"wti": list(WTI_FEATURE_COLUMNS)},
+                    "feature_sets": {name: list(columns) for name, columns in FEATURE_SETS.items()},
                 },
                 "artifacts": artifacts}
     (root / "manifest.json").write_text(json.dumps(manifest))
@@ -79,8 +79,9 @@ class DevelopmentDataTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
 
-    def load(self, content=None):
-        return load_development_data(save(self.temp.name, content if content is not None else fixture()))
+    def load(self, content=None, feature_set="wti"):
+        content = content if content is not None else fixture(feature_set)
+        return load_development_data(save(self.temp.name, content), feature_set=feature_set)
 
     def test_valid_rows_expose_only_wti_features_and_bounded_identity(self):
         identity, rows, events, scoring = self.load()
@@ -90,6 +91,91 @@ class DevelopmentDataTests(unittest.TestCase):
         self.assertNotIn("summary", identity)
         self.assertEqual(events[-1]["label"], 1)
         self.assertEqual(scoring[0]["origin_price"], -36.98)
+
+    def test_combined_rows_expose_fourteen_ordered_features(self):
+        identity, rows, events, scoring = self.load(feature_set="wti_brent")
+        self.assertEqual(tuple(rows[0]["features"]), FEATURE_COLUMNS)
+        self.assertEqual(len(rows[0]["features"]), 14)
+        self.assertEqual(rows[0]["eligibility"]["wti_brent"], True)
+        wti_identity, _, wti_events, wti_scoring = self.load(fixture("wti_brent"))
+        self.assertEqual(identity, wti_identity)
+        self.assertEqual(events, wti_events)
+        self.assertEqual(scoring, wti_scoring)
+
+    def test_unknown_feature_set_is_rejected_before_source_io(self):
+        for selection in ("brent", "all", "", None, []):
+            with self.subTest(selection=selection), self.assertRaisesRegex(ValueError, "Unknown feature set"):
+                load_development_data(Path(self.temp.name) / "nonexistent", selection)
+
+    def test_wti_default_ignores_invalid_or_missing_brent_features(self):
+        for value in (float("nan"), True, "invalid", None):
+            content = fixture()
+            content["features.jsonl"][0]["features"]["brent_latest_price"] = value
+            self.assertEqual(tuple(self.load(content)[1][0]["features"]), WTI_FEATURE_COLUMNS)
+        content["features.jsonl"][0]["features"].pop("brent_latest_price")
+        self.assertEqual(tuple(self.load(content)[1][0]["features"]), WTI_FEATURE_COLUMNS)
+
+    def test_combined_source_config_requires_exact_ordered_columns(self):
+        for columns in (None, list(reversed(FEATURE_COLUMNS)), list(WTI_FEATURE_COLUMNS)):
+            with self.subTest(columns=columns):
+                root = save(self.temp.name, fixture("wti_brent"))
+                manifest = json.loads((root / "manifest.json").read_text())
+                manifest["config"]["feature_sets"]["wti_brent"] = columns
+                (root / "manifest.json").write_text(json.dumps(manifest))
+                with self.assertRaisesRegex(ValueError, "feature_sets.wti_brent"):
+                    load_development_data(root, "wti_brent")
+                # The WTI-only contract is independent of the unused feature set.
+                self.assertEqual(tuple(load_development_data(root)[1][0]["features"]), WTI_FEATURE_COLUMNS)
+
+    def test_combined_optional_nulls_are_retained_and_not_eligibility_requirements(self):
+        content = fixture("wti_brent")
+        optional = ("brent_change_5_business_days_usd", "brent_change_20_business_days_usd",
+                    "brent_change_std_20_business_days_usd", "spread_age_calendar_days")
+        content["features.jsonl"][0]["features"].update(dict.fromkeys(optional))
+        row = self.load(content, "wti_brent")[1][0]
+        self.assertTrue(row["eligibility"]["wti_brent"])
+        for column in optional:
+            self.assertIsNone(row["features"][column])
+
+    def test_combined_missing_required_prices_are_retained_when_ineligible(self):
+        for column in ("wti_latest_price", "brent_latest_price", "brent_wti_spread_usd"):
+            with self.subTest(column=column):
+                content = fixture("wti_brent")
+                row = content["features.jsonl"][0]
+                row["features"][column] = None
+                row["eligibility"]["wti_brent"] = False
+                if column == "wti_latest_price":
+                    row["eligibility"]["wti"] = False
+                result = self.load(content, "wti_brent")[1][0]
+                self.assertFalse(result["eligibility"]["wti_brent"])
+                self.assertIsNone(result["features"][column])
+
+    def test_combined_nonfinite_missing_columns_and_eligibility_mismatch_rejected(self):
+        for mutation in (
+            lambda row: row["features"].update(brent_latest_price=float("inf")),
+            lambda row: row["features"].update(brent_change_5_business_days_usd=float("nan")),
+            lambda row: row["features"].update(brent_latest_price=True),
+            lambda row: row["features"].pop("brent_coverage_20_business_days"),
+            lambda row: row["features"].update(brent_latest_price=None),
+            lambda row: row["features"].update(brent_wti_spread_usd=None),
+            lambda row: row["eligibility"].update(wti_brent=False),
+            lambda row: row["eligibility"].update(wti_brent=1),
+            lambda row: row["eligibility"].pop("wti_brent"),
+        ):
+            content = fixture("wti_brent")
+            mutation(content["features.jsonl"][0])
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                self.load(content, "wti_brent")
+
+    def test_combined_holdout_and_future_labels_are_filtered_before_decoding(self):
+        content = fixture("wti_brent")
+        for name in ARTIFACTS:
+            content[name].append(b'{"forecast_date":"2023-01-03", cannot decode this}')
+        content["label_events.jsonl"][1]["available_until"] = "2023-01-03"
+        for name in ("label_events.jsonl", "evaluation_labels.jsonl"):
+            content[name].append(b'{"forecast_date":"2011-04-07", "available_from":"2023-01-03", poison}')
+        baseline = self.load(fixture("wti_brent"), "wti_brent")[1:]
+        self.assertEqual(self.load(content, "wti_brent")[1:], baseline)
 
     def test_checksum_and_size_mismatches_rejected_before_parsing(self):
         root = save(self.temp.name, fixture())

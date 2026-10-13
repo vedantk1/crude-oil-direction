@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from oil_audit.features import WTI_FEATURE_COLUMNS
+from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
 
 
 TRAIN_START = date(2011, 4, 7)
@@ -10,10 +10,13 @@ DEVELOPMENT_START = date(2017, 1, 1)
 HOLDOUT_START = date(2023, 1, 1)
 SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
+EXPERIMENTS = ("wti", "brent-comparison")
 
 
-def protocol_config() -> dict:
-    return {
+def protocol_config(experiment: str = "wti") -> dict:
+    if experiment not in EXPERIMENTS:
+        raise ValueError("Unknown development experiment")
+    config = {
         "protocol_id": "wti-development-v1",
         "initial_training_start": TRAIN_START.isoformat(),
         "development_start": DEVELOPMENT_START.isoformat(),
@@ -39,6 +42,20 @@ def protocol_config() -> dict:
         "primary_comparison": "paired development accuracy; probability quality also reported",
         "uncertainty": "descriptive yearly results; no independent-sample significance claim",
     }
+    if experiment == "brent-comparison":
+        config.update({
+            "protocol_id": "wti-brent-development-v1",
+            "feature_columns": list(FEATURE_COLUMNS),
+            "compared_feature_sets": {"logistic": list(WTI_FEATURE_COLUMNS),
+                                      "logistic_wti_brent": list(FEATURE_COLUMNS)},
+            "training_cohort": "same ordered, historically labelled WTI-and-Brent-eligible rows for all models",
+            "forecast_cohort": "exact forecast IDs, dates, targets and scoring states from the verified WTI reference",
+            "ineligible_comparison_forecast": "fail before fitting; never silently drop reference dates",
+            "reference_reproduction": "when WTI training inputs match, require exact reference model outputs",
+            "primary_comparison": "paired WTI-plus-Brent minus WTI-only development accuracy; probability quality also reported",
+            "tuning": "none: keep the WTI experiment's parameters, thresholds and dates fixed",
+        })
+    return config
 
 
 def forecast_role(row: dict) -> str:

@@ -1,4 +1,4 @@
-"""Fixed baselines and WTI-only logistic regression fitted on supplied rows.
+"""Fixed baselines and logistic regressions fitted on supplied rows.
 
 This module cannot choose training dates. The replay caller must first select
 historical rows and labels available at the current forecast cutoff.
@@ -15,10 +15,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from oil_audit.features import WTI_FEATURE_COLUMNS
+from oil_audit.features import FEATURE_COLUMNS, WTI_FEATURE_COLUMNS
 
 
 MODEL_NAMES = ("majority", "momentum", "logistic")
+COMPARISON_MODEL_NAMES = MODEL_NAMES + ("logistic_wti_brent",)
 LOGISTIC_PARAMETERS = {
     "C": 1.0,
     "solver": "lbfgs",
@@ -27,18 +28,21 @@ LOGISTIC_PARAMETERS = {
 }
 
 
-def _feature_vector(row: dict) -> list[float]:
-    """Allow only the six WTI fields; retain explicit nulls for imputation."""
+def _feature_vector(row: dict, feature_columns: tuple = WTI_FEATURE_COLUMNS) -> list[float]:
+    """Select a fixed feature allowlist; retain explicit nulls for imputation."""
+    if feature_columns not in (WTI_FEATURE_COLUMNS, FEATURE_COLUMNS):
+        raise ValueError("Unsupported logistic feature columns")
+    feature_set = "WTI" if feature_columns == WTI_FEATURE_COLUMNS else "WTI/Brent"
     features = row["features"]
     result = []
-    for column in WTI_FEATURE_COLUMNS:
+    for column in feature_columns:
         if column not in features:
-            raise ValueError(f"Missing required WTI feature column: {column}")
+            raise ValueError(f"Missing required {feature_set} feature column: {column}")
         value = features[column]
         if value is None:
             result.append(float("nan"))
         elif isinstance(value, bool) or not isinstance(value, Real) or not math.isfinite(value):
-            raise ValueError(f"WTI feature {column} must be finite numeric data or null")
+            raise ValueError(f"{feature_set} feature {column} must be finite numeric data or null")
         else:
             result.append(float(value))
     return result
@@ -49,6 +53,43 @@ def _training_label(row: dict) -> int:
     if isinstance(value, bool) or not isinstance(value, Integral) or value not in (0, 1):
         raise ValueError("Training labels must be integers 0 or 1")
     return int(value)
+
+
+def _fit_predict_logistic(training_rows: list[dict], forecast_row: dict,
+                          labels: list[int], feature_columns: tuple) -> dict:
+    """Use identical fitting settings for either predefined feature set."""
+    train = np.asarray([_feature_vector(row, feature_columns) for row in training_rows], dtype=float)
+    forecast = np.asarray([_feature_vector(forecast_row, feature_columns)], dtype=float)
+    model = Pipeline([
+        ("imputer", SimpleImputer(strategy="median", keep_empty_features=True)),
+        ("scaler", StandardScaler()),
+        ("classifier", LogisticRegression(**LOGISTIC_PARAMETERS)),
+    ])
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", ConvergenceWarning)
+            model.fit(train, labels)
+    except ConvergenceWarning as exc:
+        raise RuntimeError("Logistic regression did not converge; evaluation stopped") from exc
+    probability = float(model.predict_proba(forecast)[0, 1])
+    if not math.isfinite(probability):
+        raise RuntimeError("Logistic regression produced a non-finite probability")
+    imputer = model.named_steps["imputer"]
+    scaler = model.named_steps["scaler"]
+    classifier = model.named_steps["classifier"]
+    return {
+        "prediction": int(probability >= 0.5),
+        "probability_up": probability,
+        "diagnostics": {
+            "feature_columns": list(feature_columns),
+            "imputer_statistics": dict(zip(feature_columns, imputer.statistics_.tolist())),
+            "scaler_mean": dict(zip(feature_columns, scaler.mean_.tolist())),
+            "scaler_scale": dict(zip(feature_columns, scaler.scale_.tolist())),
+            "coef": dict(zip(feature_columns, classifier.coef_[0].tolist())),
+            "intercept": float(classifier.intercept_[0]),
+            "iterations": int(classifier.n_iter_[0]),
+        },
+    }
 
 
 def fit_predict_models(training_rows: list[dict], forecast_row: dict) -> dict:
@@ -69,28 +110,10 @@ def fit_predict_models(training_rows: list[dict], forecast_row: dict) -> dict:
     labels = [_training_label(row) for row in training_rows]
     if len(set(labels)) != 2:
         raise ValueError("Logistic regression requires both training label classes")
-    train = np.asarray([_feature_vector(row) for row in training_rows], dtype=float)
-    forecast = np.asarray([_feature_vector(forecast_row)], dtype=float)
-    model = Pipeline([
-        ("imputer", SimpleImputer(strategy="median", keep_empty_features=True)),
-        ("scaler", StandardScaler()),
-        ("classifier", LogisticRegression(**LOGISTIC_PARAMETERS)),
-    ])
-    try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("error", ConvergenceWarning)
-            model.fit(train, labels)
-    except ConvergenceWarning as exc:
-        raise RuntimeError("Logistic regression did not converge; evaluation stopped") from exc
-    probability = float(model.predict_proba(forecast)[0, 1])
-    if not math.isfinite(probability):
-        raise RuntimeError("Logistic regression produced a non-finite probability")
+    logistic = _fit_predict_logistic(training_rows, forecast_row, labels, WTI_FEATURE_COLUMNS)
     prevalence = sum(labels) / len(labels)
     majority = int(prevalence >= 0.5)
     momentum = forecast_row["features"]["wti_change_5_business_days_usd"]
-    imputer = model.named_steps["imputer"]
-    scaler = model.named_steps["scaler"]
-    classifier = model.named_steps["classifier"]
     return {
         "majority": {
             "prediction": majority,
@@ -101,17 +124,21 @@ def fit_predict_models(training_rows: list[dict], forecast_row: dict) -> dict:
             "probability_up": None,
             "used_majority_fallback": momentum is None,
         },
-        "logistic": {
-            "prediction": int(probability >= 0.5),
-            "probability_up": probability,
-            "diagnostics": {
-                "feature_columns": list(WTI_FEATURE_COLUMNS),
-                "imputer_statistics": dict(zip(WTI_FEATURE_COLUMNS, imputer.statistics_.tolist())),
-                "scaler_mean": dict(zip(WTI_FEATURE_COLUMNS, scaler.mean_.tolist())),
-                "scaler_scale": dict(zip(WTI_FEATURE_COLUMNS, scaler.scale_.tolist())),
-                "coef": dict(zip(WTI_FEATURE_COLUMNS, classifier.coef_[0].tolist())),
-                "intercept": float(classifier.intercept_[0]),
-                "iterations": int(classifier.n_iter_[0]),
-            },
-        },
+        "logistic": logistic,
     }
+
+
+def fit_predict_comparison_models(training_rows: list[dict], forecast_row: dict) -> dict:
+    """Fit WTI and WTI/Brent models on exactly the same supplied rows and labels.
+
+    The caller must select a common eligible cohort before calling. Both
+    regressions receive every supplied row in the same order; this function
+    neither selects rows nor changes labels. Brent lookback nulls remain in
+    place and are imputed from this shared training set. Only the combined
+    regression uses Brent and the aligned Brent/WTI spread.
+    """
+    result = fit_predict_models(training_rows, forecast_row)
+    labels = [_training_label(row) for row in training_rows]
+    result["logistic_wti_brent"] = _fit_predict_logistic(
+        training_rows, forecast_row, labels, FEATURE_COLUMNS)
+    return result
