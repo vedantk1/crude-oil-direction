@@ -256,9 +256,13 @@ def main():
     global ROOT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--download", action="store_true")
+    parser.add_argument("--capture-only", action="store_true",
+                        help="With --download, save and hash bytes without decoding observation values")
     parser.add_argument("--data-dir", type=Path, default=ROOT)
     parser.add_argument("--output", type=Path, default=Path("reports/vintage_audit.json"))
     args = parser.parse_args()
+    if args.capture_only and not args.download:
+        parser.error("--capture-only requires --download")
     if args.data_dir.is_absolute() or args.output.is_absolute():
         parser.error("Use workspace-relative paths")
     ROOT = args.data_dir
@@ -266,6 +270,9 @@ def main():
         ROOT = ROOT / dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         download()
     verify_manifest()
+    if args.capture_only:
+        print("Source evidence:", ROOT.as_posix())
+        return
     results = {series: audit(series) for series in SERIES}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(results, indent=2) + "\n")

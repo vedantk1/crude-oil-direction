@@ -72,6 +72,23 @@ The current directory is recorded in [the dataset summary](../reports/dataset_su
 
 The directory ID derives from source-manifest, configuration, and code hashes. Rebuilding identical inputs is idempotent. An existing artifact with different bytes is not overwritten. `training-view` checks artifact hashes before selection. Data files remain local; see the source audit for vendor-origin data reuse limits.
 
+## Bounded fresh-checkout preparation
+
+The retained full-history build above remains an immutable historical artifact.
+The public [workflow](reproducibility.md) now calls `build` with an explicit
+2022-12-31 boundary. Observation and vintage-start dates are admitted before
+CSV/value decoding; later interval ends are masked. The declared supported end
+is the requested bound only when both source captures cover its 18:00 New York
+cutoff, even when no forecast is scheduled on that date.
+
+Use `python -m oil_audit.dataset build --end 2022-12-31` for the same bounded
+source admission through the low-level CLI. Without `--end`, this older CLI
+retains its full-history audit behavior and is outside the closed-holdout
+development workflow. Capture ALFRED with `--download --capture-only` to save
+and verify raw archives without first decoding their later values. Prefer the
+orchestrated public workflow for development research; it fixes this bound and
+creates a complete authenticated reference chain.
+
 | Measured result | Count |
 | --- | ---: |
 | Forecast opportunities, 2011-04-07 to 2026-10-08 | 801 |

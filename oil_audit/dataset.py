@@ -127,15 +127,30 @@ def summarize(feature_rows, events, evaluation, maximum_as_of: date) -> dict:
 
 def build(data_dir: Path = Path("data/audit/vintages"),
           output_root: Path = Path("data/datasets"), start: date = date(2011, 1, 1),
-          report: Path = Path("reports/dataset_summary.json")) -> dict:
+          report: Path = Path("reports/dataset_summary.json"), *,
+          maximum_as_of: date | None = None) -> dict:
     vintages.verify_manifest(data_dir)
     source_manifest = (data_dir / "manifest.json").read_bytes()
     source_records = json.loads(source_manifest)
+    bounds = capture_bounds(source_records, vintages.SERIES)
+    requested_maximum = maximum_as_of
+    if requested_maximum is not None and any(
+        datetime.combine(requested_maximum, time(18), tzinfo=ZoneInfo("America/New_York")) > bound
+        for bound in bounds.values()
+    ):
+        raise ValueError("Requested replay bound exceeds captured history")
     series, listed_dates = {}, {}
     for series_id in vintages.SERIES:
         listed, _ = vintages.form_metadata(series_id, data_dir)
         listed_dates[series_id] = sorted(date.fromisoformat(day) for day in listed)
-        series[series_id] = PointInTimeSeries(series_id, vintages.records(series_id, data_dir))
+        if requested_maximum is None:
+            records = vintages.records(series_id, data_dir)
+        else:
+            from .bounded_vintages import bounded_records
+            listed_dates[series_id] = [day for day in listed_dates[series_id]
+                                      if day <= requested_maximum]
+            records = bounded_records(series_id, data_dir, requested_maximum)
+        series[series_id] = PointInTimeSeries(series_id, records)
         starts = {version.vintage_start for versions in series[series_id].versions_by_observation.values()
                   for version in versions}
         if not starts.issubset(set(listed_dates[series_id])):
@@ -143,14 +158,13 @@ def build(data_dir: Path = Path("data/audit/vintages"),
         if min(starts) != min(listed_dates[series_id]) or max(starts) != max(listed_dates[series_id]):
             raise ValueError("Captured interval coverage differs from listed vintage bounds")
     wti, brent = (series[series_id] for series_id in vintages.SERIES)
-    bounds = capture_bounds(source_records, vintages.SERIES)
     schedule = forecast_schedule(listed_dates[wti.series_id], start)
     safe_dates = [forecast for forecast, _ in schedule if all(
         datetime.combine(forecast, time(18), tzinfo=ZoneInfo("America/New_York")) <= bound
         for bound in bounds.values())]
     if not safe_dates:
         raise ValueError("No forecast opportunities in the requested period")
-    maximum_as_of = max(safe_dates)
+    maximum_as_of = requested_maximum if requested_maximum is not None else max(safe_dates)
     feature_rows, events, evaluation = construct_rows(
         wti, brent, listed_dates[wti.series_id], start, maximum_as_of)
     config = {
@@ -168,6 +182,9 @@ def build(data_dir: Path = Path("data/audit/vintages"),
         "capture_lower_bounds_utc": {key: value.isoformat() for key, value in bounds.items()},
         "feature_sets": FEATURE_SETS,
     }
+    if requested_maximum is not None:
+        config["source_value_boundary"] = (
+            "gate observation and vintage dates before value decoding; mask future interval ends")
     source_code = {str(path): sha256(path.read_bytes()) for path in sorted(Path("oil_audit").glob("*.py"))}
     identity = {"config": config, "source_manifest_sha256": sha256(source_manifest),
                 "source_code_sha256": source_code}
@@ -229,6 +246,8 @@ def main():
     build_parser.add_argument("--data-dir", type=workspace_path, default=Path("data/audit/vintages"))
     build_parser.add_argument("--output-root", type=workspace_path, default=Path("data/datasets"))
     build_parser.add_argument("--start", type=date.fromisoformat, default=date(2011, 1, 1))
+    build_parser.add_argument("--end", type=date.fromisoformat,
+                              help="Bound source-value decoding and replay to this date")
     build_parser.add_argument("--report", type=workspace_path, default=Path("reports/dataset_summary.json"))
     view_parser = subparsers.add_parser("training-view", help="Export a historical training view; fits no model")
     view_parser.add_argument("--dataset-dir", type=workspace_path, required=True)
@@ -237,7 +256,8 @@ def main():
     view_parser.add_argument("--output", type=workspace_path, required=True)
     args = parser.parse_args()
     if args.command == "build":
-        print(json.dumps(build(args.data_dir, args.output_root, args.start, args.report), indent=2))
+        print(json.dumps(build(args.data_dir, args.output_root, args.start, args.report,
+                               maximum_as_of=args.end), indent=2))
     else:
         manifest, data = read_dataset(args.dataset_dir)
         rows = training_rows(data["features.jsonl"], data["label_events.jsonl"], args.as_of,
