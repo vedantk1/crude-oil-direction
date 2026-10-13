@@ -1,0 +1,144 @@
+{
+  "config": {
+    "calendar_id": "us-federal-observed-2011-2100-v1",
+    "calendar_notes": "Operational Monday-Friday calendar excluding recurring US federal observed holidays, with Juneteenth from 2021. Not a NYMEX trading calendar or evidence of source publication. Good Friday, exceptional closures and regional Inauguration Day are not excluded. Rules after the source snapshot are projections, subject to policy changes.",
+    "capture_lower_bounds_utc": {
+      "DCOILBRENTEU": "2026-10-12T00:00:00+00:00",
+      "DCOILWTICO": "2026-10-12T00:00:00+00:00"
+    },
+    "evaluation_labels": "frozen first jointly available numeric endpoint pair; evaluation only",
+    "feature_sets": {
+      "wti": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days"
+      ],
+      "wti_brent": [
+        "wti_latest_price",
+        "wti_age_calendar_days",
+        "wti_change_5_business_days_usd",
+        "wti_change_20_business_days_usd",
+        "wti_change_std_20_business_days_usd",
+        "wti_coverage_20_business_days",
+        "brent_latest_price",
+        "brent_age_calendar_days",
+        "brent_change_5_business_days_usd",
+        "brent_change_20_business_days_usd",
+        "brent_change_std_20_business_days_usd",
+        "brent_coverage_20_business_days",
+        "brent_wti_spread_usd",
+        "spread_age_calendar_days"
+      ]
+    },
+    "forecast_schedule": "next US business day after each WTI listed vintage; collisions merged",
+    "forecast_time": "18:00",
+    "forecast_timezone": "America/New_York",
+    "horizon_business_days": 5,
+    "information_cutoff": "preceding calendar date, inclusive",
+    "maximum_supported_as_of_date": "2026-10-08",
+    "requested_start_vintage_date": "2011-01-01",
+    "schema_version": 1,
+    "source_capture_policy": "Every forecast and label eligibility date must be within captured history. For timestamped files use the recorded UTC completion time. For date-only records with unspecified timezone, use 00:00 UTC on the preceding calendar date as a deliberately early lower bound on capture time, not an invented retrieval timestamp. Apply the earliest bound independently to each series.",
+    "target": "WTI price on target date > WTI price on forecast date; ties map to 0",
+    "training_labels": "active endpoint versions as of preceding calendar date; withdrawals honored"
+  },
+  "data_age_calendar_days": {
+    "brent_age_calendar_days": {
+      "count": 801,
+      "max": 10,
+      "median": 3,
+      "min": 1,
+      "p95_nearest_rank": 4
+    },
+    "spread_age_calendar_days": {
+      "count": 801,
+      "max": 10,
+      "median": 3,
+      "min": 1,
+      "p95_nearest_rank": 4
+    },
+    "wti_age_calendar_days": {
+      "count": 801,
+      "max": 9,
+      "median": 3,
+      "min": 1,
+      "p95_nearest_rank": 3
+    }
+  },
+  "dataset_directory": "data/datasets/4abada098156b2b39306",
+  "dataset_id": "4abada098156b2b39306",
+  "direction_changed_between_available_versions": 1,
+  "eligibility_counts": {
+    "complete_wti_brent_features": 568,
+    "complete_wti_features": 694,
+    "wti": 801,
+    "wti_brent": 801
+  },
+  "feature_missing_counts": {
+    "brent_age_calendar_days": 0,
+    "brent_change_20_business_days_usd": 18,
+    "brent_change_5_business_days_usd": 28,
+    "brent_change_std_20_business_days_usd": 199,
+    "brent_coverage_20_business_days": 0,
+    "brent_latest_price": 0,
+    "brent_wti_spread_usd": 0,
+    "spread_age_calendar_days": 0,
+    "wti_age_calendar_days": 0,
+    "wti_change_20_business_days_usd": 3,
+    "wti_change_5_business_days_usd": 1,
+    "wti_change_std_20_business_days_usd": 107,
+    "wti_coverage_20_business_days": 0,
+    "wti_latest_price": 0
+  },
+  "first_available_direction_counts": {
+    "not_up": 376,
+    "up": 413
+  },
+  "first_available_evaluation_labels": 789,
+  "first_available_ties": 0,
+  "forecast_date_range": [
+    "2011-04-07",
+    "2026-10-08"
+  ],
+  "forecast_rows": 801,
+  "issuances_excluded_by_capture_bound": 0,
+  "label_event_rows": 2422,
+  "latest_available_direction_counts": {
+    "not_up": 370,
+    "up": 407
+  },
+  "latest_label_status_counts": {
+    "available": 777,
+    "missing_both": 6,
+    "missing_origin": 11,
+    "missing_target": 6,
+    "quarantined": 1
+  },
+  "previously_available_now_unavailable": 12,
+  "series_checks": {
+    "DCOILBRENTEU": {
+      "first_listed_vintage": "2011-04-06",
+      "last_listed_vintage": "2026-10-07",
+      "listed_vintages": 803,
+      "quarantined_versions": 1
+    },
+    "DCOILWTICO": {
+      "first_listed_vintage": "2011-04-06",
+      "last_listed_vintage": "2026-10-07",
+      "listed_vintages": 801,
+      "quarantined_versions": 1
+    }
+  },
+  "target_date_range": [
+    "2011-04-14",
+    "2026-10-16"
+  ],
+  "target_not_yet_before_replay_end": 2,
+  "training_rows_at_replay_end": {
+    "wti": 777,
+    "wti_brent": 777
+  }
+}

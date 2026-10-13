@@ -1,0 +1,97 @@
+{
+  "current_eia_vs_alfred": {
+    "wti": {
+      "eia_count": 9517,
+      "alfred_count": 9517,
+      "mismatch_count": 0,
+      "mismatches": []
+    },
+    "brent": {
+      "eia_count": 9102,
+      "alfred_count": 9102,
+      "mismatch_count": 0,
+      "mismatches": []
+    }
+  },
+  "sampled_weekly_releases": [
+    {
+      "issue_date": "2011-08-03",
+      "series": "wti",
+      "daily_columns": 10,
+      "numeric_prices": 10,
+      "first_observation": "2011-07-18",
+      "last_observation": "2011-07-29",
+      "mismatches": [
+        {
+          "observation_date": "2011-07-22",
+          "archived_price": 99.53,
+          "current_price": null
+        }
+      ]
+    },
+    {
+      "issue_date": "2011-08-03",
+      "series": "brent",
+      "daily_columns": 10,
+      "numeric_prices": 10,
+      "first_observation": "2011-07-18",
+      "last_observation": "2011-07-29",
+      "mismatches": []
+    },
+    {
+      "issue_date": "2020-04-22",
+      "series": "wti",
+      "daily_columns": 10,
+      "numeric_prices": 9,
+      "first_observation": "2020-04-06",
+      "last_observation": "2020-04-17",
+      "mismatches": []
+    },
+    {
+      "issue_date": "2020-04-22",
+      "series": "brent",
+      "daily_columns": 10,
+      "numeric_prices": 8,
+      "first_observation": "2020-04-06",
+      "last_observation": "2020-04-17",
+      "mismatches": []
+    },
+    {
+      "issue_date": "2020-04-29",
+      "series": "wti",
+      "daily_columns": 10,
+      "numeric_prices": 10,
+      "first_observation": "2020-04-13",
+      "last_observation": "2020-04-24",
+      "mismatches": []
+    },
+    {
+      "issue_date": "2020-04-29",
+      "series": "brent",
+      "daily_columns": 10,
+      "numeric_prices": 9,
+      "first_observation": "2020-04-13",
+      "last_observation": "2020-04-24",
+      "mismatches": []
+    },
+    {
+      "issue_date": "2024-01-04",
+      "series": "wti",
+      "daily_columns": 10,
+      "numeric_prices": 9,
+      "first_observation": "2023-12-18",
+      "last_observation": "2023-12-29",
+      "mismatches": []
+    },
+    {
+      "issue_date": "2024-01-04",
+      "series": "brent",
+      "daily_columns": 10,
+      "numeric_prices": 8,
+      "first_observation": "2023-12-18",
+      "last_observation": "2023-12-29",
+      "mismatches": []
+    }
+  ],
+  "scope": "Current entire series compared; only four EIA weekly issues sampled. No intraday availability proof."
+}
