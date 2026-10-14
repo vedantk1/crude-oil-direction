@@ -1,6 +1,6 @@
 {
-  "consolidation_status": "prepared for original-history push",
-  "extra_working_copy_removed": false,
+  "consolidation_status": "original history published; extra working copy removed",
+  "extra_working_copy_removed": true,
   "holdout_evaluated": false,
   "initial_snapshot_publication": {
     "first_hosted_ci": {
@@ -60,15 +60,31 @@
   "original_history": {
     "base_commit": "430840759068b14575fe8db693bfec1f12430f08",
     "commit_count_before_consolidation": 21,
-    "published": false,
+    "first_published_commit": "61a8bba9ca44c74c71e87bc3ab00e8eb4bdaf9b5",
+    "original_commit_hashes_verified": true,
+    "published": true,
     "rewritten": false,
     "root_commit": "336f672"
   },
-  "original_history_ci": null,
+  "original_history_ci": {
+    "conclusion": "success",
+    "dependency_installation": "success",
+    "holdout_evaluated": false,
+    "job_id": 115750959229,
+    "market_data_downloaded": false,
+    "run_id": 38533577318,
+    "scope": "First original-history push; subsequent documentation commits trigger their own CI.",
+    "synthetic_demo": "success",
+    "tested_commit": "61a8bba9ca44c74c71e87bc3ab00e8eb4bdaf9b5",
+    "unit_test_seconds": 21.563,
+    "unit_tests_passed": 420,
+    "workflow": "Offline checks"
+  },
   "private_data": {
     "changed_or_missing_files": 0,
     "credential_pattern_matches_in_215_historical_blobs": 0,
     "preserved_files_verified": 1479,
+    "preserved_files_verified_after_cleanup": 1479,
     "raw_data_paths_tracked_in_any_original_commit": 0,
     "raw_data_published": false
   },

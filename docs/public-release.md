@@ -92,3 +92,19 @@ use the title Crude Oil Direction, and remove the extra working copy. The
 [publication report](../reports/publication.json) records execution and CI
 status. Earlier export and publication records remain historical evidence, not
 instructions to repeat the separate-copy workflow.
+
+## Completed consolidation
+
+On 2026-10-14, the existing GitHub repository was renamed to
+`crude-oil-direction` and connected directly to this original checkout. Commit
+`61a8bba` was pushed with all 21 original development commits and their hashes
+unchanged, replacing the two-commit snapshot on the public main branch. Hosted
+Offline checks run `38533577318` passed dependency installation, all 420 tests
+and the synthetic demo. The extra local public working copy was then removed.
+
+All 1,479 previously recorded data/result files retained their checksums after
+cleanup. Raw datasets remain ignored and local; the final holdout was not
+evaluated. The existing local environment received the already documented
+compatible SciPy wheel, and all 420 local tests passed. No market models or
+results were recomputed. Later documentation commits run CI separately; the
+publication report identifies the exact commit verified by the run above.
