@@ -14,6 +14,18 @@ SCORING_AS_OF = date(2022, 12, 31)
 MIN_TRAINING_ROWS = 150
 EXPERIMENTS = ("wti", "brent-comparison", "inventory-comparison", "inventory-regularization",
                "inventory-window-comparison", "inventory-tree-comparison", "inventory-availability-delay")
+GENERIC_EXPERIMENTS = tuple(experiment for experiment in EXPERIMENTS
+                            if experiment != "inventory-availability-delay")
+
+
+def require_generic_experiment(experiment: str) -> str:
+    """Keep dedicated protocols out of the ordinary evaluator and replay."""
+    if experiment == "inventory-availability-delay":
+        raise ValueError("inventory-availability-delay requires the dedicated command "
+                         "python -m oil_eval.delay_runner")
+    if experiment not in GENERIC_EXPERIMENTS:
+        raise ValueError("Unknown development experiment")
+    return experiment
 
 
 def protocol_config(experiment: str = "wti") -> dict:

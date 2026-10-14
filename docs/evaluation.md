@@ -538,3 +538,19 @@ all 1,550 control outputs, preprocessing statistics and candidate probabilities
 (maximum arithmetic difference 1.11e-16). All four result artifact hashes, 34 code
 hashes against `b84a738`, and 211 native fingerprints verify. All 375 tests pass.
 No paid data, GPU, or final-holdout evaluation was used.
+
+
+## Dedicated delay routing correction
+
+The general evaluator previously accepted `inventory-availability-delay` but
+could route it to ordinary WTI evaluation under an incorrect manifest protocol
+and select the WTI report path. This unused generic route is now rejected by a
+shared dispatch guard before any source read, runtime inspection, fit or write.
+The generic CLI no longer advertises it; errors direct callers to
+`python -m oil_eval.delay_runner`. Direct generic replay calls are guarded too.
+
+All seven frozen protocol configurations remain byte-equivalent as canonical
+JSON. Six synthetic regression tests cover both APIs, CLI/help behavior,
+malformed inputs and preservation of an existing report. The saved delay result
+used the correct dedicated command and is unchanged. No historical model was
+refitted for this correction and the final holdout remains closed.

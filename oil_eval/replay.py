@@ -19,7 +19,7 @@ from .models import (COMPARISON_MODEL_NAMES, INVENTORY_MODEL_NAMES,
                      fit_predict_inventory_regularization_models, fit_predict_inventory_window_models,
                      fit_predict_inventory_tree_models, fit_predict_models)
 from .protocol import (HOLDOUT_START, MIN_TRAINING_ROWS, SCORING_AS_OF,
-                       forecast_role, protocol_config)
+                       forecast_role, protocol_config, require_generic_experiment)
 from .reference import (validate_inventory_reference_schedule, validate_reference_schedule,
                         verify_inventory_reference_reproduction, verify_reference_reproduction,
                         verify_regularization_reference_reproduction)
@@ -34,6 +34,7 @@ def replay_development(feature_rows, label_events, scoring_labels, *,
     Training eligibility follows each issuance's label state. The final
     holdout is rejected at this layer even if a caller bypasses the loader.
     """
+    require_generic_experiment(experiment)
     protocol_config(experiment)
     brent = experiment == "brent-comparison"
     window = experiment == "inventory-window-comparison"

@@ -10,7 +10,8 @@ from oil_audit.dataset import json_bytes, jsonl_bytes, sha256, workspace_path
 from .data import load_development_data
 from .inventory_features import (INVENTORY_FEATURE_COLUMNS, attach_inventory_features,
                                  load_inventory_reference)
-from .protocol import EXPERIMENTS, forecast_role, protocol_config
+from .protocol import (GENERIC_EXPERIMENTS, forecast_role, protocol_config,
+                       require_generic_experiment)
 from .reference import (load_inventory_comparison_reference,
                         load_inventory_regularization_reference, load_reference)
 from .replay import replay_development
@@ -42,6 +43,7 @@ def run(dataset_dir: Path, output_root: Path = Path("data/evaluations"),
         inventory_audit_report: Path = INVENTORY_AUDIT_REPORT,
         inventory_reference_report: Path = INVENTORY_REPORT,
         regularization_reference_report: Path = INVENTORY_REGULARIZATION_REPORT) -> dict:
+    require_generic_experiment(experiment)
     protocol = protocol_config(experiment)
     window = experiment == "inventory-window-comparison"
     tree = experiment == "inventory-tree-comparison"
@@ -187,7 +189,14 @@ def main():
     parser.add_argument("--output-root", type=workspace_path, default=Path("data/evaluations"))
     parser.add_argument("--report", type=workspace_path,
                         help="defaults to a separate report for each experiment")
-    parser.add_argument("--experiment", choices=EXPERIMENTS, default="wti")
+    def generic_experiment(value):
+        try:
+            return require_generic_experiment(value)
+        except ValueError as error:
+            raise argparse.ArgumentTypeError(str(error)) from error
+
+    parser.add_argument("--experiment", type=generic_experiment,
+                        choices=GENERIC_EXPERIMENTS, default="wti")
     parser.add_argument("--reference-report", type=workspace_path, default=WTI_REPORT,
                         help="authenticated WTI development report for a matched comparison")
     parser.add_argument("--inventory-audit-report", type=workspace_path, default=INVENTORY_AUDIT_REPORT,
