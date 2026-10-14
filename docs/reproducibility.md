@@ -1,7 +1,10 @@
 # Reproduction and fresh checkouts
 
-Three workflows answer different questions. None needs paid data, an API key,
-a GPU or an earlier project's local run IDs. Run from the repository root.
+The synthetic workflow is the current public quickstart. Historical real-data
+recipes remain below as technical records, **not source-permission clearance**.
+Do not run new ALFRED training while its training-use terms are unresolved.
+See [data rights](../DATA_LICENSE.md) and the [alternative-source audit](free-training-data-audit.md).
+No paid data, API key or GPU is needed for the synthetic demo. Run from the repository root.
 
 ## Install and demonstrate
 
@@ -31,13 +34,13 @@ tree comparison. It deliberately contains invalid future-value sentinels to
 check admission boundaries. Demonstration metrics have **no market meaning**.
 CI runs the tests and demo on Linux/Python 3.13; it makes no market-data requests.
 
-## New free captures
+## Historical real-data capture recipe — permission unresolved
 
 ```sh
 .venv/bin/python -m oil_eval.workflow --download --run-root data/new-capture
 ```
 
-This explicitly downloads free, key-free ALFRED archives and EIA inventory
+This historically tested command downloads key-free ALFRED archives and EIA inventory
 releases for 2011–2022, then builds and evaluates a new reference chain.
 Network access and functioning public sources are required. Inventory capture
 can require hundreds of requests; worker count is bounded by `--max-workers`.
@@ -58,7 +61,7 @@ do not search parameters. A new capture can contain changed archive history,
 metadata or availability evidence. Its identities and results need not match
 retained project reports, even if historical values look unchanged.
 
-## Offline replay from retained evidence
+## Historical retained-evidence recipe — permission unresolved
 
 Copy an authorized source snapshot into the checkout, preserving its relative
 paths and manifest checksums. Supply its directories explicitly:
@@ -89,9 +92,12 @@ native builds or configuration have changed. Exact historical artifacts require
 the original commit, source bytes, configuration and numeric build. Saved
 historical reports alone are insufficient to reconstruct omitted source files.
 
-## Predefined availability-delay check
+## Dedicated availability-delay command — permission unresolved
 
-For a built workflow use the dataset directory and reports listed in its
+The generic evaluator now rejects `inventory-availability-delay` before any
+source read or write. Only this dedicated command implements the delay; using
+it with original ALFRED data still requires resolved training-use permission.
+For an appropriately authorized built workflow use the dataset directory and reports listed in its
 `workflow.json`; pass all four reference reports to the dedicated command:
 
 ```sh

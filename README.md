@@ -26,24 +26,20 @@ modify an existing one. On macOS arm64 it verifies and selects an official
 compatible SciPy wheel. The demo uses invented data, fits real models, and needs
 no market downloads or API key. Its metrics have no market meaning.
 
-To capture free public data and build a new development reference chain:
+The public quickstart uses synthetic data only. **New ALFRED-based training is
+not cleared:** the current FRED legal page includes a machine-learning training
+restriction and its applicability includes ALFRED. Free access and ignored raw
+files do not establish training permission. See [source rights](DATA_LICENSE.md).
 
-```sh
-.venv/bin/python -m oil_eval.workflow --download --run-root data/new-capture
-```
+The [free-training-data audit](docs/free-training-data-audit.md) identifies
+licensed World Bank monthly WTI/Brent data and EIA's own survey aggregates as
+candidates for a separate phase. None is a verified replacement for this exact
+daily WTI/vintage experiment. No replacement dataset or model has been trained.
 
-ALFRED/EIA downloads require network access and functioning source sites.
-All prices decoded for this workflow are bounded at 2022-12-31, including during
-dataset preparation. Each stage discovers its own content ID and passes its own
-references; earlier local run IDs and artifacts are unnecessary. Add
-`--brent --benchmarks --window --tree` for the fixed supplementary comparisons.
-Use a new run root each time; source files and full artifacts stay in ignored
-`data/`. Reports and identities are listed in the run's `workflow.json`.
-
-For an offline replay from a retained source snapshot, installation details,
-source rights and the difference between new captures and exact historical
-reproduction, read [reproducibility](docs/reproducibility.md) and
-[data licensing](DATA_LICENSE.md).
+[Reproducibility](docs/reproducibility.md) distinguishes the working synthetic
+demo, completed historical source replays and permission-restricted real-data
+commands. The existing model results are retained research findings; they do not
+assert current source-use clearance.
 
 ## Retained development findings
 
@@ -109,12 +105,15 @@ The target calendar is fixed US business days, not exchange trading sessions.
 - [Fresh-checkout and retained-source workflows](docs/reproducibility.md)
 - [Research card and frozen-phase boundaries](docs/research-card.md)
 
-Original aggregate reports under `reports/` remain preserved. Full per-forecast
-inputs, predictions, fitted diagnostics and checksums remain local under `data/`.
+Public audit reports under `reports/` now omit source-price quotations and mark
+those omissions explicitly. Byte-exact originals, full per-forecast inputs,
+predictions, fitted diagnostics and checksums remain private under ignored `data/`.
 CI runs synthetic tests and the offline demonstration without market data.
 
 ## License and contributions
 
 Original code, documentation and synthetic fixtures are [MIT licensed](LICENSE).
-External data remain subject to [their own terms](DATA_LICENSE.md); downloaded
-vendor-origin prices are not redistributed. See [contributing](CONTRIBUTING.md).
+External data remain subject to [their own terms](DATA_LICENSE.md).
+Use the [clean release exporter](docs/public-release.md) to omit private Git
+history, which still preserves older unsanitized reports and author metadata.
+See [contributing](CONTRIBUTING.md).

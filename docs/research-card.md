@@ -75,3 +75,19 @@ live-provider behavior or model skill. New source captures may differ from
 retained evidence. See [reproducibility](reproducibility.md),
 [contributor guidance](../CONTRIBUTING.md) and [data rights](../DATA_LICENSE.md).
 Original code/docs/synthetic fixtures use MIT; third-party data do not inherit it.
+
+
+## Current distribution and data-use status
+
+The public demonstration is synthetic-only. The current published FRED terms
+include a training-use restriction covering ALFRED; that use is unresolved,
+independently of the permission to publish original MIT code. The source-price
+reports now omit quotations while private originals remain byte-exact. Local
+Git history retains older report versions and must not be published unchanged;
+use the [clean export](public-release.md).
+
+The [free-source audit](free-training-data-audit.md) identifies licensed monthly
+World Bank crude prices and EIA's own survey aggregates for a separate future
+phase. Neither is a verified daily-WTI/vintage replacement. Existing findings,
+model selection and the final holdout are unchanged. No new real-data model
+was fitted during release preparation.

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from .prices import run_audit
+from .report_output import write_audit_report
 from .sources import RELEASE_SOURCES, fetch_snapshot
 
 
@@ -27,8 +28,8 @@ def main() -> None:
         print(fetch_snapshot(args.output, RELEASE_SOURCES).as_posix())
     else:
         result = run_audit(args.manifest)
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
+        write_audit_report("price_audit.json",
+                           (json.dumps(result, indent=2, allow_nan=False) + "\n").encode(), args.output)
         print(args.output.as_posix())
 
 

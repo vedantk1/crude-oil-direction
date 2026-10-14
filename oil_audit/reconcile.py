@@ -105,8 +105,8 @@ def main():
         parser.error("Use workspace-relative paths")
     vintages.ROOT = args.vintage_dir
     result = reconcile(args.manifest, args.release_dir)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2) + "\n")
+    from .report_output import write_audit_report
+    write_audit_report("source_reconciliation.json", (json.dumps(result, indent=2) + "\n").encode(), args.output)
     print(args.output.as_posix())
 
 

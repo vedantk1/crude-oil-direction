@@ -24,7 +24,7 @@
       "mismatches": [
         {
           "observation_date": "2011-07-22",
-          "archived_price": 99.53,
+          "archived_price": null,
           "current_price": null
         }
       ]
@@ -93,5 +93,16 @@
       "mismatches": []
     }
   ],
-  "scope": "Current entire series compared; only four EIA weekly issues sampled. No intraday availability proof."
+  "scope": "Current entire series compared; only four EIA weekly issues sampled. No intraday availability proof.",
+  "public_sanitization": {
+    "original_bytes": 2407,
+    "original_sha256": "038e1054d5cd59dba038806b2796df74095e5d7e51af70dc1bc317e328508eaf",
+    "policy_version": "source-price-excerpts-v1",
+    "redacted_path_counts": {
+      "sampled_weekly_releases.*.mismatches.*.archived_price": 1,
+      "sampled_weekly_releases.*.mismatches.*.current_price": 1
+    },
+    "replacement_meaning": "Introduced nulls omit source-price quotations; they do not indicate missing values in the original source or audit.",
+    "report": "source_reconciliation.json"
+  }
 }

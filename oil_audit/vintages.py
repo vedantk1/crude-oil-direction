@@ -274,8 +274,8 @@ def main():
         print("Source evidence:", ROOT.as_posix())
         return
     results = {series: audit(series) for series in SERIES}
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(results, indent=2) + "\n")
+    from .report_output import write_audit_report
+    write_audit_report("vintage_audit.json", (json.dumps(results, indent=2) + "\n").encode(), args.output)
     print("Source evidence:", ROOT.as_posix())
     for series, result in results.items():
         print(series, result["first_vintage"], result["listed_vintage_count"],

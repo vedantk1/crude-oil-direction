@@ -23,11 +23,17 @@ workspace-relative paths, explicit missing values, source checksums and bounded
 date admission before value decoding. Never commit credentials, personal or
 machine identifiers, downloaded data, environments or full model artifacts.
 Original code, docs and synthetic fixtures use [MIT](LICENSE); external data
-remain subject to [their own terms](DATA_LICENSE.md).
+remain subject to [their own terms](DATA_LICENSE.md). Real ALFRED training-use
+permission is unresolved; use synthetic fixtures for contributions and do not
+start new capture/training runs. Alternative permitted sources require a
+separate availability audit and protocol; see [the source audit](docs/free-training-data-audit.md).
 
 Tests and CI use synthetic data without market downloads or keys. A passing demo
 proves pipeline behavior, not live source availability or forecasting skill.
-Preserve historical reports and immutable artifacts; use a new output root for
+Public source-audit reports omit quotations; never interpret their redacted
+nulls as source missingness. Preserve private originals and immutable artifacts;
+use the [clean exporter](docs/public-release.md) for public distribution.
+Use a new output root for
 every source replay. Record capture identity, environment and whether a result
 uses retained snapshots or a newly captured history.
 

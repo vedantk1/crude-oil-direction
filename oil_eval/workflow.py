@@ -2,6 +2,9 @@
 
 Run from the repository root. Existing reports, datasets and source captures are
 read-only inputs; every output belongs to a fresh workspace-relative directory.
+Real ALFRED training-use permission is unresolved. These real-data entry points
+are historical technical recipes, not a permission grant. The public quickstart
+is ``python -m oil_eval.demo`` with invented sources.
 """
 
 import argparse
@@ -230,7 +233,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--vintage-dir", type=workspace_path)
     parser.add_argument("--inventory-snapshot", type=workspace_path)
-    parser.add_argument("--download", action="store_true", help="explicitly capture free sources before bounded replay")
+    parser.add_argument("--download", action="store_true",
+                        help="historical ALFRED capture/replay route; training-use permission must be resolved first")
     parser.add_argument("--max-workers", type=int, default=12)
     parser.add_argument("--run-root", type=workspace_path, required=True)
     parser.add_argument("--report-dir", type=workspace_path)

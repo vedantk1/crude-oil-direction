@@ -1,6 +1,6 @@
 # WTI and Brent data audit
 
-Audit date: 2026-10-13. The free sources are sufficient for a qualified, reproducible forecasting experiment. ALFRED allows reconstruction of its recorded historical states from **2011-04-06 onward** for both series. Exact historical intraday availability, or the earliest price available through every public channel, is not established.
+Audit date: 2026-10-13. The sources were technically sufficient for a qualified replay; current training-use permission is separately unresolved. See [source rights](../DATA_LICENSE.md) and the [2026-10-14 alternatives audit](free-training-data-audit.md). ALFRED allows reconstruction of its recorded historical states from **2011-04-06 onward** for both series. Exact historical intraday availability, or the earliest price available through every public channel, is not established.
 
 The original proposal to evaluate forecasts back to 2000 needs narrowing for the primary experiment. Observation history starts much earlier than archived availability history. Today's price download plus a fixed delay is demonstrably different from the information in past vintages.
 
@@ -26,7 +26,7 @@ The missing weekday counts include holidays and unclassified omissions; they are
 
 Within the shared 1987-05-20 to 2026-10-06 period, 8,410 dates have both prices, 791 have only WTI, 692 have only Brent, and 382 weekdays have neither. A simple inner join would discard real WTI observations and could silently change a five-observation target into a different horizon.
 
-WTI is -36.98 USD per barrel on 2020-04-20. The 2020-04-29 archived EIA table independently confirms this. Ordinary log returns fail there, and percentage-return signs can misrepresent direction across negative prices. A future direction label should compare price levels directly, with a separately defined reporting calendar.
+WTI is negative on 2020-04-20; the exact source quote is omitted from the public copy. The 2020-04-29 archived EIA table independently confirms this. Ordinary log returns fail there, and percentage-return signs can misrepresent direction across negative prices. A future direction label should compare price levels directly, with a separately defined reporting calendar.
 
 Sources: [WTI history and XLS](https://www.eia.gov/dnav/pet/hist/RWTCD.htm), [Brent history and XLS](https://www.eia.gov/dnav/pet/hist/RBRTED.htm). Full calculations, annual counts, gaps, and provenance: [price audit JSON](../reports/price_audit.json).
 
@@ -76,11 +76,11 @@ Sources: [WTI download form](https://alfred.stlouisfed.org/series/downloaddata?s
 
 ## Material revisions and anomalies
 
-**Numeric corrections are visible.** WTI's 2020-03-18 price changes from 26.96 to 20.48 on the April 1 vintage, back to 26.96 on April 22, then to 20.48 on April 29. These are recorded archive differences; their cause is not established. A present-day history with a delay cannot reproduce that sequence.
+**Numeric corrections are visible.** WTI's 2020-03-18 price changes on the April 1 vintage, reverts on April 22, then changes again on April 29; exact quotations are retained only in the private original. These are recorded archive differences; their cause is not established. A present-day history with a delay cannot reproduce that sequence.
 
 **Large sets of older values later became missing.** The 2026-09-16 vintage changes 743 WTI and 890 Brent observations from numeric to missing. Of these, 378 WTI and 311 Brent dates are from 2000 onward; 53 WTI and one Brent date are from 2011-04-06 onward. Their cause remains unresolved. Preserve both earlier values and later missing states instead of rewriting history.
 
-An independent EIA archive check confirms one concrete omission: Table 11 released on 2011-08-03 contains WTI **99.53 on 2011-07-22**, while the current EIA XLS omits that date. This is not merely an inferred holiday gap.
+An independent EIA archive check confirms one concrete omission: Table 11 released on 2011-08-03 contains a numeric WTI observation on **2011-07-22** (quote omitted from the public copy), while the current EIA XLS omits that date. This is not merely an inferred holiday gap.
 
 **One impossible availability date occurs in each archive.** Both mark a 2012-12-27 observation as active on 2012-12-26. The strict audit lookup permanently quarantines those version records. Six WTI and seven Brent version records have matching observation and vintage dates; that alone is not an error, but the archive cannot prove intraday ordering. The strict lookup excludes same-day observations at the requested cutoff.
 
@@ -92,8 +92,8 @@ Four original EIA Table 11 CSVs were downloaded and checked against the current 
 | --- | --- | --- |
 | 2011-08-03 | July 18–29, 2011 | WTI July 22 value omitted from current history |
 | 2020-04-22 | April 6–17, 2020 | Does not contain April 20; ALFRED WTI already does on this archive date |
-| 2020-04-29 | April 13–24, 2020 | Confirms April 20 WTI -36.98 and Brent 17.36 |
-| 2024-01-04 | December 18–29, 2023 | December 26 has WTI 75.84 but no Brent value |
+| 2020-04-29 | April 13–24, 2020 | Confirms negative April 20 WTI and contemporaneous Brent; quotations omitted |
+| 2024-01-04 | December 18–29, 2023 | December 26 has numeric WTI but no Brent value; quotation omitted |
 
 These CSVs use CP1252 encoding, unavailable-value markers, and multiple header sections. In the daily section, the first two date columns are weekly averages, followed by ten daily columns. The audit parser separates them and checks weekday names and year-boundary dates.
 
@@ -123,4 +123,15 @@ All downloads were free and key-free. EIA also offers a free registered API, but
 
 Evidence locations are `data/audit/current/20261013T055923606961Z/`, `data/audit/vintages/`, and `data/audit/releases/`. Their manifests record source URLs, SHA-256 hashes, and retrieval provenance. Initial ALFRED captures have retrieval dates only; current EIA and release captures have UTC completion timestamps. These are this audit's retrieval times, not original historical publication times.
 
-Verification passed: source checksums, current XLS schema/coverage checks, ten unit tests, all interval adjacency checks, eight complete snapshot-column comparisons, full current EIA-versus-ALFRED reconciliation, and four weekly issue comparisons. See [reproducibility](reproducibility.md) for bounded offline replay and free new-download commands. Original code/docs now use [MIT](../LICENSE); external source rights remain [separate](../DATA_LICENSE.md).
+Verification passed: source checksums, current XLS schema/coverage checks, ten unit tests, all interval adjacency checks, eight complete snapshot-column comparisons, full current EIA-versus-ALFRED reconciliation, and four weekly issue comparisons. See [reproducibility](reproducibility.md) for the synthetic quickstart and permission-restricted historical recipes. Original code/docs now use [MIT](../LICENSE); external source rights remain [separate](../DATA_LICENSE.md).
+
+
+## Public copy and current rights status
+
+The price, vintage and reconciliation JSON links point to sanitized summaries.
+Their introduced nulls omit source quotations, not source observations. Original
+report and document bytes were preserved privately before replacement. This
+historical technical audit does not establish current permission for ALFRED ML
+training or unrestricted vendor-data redistribution. The current public
+quickstart uses synthetic sources only; use the [clean export](public-release.md)
+instead of publishing local Git history containing earlier excerpts.

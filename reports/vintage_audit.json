@@ -15,25 +15,25 @@
         "vintage_date": "2011-04-06",
         "nonmissing_count": 6373,
         "latest_observation": "2011-04-05",
-        "latest_value": "107.82"
+        "latest_value": null
       },
       {
         "vintage_date": "2011-04-13",
         "nonmissing_count": 6378,
         "latest_observation": "2011-04-12",
-        "latest_value": "105.75"
+        "latest_value": null
       },
       {
         "vintage_date": "2020-04-22",
         "nonmissing_count": 8645,
         "latest_observation": "2020-04-21",
-        "latest_value": "8.91"
+        "latest_value": null
       },
       {
         "vintage_date": "2020-04-29",
         "nonmissing_count": 8649,
         "latest_observation": "2020-04-27",
-        "latest_value": "12.17"
+        "latest_value": null
       }
     ],
     "first_numeric_lag_after_initial_vintage": {
@@ -85,70 +85,70 @@
         {
           "lag": 103,
           "period_start_date": "2019-11-29",
-          "DCOILWTICO": "58.12",
+          "DCOILWTICO": null,
           "realtime_start_date": "2020-03-11",
           "realtime_end_date": ""
         },
         {
           "lag": 77,
           "period_start_date": "2019-12-25",
-          "DCOILWTICO": "61.17",
+          "DCOILWTICO": null,
           "realtime_start_date": "2020-03-11",
           "realtime_end_date": "2020-03-31"
         },
         {
           "lag": 70,
           "period_start_date": "2020-01-01",
-          "DCOILWTICO": "61.14",
+          "DCOILWTICO": null,
           "realtime_start_date": "2020-03-11",
           "realtime_end_date": "2020-03-31"
         },
         {
           "lag": 55,
           "period_start_date": "2011-11-25",
-          "DCOILWTICO": "96.91",
+          "DCOILWTICO": null,
           "realtime_start_date": "2012-01-19",
           "realtime_end_date": ""
         },
         {
           "lag": 40,
           "period_start_date": "2024-05-31",
-          "DCOILWTICO": "77.97",
+          "DCOILWTICO": null,
           "realtime_start_date": "2024-07-10",
           "realtime_end_date": ""
         },
         {
           "lag": 37,
           "period_start_date": "2024-06-03",
-          "DCOILWTICO": "75.26",
+          "DCOILWTICO": null,
           "realtime_start_date": "2024-07-10",
           "realtime_end_date": ""
         },
         {
           "lag": 36,
           "period_start_date": "2024-06-04",
-          "DCOILWTICO": "74.27",
+          "DCOILWTICO": null,
           "realtime_start_date": "2024-07-10",
           "realtime_end_date": ""
         },
         {
           "lag": 35,
           "period_start_date": "2024-06-05",
-          "DCOILWTICO": "75.08",
+          "DCOILWTICO": null,
           "realtime_start_date": "2024-07-10",
           "realtime_end_date": ""
         },
         {
           "lag": 34,
           "period_start_date": "2024-06-06",
-          "DCOILWTICO": "76.52",
+          "DCOILWTICO": null,
           "realtime_start_date": "2024-07-10",
           "realtime_end_date": ""
         },
         {
           "lag": 33,
           "period_start_date": "2024-06-07",
-          "DCOILWTICO": "76.53",
+          "DCOILWTICO": null,
           "realtime_start_date": "2024-07-10",
           "realtime_end_date": ""
         }
@@ -158,43 +158,43 @@
     "same_or_future_observation_date_records": [
       {
         "period_start_date": "2011-09-27",
-        "DCOILWTICO": "84.18",
+        "DCOILWTICO": null,
         "realtime_start_date": "2011-09-27",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-02-22",
-        "DCOILWTICO": "105.99",
+        "DCOILWTICO": null,
         "realtime_start_date": "2012-02-22",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-10-31",
-        "DCOILWTICO": "86.23",
+        "DCOILWTICO": null,
         "realtime_start_date": "2012-10-31",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-11-14",
-        "DCOILWTICO": "86.32",
+        "DCOILWTICO": null,
         "realtime_start_date": "2012-11-14",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-12-26",
-        "DCOILWTICO": "90.71",
+        "DCOILWTICO": null,
         "realtime_start_date": "2012-12-26",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-12-27",
-        "DCOILWTICO": "90.91",
+        "DCOILWTICO": null,
         "realtime_start_date": "2012-12-26",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2020-04-01",
-        "DCOILWTICO": "20.28",
+        "DCOILWTICO": null,
         "realtime_start_date": "2020-04-01",
         "realtime_end_date": ""
       }
@@ -202,7 +202,7 @@
     "impossible_future_observation_date_records": [
       {
         "period_start_date": "2012-12-27",
-        "DCOILWTICO": "90.91",
+        "DCOILWTICO": null,
         "realtime_start_date": "2012-12-26",
         "realtime_end_date": ""
       }
@@ -285,71 +285,71 @@
       {
         "observation_date": "1986-01-31",
         "vintage_date": "2026-09-16",
-        "before": "18.95",
-        "after": "",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_missing"
       },
       {
         "observation_date": "2019-11-29",
         "vintage_date": "2020-03-11",
-        "before": "",
-        "after": "58.12",
+        "before": null,
+        "after": null,
         "kind": "missing_to_numeric"
       },
       {
         "observation_date": "2019-12-25",
         "vintage_date": "2020-03-11",
-        "before": "",
-        "after": "61.17",
+        "before": null,
+        "after": null,
         "kind": "missing_to_numeric"
       },
       {
         "observation_date": "2019-12-25",
         "vintage_date": "2020-04-01",
-        "before": "61.17",
-        "after": "",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_missing"
       },
       {
         "observation_date": "2020-03-06",
         "vintage_date": "2020-04-22",
-        "before": "41.14",
-        "after": "45.90",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_numeric"
       },
       {
         "observation_date": "2020-03-06",
         "vintage_date": "2020-04-29",
-        "before": "45.90",
-        "after": "41.14",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_numeric"
       },
       {
         "observation_date": "2020-03-18",
         "vintage_date": "2020-04-01",
-        "before": "26.96",
-        "after": "20.48",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_numeric"
       },
       {
         "observation_date": "2020-03-18",
         "vintage_date": "2020-04-22",
-        "before": "20.48",
-        "after": "26.96",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_numeric"
       },
       {
         "observation_date": "2020-03-18",
         "vintage_date": "2020-04-29",
-        "before": "26.96",
-        "after": "20.48",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_numeric"
       },
       {
         "observation_date": "2024-05-31",
         "vintage_date": "2024-07-10",
-        "before": "",
-        "after": "77.97",
+        "before": null,
+        "after": null,
         "kind": "missing_to_numeric"
       }
     ],
@@ -376,25 +376,25 @@
         "vintage_date": "2011-04-06",
         "nonmissing_count": 6068,
         "latest_observation": "2011-04-05",
-        "latest_value": "122.87"
+        "latest_value": null
       },
       {
         "vintage_date": "2011-04-13",
         "nonmissing_count": 6073,
         "latest_observation": "2011-04-12",
-        "latest_value": "121.33"
+        "latest_value": null
       },
       {
         "vintage_date": "2020-04-22",
         "nonmissing_count": 8353,
         "latest_observation": "2020-04-13",
-        "latest_value": "20.23"
+        "latest_value": null
       },
       {
         "vintage_date": "2020-04-29",
         "nonmissing_count": 8362,
         "latest_observation": "2020-04-27",
-        "latest_value": "15.17"
+        "latest_value": null
       }
     ],
     "first_numeric_lag_after_initial_vintage": {
@@ -430,70 +430,70 @@
         {
           "lag": 77,
           "period_start_date": "2019-12-25",
-          "DCOILBRENTEU": "69.26",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2020-03-11",
           "realtime_end_date": "2020-03-31"
         },
         {
           "lag": 70,
           "period_start_date": "2020-01-01",
-          "DCOILBRENTEU": "67.77",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2020-03-11",
           "realtime_end_date": "2020-03-31"
         },
         {
           "lag": 27,
           "period_start_date": "2012-12-13",
-          "DCOILBRENTEU": "110.18",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2013-01-09",
           "realtime_end_date": ""
         },
         {
           "lag": 22,
           "period_start_date": "2012-12-18",
-          "DCOILBRENTEU": "109.96",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2013-01-09",
           "realtime_end_date": ""
         },
         {
           "lag": 22,
           "period_start_date": "2013-03-19",
-          "DCOILBRENTEU": "106.91",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2013-04-10",
           "realtime_end_date": ""
         },
         {
           "lag": 15,
           "period_start_date": "2013-10-08",
-          "DCOILBRENTEU": "110.56",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2013-10-23",
           "realtime_end_date": ""
         },
         {
           "lag": 15,
           "period_start_date": "2020-03-17",
-          "DCOILBRENTEU": "27.97",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2020-04-01",
           "realtime_end_date": ""
         },
         {
           "lag": 15,
           "period_start_date": "2020-04-14",
-          "DCOILBRENTEU": "21.74",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2020-04-29",
           "realtime_end_date": ""
         },
         {
           "lag": 15,
           "period_start_date": "2022-06-14",
-          "DCOILBRENTEU": "127.02",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2022-06-29",
           "realtime_end_date": ""
         },
         {
           "lag": 15,
           "period_start_date": "2023-10-31",
-          "DCOILBRENTEU": "86.82",
+          "DCOILBRENTEU": null,
           "realtime_start_date": "2023-11-15",
           "realtime_end_date": ""
         }
@@ -503,49 +503,49 @@
     "same_or_future_observation_date_records": [
       {
         "period_start_date": "2011-09-27",
-        "DCOILBRENTEU": "109.54",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2011-09-27",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-02-22",
-        "DCOILBRENTEU": "123.07",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2012-02-22",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-10-31",
-        "DCOILBRENTEU": "109.89",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2012-10-31",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-11-14",
-        "DCOILBRENTEU": "109.66",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2012-11-14",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-12-26",
-        "DCOILBRENTEU": "110.72",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2012-12-26",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2012-12-27",
-        "DCOILBRENTEU": "110.04",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2012-12-26",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2013-02-06",
-        "DCOILBRENTEU": "116.61",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2013-02-06",
         "realtime_end_date": ""
       },
       {
         "period_start_date": "2020-04-01",
-        "DCOILBRENTEU": "14.97",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2020-04-01",
         "realtime_end_date": ""
       }
@@ -553,7 +553,7 @@
     "impossible_future_observation_date_records": [
       {
         "period_start_date": "2012-12-27",
-        "DCOILBRENTEU": "110.04",
+        "DCOILBRENTEU": null,
         "realtime_start_date": "2012-12-26",
         "realtime_end_date": ""
       }
@@ -651,29 +651,29 @@
       {
         "observation_date": "1987-12-21",
         "vintage_date": "2026-09-16",
-        "before": "15.40",
-        "after": "",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_missing"
       },
       {
         "observation_date": "2019-12-25",
         "vintage_date": "2020-03-11",
-        "before": "",
-        "after": "69.26",
+        "before": null,
+        "after": null,
         "kind": "missing_to_numeric"
       },
       {
         "observation_date": "2019-12-25",
         "vintage_date": "2020-04-01",
-        "before": "69.26",
-        "after": "",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_missing"
       },
       {
         "observation_date": "2020-03-18",
         "vintage_date": "2020-04-01",
-        "before": "26.93",
-        "after": "22.79",
+        "before": null,
+        "after": null,
         "kind": "numeric_to_numeric"
       }
     ],
@@ -683,5 +683,20 @@
       "Future observations and incorrectly predated records rejected by strict as-of lookup",
       "No false reconstruction before initial archive date"
     ]
+  },
+  "public_sanitization": {
+    "original_bytes": 18737,
+    "original_sha256": "cca50b7565e121d1d0381de10b1525097cd427a4bb5f2ffe41b325b459cab986",
+    "policy_version": "source-price-excerpts-v1",
+    "redacted_path_counts": {
+      "*.date_level_reconstruction_verified_against_samples.*.latest_value": 8,
+      "*.event_examples.*.after": 14,
+      "*.event_examples.*.before": 14,
+      "*.first_numeric_lag_after_initial_vintage.longest_examples.*.$series": 20,
+      "*.impossible_future_observation_date_records.*.$series": 2,
+      "*.same_or_future_observation_date_records.*.$series": 15
+    },
+    "replacement_meaning": "Introduced nulls omit source-price quotations; they do not indicate missing values in the original source or audit.",
+    "report": "vintage_audit.json"
   }
 }

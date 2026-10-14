@@ -32,16 +32,16 @@
       "missing_date_interpretation": "Weekday grid only; includes holidays and unclassified omissions. Not a missing-trading-day count.",
       "minimum": {
         "date": "2020-04-20",
-        "value": -36.98
+        "value": null
       },
       "maximum": {
         "date": "2008-07-03",
-        "value": 145.31
+        "value": null
       },
       "nonpositive_observations": [
         {
           "date": "2020-04-20",
-          "value": -36.98
+          "value": null
         }
       ],
       "unchanged_adjacent_observations": 114,
@@ -49,90 +49,90 @@
         {
           "previous_date": "2020-04-17",
           "date": "2020-04-20",
-          "previous_price": 18.31,
-          "price": -36.98,
-          "change_usd": -55.29,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 3
         },
         {
           "previous_date": "2020-04-20",
           "date": "2020-04-21",
-          "previous_price": -36.98,
-          "price": 8.91,
-          "change_usd": 45.89,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2008-09-19",
           "date": "2008-09-22",
-          "previous_price": 104.05,
-          "price": 122.61,
-          "change_usd": 18.56,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 3
         },
         {
           "previous_date": "2026-04-07",
           "date": "2026-04-08",
-          "previous_price": 114.58,
-          "price": 96.17,
-          "change_usd": -18.41,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2022-03-08",
           "date": "2022-03-09",
-          "previous_price": 123.64,
-          "price": 108.81,
-          "change_usd": -14.83,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2008-09-22",
           "date": "2008-09-23",
-          "previous_price": 122.61,
-          "price": 107.85,
-          "change_usd": -14.76,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-09-25",
           "date": "2026-09-28",
-          "previous_price": 85.23,
-          "price": 99.37,
-          "change_usd": 14.14,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 3
         },
         {
           "previous_date": "2026-04-01",
           "date": "2026-04-02",
-          "previous_price": 101.9,
-          "price": 113.23,
-          "change_usd": 11.33,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-03-09",
           "date": "2026-03-10",
-          "previous_price": 94.65,
-          "price": 83.71,
-          "change_usd": -10.94,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "1991-01-16",
           "date": "1991-01-17",
-          "previous_price": 32.25,
-          "price": 21.48,
-          "change_usd": -10.77,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         }
       ],
       "longest_calendar_gap": {
         "previous_date": "1999-09-01",
         "date": "1999-09-15",
-        "previous_price": 21.79,
-        "price": 24.1,
-        "change_usd": 2.31,
+        "previous_price": null,
+        "price": null,
+        "change_usd": null,
         "calendar_days_between": 14
       },
       "yearly_coverage": [
@@ -1517,11 +1517,11 @@
       "missing_date_interpretation": "Weekday grid only; includes holidays and unclassified omissions. Not a missing-trading-day count.",
       "minimum": {
         "date": "1998-12-10",
-        "value": 9.1
+        "value": null
       },
       "maximum": {
         "date": "2008-07-03",
-        "value": 143.95
+        "value": null
       },
       "nonpositive_observations": [],
       "unchanged_adjacent_observations": 171,
@@ -1529,90 +1529,90 @@
         {
           "previous_date": "2026-10-01",
           "date": "2026-10-02",
-          "previous_price": 114.82,
-          "price": 135.51,
-          "change_usd": 20.69,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-04-16",
           "date": "2026-04-17",
-          "previous_price": 116.63,
-          "price": 98.63,
-          "change_usd": -18.0,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2022-03-08",
           "date": "2022-03-09",
-          "previous_price": 133.18,
-          "price": 116.58,
-          "change_usd": -16.6,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-04-07",
           "date": "2026-04-08",
-          "previous_price": 138.21,
-          "price": 122.11,
-          "change_usd": -16.1,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-03-20",
           "date": "2026-03-23",
-          "previous_price": 118.42,
-          "price": 103.79,
-          "change_usd": -14.63,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 3
         },
         {
           "previous_date": "2026-09-09",
           "date": "2026-09-10",
-          "previous_price": 109.51,
-          "price": 120.98,
-          "change_usd": 11.47,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-03-11",
           "date": "2026-03-12",
-          "previous_price": 90.98,
-          "price": 102.38,
-          "change_usd": 11.4,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2022-07-04",
           "date": "2022-07-05",
-          "previous_price": 121.8,
-          "price": 110.49,
-          "change_usd": -11.31,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-07-22",
           "date": "2026-07-23",
-          "previous_price": 94.12,
-          "price": 105.32,
-          "change_usd": 11.2,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         },
         {
           "previous_date": "2026-05-05",
           "date": "2026-05-06",
-          "previous_price": 114.51,
-          "price": 103.7,
-          "change_usd": -10.81,
+          "previous_price": null,
+          "price": null,
+          "change_usd": null,
           "calendar_days_between": 1
         }
       ],
       "longest_calendar_gap": {
         "previous_date": "1994-12-21",
         "date": "1995-01-03",
-        "previous_price": 15.65,
-        "price": 15.88,
-        "change_usd": 0.23,
+        "previous_price": null,
+        "price": null,
+        "change_usd": null,
         "calendar_days_between": 13
       },
       "yearly_coverage": [
@@ -4529,5 +4529,23 @@
     ],
     "neither_has_price_weekdays": 382,
     "join_rule": "Keep WTI target calendar. Brent features require separate availability alignment; do not inner-join first and redefine the target horizon."
+  },
+  "public_sanitization": {
+    "original_bytes": 101067,
+    "original_sha256": "a7bf03d3b9473e0d9c19c617a516da376d8408ccfe89e26fbe9c9ef8619fb06a",
+    "policy_version": "source-price-excerpts-v1",
+    "redacted_path_counts": {
+      "series.*.largest_absolute_adjacent_changes.*.change_usd": 20,
+      "series.*.largest_absolute_adjacent_changes.*.previous_price": 20,
+      "series.*.largest_absolute_adjacent_changes.*.price": 20,
+      "series.*.longest_calendar_gap.change_usd": 2,
+      "series.*.longest_calendar_gap.previous_price": 2,
+      "series.*.longest_calendar_gap.price": 2,
+      "series.*.maximum.value": 2,
+      "series.*.minimum.value": 2,
+      "series.*.nonpositive_observations.*.value": 1
+    },
+    "replacement_meaning": "Introduced nulls omit source-price quotations; they do not indicate missing values in the original source or audit.",
+    "report": "price_audit.json"
   }
 }
