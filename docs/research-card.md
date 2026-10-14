@@ -1,9 +1,9 @@
-# Crude Oil Direction: research card
+# Crude Oil Direction Prediction: research card
 
 ## Question and intended use
 
 Can a small, free-data model predict whether WTI spot is higher five fixed US
-business days after the forecast date? Crude Oil Direction is a forecasting
+business days after the forecast date? Crude Oil Direction Prediction is a forecasting
 software project and reproducible research record. It predicts a direction
 probability, not a price level. WTI spot is a benchmark rather than a directly tradable security;
 there is no transaction-cost, execution or futures-roll backtest.

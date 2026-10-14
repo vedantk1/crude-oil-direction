@@ -17,7 +17,7 @@ if __package__ in (None, ""):
 from oil_audit.public_reports import sanitize_report
 
 
-ARCHIVE_PREFIX = "crude-oil-direction"
+ARCHIVE_PREFIX = "crude-oil-direction-prediction"
 ARCHIVE_NAME = ARCHIVE_PREFIX + ".zip"
 MANIFEST_NAME = "PUBLIC_RELEASE_MANIFEST.json"
 PUBLIC_REPORTS = {

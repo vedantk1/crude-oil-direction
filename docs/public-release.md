@@ -1,9 +1,10 @@
-# Publishing Crude Oil Direction
+# Publishing Crude Oil Direction Prediction
 
 Use the original repository and full development history for development and
-publication. The repository name is `crude-oil-direction`, with the project title
-**Crude Oil Direction**. Downloaded data, private backups, environments and full
-model artifacts stay local; a second working repository is not required.
+publication. The repository name is `crude-oil-direction-prediction`, with the project
+title **Crude Oil Direction Prediction**. Downloaded data, private backups,
+environments and full model artifacts stay local; a second working repository
+is not required.
 
 The public quickstart uses original MIT code and an invented synthetic demo.
 Real ALFRED training permission remains unresolved; see [data rights](../DATA_LICENSE.md)
@@ -55,7 +56,7 @@ refit or holdout evaluation is needed to publish the code and its history.
 
 ## Presentation
 
-Describe Crude Oil Direction as a forecasting project with chronological
+Describe Crude Oil Direction Prediction as a forecasting project with chronological
 evaluation and a documented development history. Report the 301 scored
 development outcomes, simple baselines, retrospective model selection and timing
 sensitivity. The strongest selected model reached 53.16% direction accuracy;
@@ -108,3 +109,16 @@ evaluated. The existing local environment received the already documented
 compatible SciPy wheel, and all 420 local tests passed. No market models or
 results were recomputed. Later documentation commits run CI separately; the
 publication report identifies the exact commit verified by the run above.
+
+## Current naming update
+
+On 2026-10-14, the project was renamed **Crude Oil Direction Prediction**.
+The existing GitHub repository and the original local folder both use
+`crude-oil-direction-prediction`; the folder was moved in place. Current
+documentation and optional source archives use this name. The earlier
+names above are retained only as publication history. The publication report
+records completion of the remote and folder rename; this changes no models,
+source data, results or holdout policy.
+
+After the folder move, all 420 local tests and the synthetic demo passed. All
+1,479 previously recorded data/result files still matched their original hashes.

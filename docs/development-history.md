@@ -1,6 +1,6 @@
 # Development history
 
-Crude Oil Direction began as a free, CPU-only project to predict crude-oil price
+Crude Oil Direction Prediction began as a free, CPU-only project to predict crude-oil price
 direction. The task became WTI spot direction over five fixed US business days,
 with source information restricted to what the archives record as available at
 each forecast. The initial training period is 2011–2016, development is
@@ -64,8 +64,8 @@ than this development history. The exported code passed hosted CI, but the
 arrangement obscured the progression of the work and split the working workflow.
 Those two commits are publication provenance, not original development commits.
 
-The subsequent decision is to use the original repository and its full history,
-name the project **Crude Oil Direction**, and remove the extra working copy.
+The subsequent consolidation restored the original repository and its full
+history, used the title **Crude Oil Direction**, and removed the extra working copy.
 There is no new sanitized history or replacement set of development hashes.
 Older report excerpts remain in their original commits. Their earlier omission
 from current reports was a precaution, not a determination that those particular
@@ -76,3 +76,8 @@ See [publication chronology](public-release.md) and its linked execution report
 for completed publication steps and CI evidence. This history preserves the
 experiments, unsuccessful approaches and corrective decisions as part of the
 same project.
+
+The current name is **Crude Oil Direction Prediction**, with repository
+slug `crude-oil-direction-prediction`. This naming update changes the title,
+GitHub name and local folder without changing model behavior or rewriting the
+development history. Its execution status is recorded in the publication report.

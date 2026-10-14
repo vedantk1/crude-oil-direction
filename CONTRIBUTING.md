@@ -1,6 +1,6 @@
 # Contributing
 
-Crude Oil Direction's initial research phase is frozen. The project is a
+Crude Oil Direction Prediction's initial research phase is frozen. The project is a
 forecasting benchmark with negative and mixed findings, not a validated price
 or trading predictor.
 The 2023-onward final holdout remains closed. Changes to model selection need a

@@ -57,6 +57,24 @@
     "unit_test_seconds": 21.235,
     "unit_tests_passed": 420
   },
+  "naming_update": {
+    "date": "2026-10-14",
+    "history_rewritten": false,
+    "holdout_evaluated": false,
+    "local_folder": "crude-oil-direction-prediction",
+    "local_folder_moved_in_place": true,
+    "local_validation": {
+      "changed_or_missing_files": 0,
+      "preserved_files_verified": 1479,
+      "synthetic_demo": "success",
+      "unit_test_seconds": 18.537,
+      "unit_tests_passed": 420
+    },
+    "model_results_recomputed": false,
+    "previous_project_title": "Crude Oil Direction",
+    "previous_repository_name": "crude-oil-direction",
+    "status": "GitHub repository and original local folder renamed; current documentation and archive prefix updated"
+  },
   "original_history": {
     "base_commit": "430840759068b14575fe8db693bfec1f12430f08",
     "commit_count_before_consolidation": 21,
@@ -88,9 +106,9 @@
     "raw_data_paths_tracked_in_any_original_commit": 0,
     "raw_data_published": false
   },
-  "project_title": "Crude Oil Direction",
+  "project_title": "Crude Oil Direction Prediction",
   "publication_date": "2026-10-14",
-  "repository_name": "crude-oil-direction",
+  "repository_name": "crude-oil-direction-prediction",
   "repository_renamed": true,
   "schema_version": 2,
   "visibility": "public",

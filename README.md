@@ -1,4 +1,4 @@
-# Crude Oil Direction
+# Crude Oil Direction Prediction
 
 A free, CPU-only forecasting project for predicting whether WTI spot rises over
 **five fixed US business days**. It reconstructs source availability, trains on
