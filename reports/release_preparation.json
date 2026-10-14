@@ -1,0 +1,87 @@
+{
+  "clean_export_verification": {
+    "all_file_hashes_verified": true,
+    "archive_bytes": 1638861,
+    "archive_sha256": "debfd41daced44a570bb993bf4b2e5164bf573bca749b7d778a935d59eb0ae41",
+    "fresh_bootstrap_succeeded": true,
+    "git_history_included": false,
+    "holdout_evaluated": false,
+    "hosted_ci_run_performed": false,
+    "manifest_sha256": "476689031367bcfcf287689862fa4ade7f59fc91f128d5c2ece4c722c781e191",
+    "personal_git_author_addresses_included": false,
+    "private_data_or_environments_included": false,
+    "source_commit": "74b2213e1643a75a06fe74d435536d20fc5957c5",
+    "synthetic_tree_demo": "complete",
+    "tracked_files": 108,
+    "unit_tests_passed": 420
+  },
+  "delay_dispatch": {
+    "frozen_protocol_configurations_unchanged": 7,
+    "generic_runner_cli_and_replay_reject_dedicated_delay": true,
+    "regression_tests": 6,
+    "rejection_before_source_access_fit_or_output": true,
+    "saved_dedicated_delay_result_unchanged": true
+  },
+  "holdout_evaluated": false,
+  "original_integrity": {
+    "data_result_and_other_report_files_unchanged": 1469,
+    "local_git_history_preserved": true,
+    "original_environment_preserved": true,
+    "original_report_and_doc_copies_preserved": 12,
+    "replaced_public_report_originals_byte_exact": 3
+  },
+  "public_reports": {
+    "future_public_audit_writers_sanitize": true,
+    "introduced_nulls_mean": "quotation omitted, not source missingness",
+    "parser_decodes_object_keys_only": true,
+    "policy_version": "source-price-excerpts-v1",
+    "private_originals_preserved": true,
+    "public_prose_quotes_removed": true,
+    "reports": {
+      "price_audit.json": {
+        "all_retained_scalar_tokens_identical": true,
+        "omitted_source_price_fields": 71,
+        "original_bytes": 101067,
+        "original_private_bytes_verified": true,
+        "original_sha256": "a7bf03d3b9473e0d9c19c617a516da376d8408ccfe89e26fbe9c9ef8619fb06a",
+        "public_sha256": "2da32340a7e110d9a27bcb994b7f563399a8e7d13b96844a80f7b2f26f34e4fe"
+      },
+      "source_reconciliation.json": {
+        "all_retained_scalar_tokens_identical": true,
+        "omitted_source_price_fields": 2,
+        "original_bytes": 2407,
+        "original_private_bytes_verified": true,
+        "original_sha256": "038e1054d5cd59dba038806b2796df74095e5d7e51af70dc1bc317e328508eaf",
+        "public_sha256": "e26ae321827e34f356d0cace10efde7b4710e52db941e7f072b12776af6506f1"
+      },
+      "vintage_audit.json": {
+        "all_retained_scalar_tokens_identical": true,
+        "omitted_source_price_fields": 73,
+        "original_bytes": 18737,
+        "original_private_bytes_verified": true,
+        "original_sha256": "cca50b7565e121d1d0381de10b1525097cd427a4bb5f2ffe41b325b459cab986",
+        "public_sha256": "4a48dd09069dd7a619aa2ae792d0fd610777d992c13ed0a1cbaccf2593a75efa"
+      }
+    },
+    "total_omitted_source_price_fields": 146
+  },
+  "publication": {
+    "published": false,
+    "pushed": false,
+    "recommendation": "distribute the clean current-source export, not the preserved private historical Git repository"
+  },
+  "review_date": "2026-10-14",
+  "schema_version": 1,
+  "scope": "release preparation only; synthetic software verification; no new real-data fitting or heldout evaluation",
+  "source_rights": {
+    "alfred_training_use": "unresolved; no new training performed",
+    "current_public_quickstart": "synthetic only",
+    "direct_eia_vendor_wti_brent": "not automatically cleared",
+    "eia_own_survey_aggregates": "affirmative government-data reuse evidence; target and publication audit required",
+    "replacement_dataset_built": false,
+    "replacement_model_trained": false,
+    "verified_daily_wti_vintage_replacement_found": false,
+    "world_bank_monthly_wti_brent": "dataset CC BY 4.0 verified; workbook-specific notices and release history unverified; retrieval failed"
+  },
+  "verified_source_checkpoint": "74b2213"
+}

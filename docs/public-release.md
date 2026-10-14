@@ -62,3 +62,21 @@ evaluation and negative results. Report the 301 scored development outcomes,
 the simple baselines, retrospective model selection and timing sensitivity.
 Do not advertise the highest observed accuracy as a reliable prediction rate,
 describe source access as training permission, or claim a trading edge.
+
+
+## Verification record
+
+Checkpoint `74b2213` was exported to a clean directory with no Git history,
+source captures, original reports or environment. The export contains 108
+tracked files plus its generated manifest; all archive file hashes verify and
+personal Git author addresses are absent. Fresh bootstrap succeeded, all
+**420 tests passed**, and the synthetic demo through tree comparison completed.
+No real-data model was refitted. The source-data/result preservation inventory
+verified 1,469 unchanged existing files plus three byte-exact private originals
+of the replaced public reports. Original report/document copies total twelve.
+
+The [release-preparation report](../reports/release_preparation.json) records
+that checked checkpoint, archive hashes, sanitation provenance and permission
+limitations. A later clean export may contain added verification docs/reports
+and therefore have a different source commit and checksum. The exporter always
+binds its archive to its own exact HEAD. No public push or hosted CI run occurred.
