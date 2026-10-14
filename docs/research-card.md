@@ -1,11 +1,11 @@
-# Research card: frozen development phase
+# Crude Oil Direction: research card
 
 ## Question and intended use
 
 Can a small, free-data model predict whether WTI spot is higher five fixed US
-business days after the forecast date? This repository is an audited benchmark
-and reproducible research record. It predicts a direction probability, not a
-price level. WTI spot is a benchmark rather than a directly tradable security;
+business days after the forecast date? Crude Oil Direction is a forecasting
+software project and reproducible research record. It predicts a direction
+probability, not a price level. WTI spot is a benchmark rather than a directly tradable security;
 there is no transaction-cost, execution or futures-roll backtest.
 
 ## Evidence and design
@@ -82,9 +82,12 @@ Original code/docs/synthetic fixtures use MIT; third-party data do not inherit i
 The public demonstration is synthetic-only. The current published FRED terms
 include a training-use restriction covering ALFRED; that use is unresolved,
 independently of the permission to publish original MIT code. The source-price
-reports now omit quotations while private originals remain byte-exact. Local
-Git history retains older report versions and must not be published unchanged;
-use the [clean export](public-release.md).
+reports now omit quotations while local backup files remain byte-exact. The
+original Git history retains older report excerpts unchanged; their earlier
+omission was a publication precaution, not an established prohibition on those
+particular excerpts. The project uses one original repository with private
+captures and artifacts excluded by Git ignore rules. See the
+[publication workflow](public-release.md) and [development history](development-history.md).
 
 The [free-source audit](free-training-data-audit.md) identifies licensed monthly
 World Bank crude prices and EIA's own survey aggregates for a separate future

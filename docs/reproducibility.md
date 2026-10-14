@@ -6,6 +6,12 @@ Do not run new ALFRED training while its training-use terms are unresolved.
 See [data rights](../DATA_LICENSE.md) and the [alternative-source audit](free-training-data-audit.md).
 No paid data, API key or GPU is needed for the synthetic demo. Run from the repository root.
 
+Use the original repository and its full commit history for development. A
+fresh clone is sufficient for the quickstart; a separate export or publication
+checkout is not required. Private source captures and full run artifacts live
+under ignored `data/` and are not included in a clone. See the
+[development history](development-history.md) and [publication workflow](public-release.md).
+
 ## Install and demonstrate
 
 Python 3.13 is the tested interpreter. Dependencies are pinned in
@@ -133,11 +139,11 @@ retained results. Older WTI/Brent/C=1 references differ only by tiny native-buil
 floating-point amounts (maximum probability difference 1.784e-13), with no
 changed directions. Those older references predate native fingerprint recording.
 
-The final implementation passes 375 tests. The separately checkpointed delay
+That reproducibility checkpoint passed 375 tests. The separately checkpointed delay
 result was independently verified and reproduced byte-identically. All 727
 pre-existing source/data/report files retain their checksums. CI configuration
-has been added; no hosted GitHub run or push was performed. The
-[verification report](../reports/reproducibility_check.json) records exact stage
+had been added; no hosted GitHub run or push had been performed at that
+checkpoint. The [verification report](../reports/reproducibility_check.json) records exact stage
 identities, checks and the live source-download check separately.
 
 
@@ -151,3 +157,9 @@ Every stage report and artifact checksum verifies. This demonstrates that the
 free download path worked at this check; it does not guarantee future source
 availability or erase the historical-publication limitations. The holdout stayed
 closed throughout numerical preparation and evaluation.
+
+The later release-preparation checkpoint passed 420 tests and the synthetic
+demo. Its first public snapshot also passed hosted Ubuntu/Python 3.13.16 CI.
+These are dated verification records, not substitutes for checking the current
+commit. [Publication evidence](../reports/publication.json) records publication
+and CI status; the original development commits remain the project history.

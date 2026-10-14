@@ -1,0 +1,82 @@
+{
+  "consolidation_status": "prepared for original-history push",
+  "extra_working_copy_removed": false,
+  "holdout_evaluated": false,
+  "initial_snapshot_publication": {
+    "first_hosted_ci": {
+      "event": "push",
+      "holdout_evaluated": false,
+      "job_conclusion": "success",
+      "job_id": 115743765260,
+      "job_status": "completed",
+      "market_data_downloaded": false,
+      "pinned_dependency_installation": "success",
+      "python": "3.13.16",
+      "run_id": 38531360671,
+      "runner": "ubuntu-latest",
+      "synthetic_end_to_end_demo": "success",
+      "tested_commit": "bb02f332c8d48f4bbead2a330b6c946085b81f2f",
+      "unit_tests": {
+        "passed": 420,
+        "reported_seconds": 14.213
+      },
+      "workflow_file": ".github/workflows/ci.yml",
+      "workflow_name": "Offline checks"
+    },
+    "holdout_evaluated": false,
+    "import": {
+      "clean_archive_sha256": "d08e8f891bb6db2e5b70ccb0771347126bb53ff87a185f5544ec91972c1c6f34",
+      "generated_import_manifest_ignored": true,
+      "private_source_checkpoint": "4308407",
+      "publication_context_docs_adapted": 6,
+      "source_file_count": 109
+    },
+    "private_preservation": {
+      "original_checkout_has_public_remote": false,
+      "original_history_rewritten": false,
+      "raw_original_data_published": false
+    },
+    "public_history": {
+      "new_root_commit": "bb02f332c8d48f4bbead2a330b6c946085b81f2f",
+      "original_private_commits_imported": false,
+      "personal_original_author_identifiers_imported": false,
+      "private_data_imported": false,
+      "root_commit_has_parents": false
+    },
+    "publication_date": "2026-10-14",
+    "published": true,
+    "pushed": true,
+    "repository_name": "crude-oil-direction-research",
+    "schema_version": 1,
+    "scope": "original MIT research code, synthetic demonstration and qualified historical aggregate findings; ALFRED training permission remains unresolved",
+    "visibility": "public"
+  },
+  "local_validation": {
+    "macos_scipy_runtime": "existing environment repaired with the documented SHA256-verified official same-version wheel",
+    "model_results_recomputed": false,
+    "unit_test_seconds": 21.235,
+    "unit_tests_passed": 420
+  },
+  "original_history": {
+    "base_commit": "430840759068b14575fe8db693bfec1f12430f08",
+    "commit_count_before_consolidation": 21,
+    "published": false,
+    "rewritten": false,
+    "root_commit": "336f672"
+  },
+  "original_history_ci": null,
+  "private_data": {
+    "changed_or_missing_files": 0,
+    "credential_pattern_matches_in_215_historical_blobs": 0,
+    "preserved_files_verified": 1479,
+    "raw_data_paths_tracked_in_any_original_commit": 0,
+    "raw_data_published": false
+  },
+  "project_title": "Crude Oil Direction",
+  "publication_date": "2026-10-14",
+  "repository_name": "crude-oil-direction",
+  "repository_renamed": true,
+  "schema_version": 2,
+  "visibility": "public",
+  "workflow": "original repository with unchanged development history"
+}

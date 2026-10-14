@@ -43,16 +43,22 @@ See the dated [free-training-data audit](docs/free-training-data-audit.md) for
 primary-source evidence, exceptions, availability gaps and proposed next steps.
 No replacement price dataset has been built or evaluated.
 
-## Public reports and private originals
+## Current reports, historical excerpts and private data
 
-The three source-price audit reports are public sanitized copies. Their
+The three current source-price audit reports omit individual quotations. Their
 `public_sanitization` metadata records the original byte count/hash and omitted
 field counts. Introduced nulls mean **quotation omitted**, not a missing source
 observation. Dates, coverage, findings and aggregate metrics remain available.
-Byte-exact originals and all raw captures stay under ignored `data/`.
+Byte-exact backup files and all raw captures stay under ignored `data/`.
 
-Audit report writers preserve raw bytes privately before public sanitization.
-Do not commit raw captures, price excerpts, full prediction artifacts or
-credentials. Local Git history deliberately remains unchanged and contains
-older excerpts; publish the [clean release export](docs/public-release.md),
-not this private historical repository or a zip containing its `.git/` directory.
+Audit report writers preserve raw bytes privately before producing concise
+public reports. The earlier omission of 146 price fields was a conservative
+publication precaution; it did not establish that publishing those particular
+excerpts was prohibited. The original Git history is retained unchanged,
+including its older report excerpts. These are public-source market observations,
+distinct from private local captures and credentials. Retaining the history
+does not assert new training-use permission or relicense external data under MIT.
+
+Do not commit raw captures, full prediction artifacts or credentials. Publish
+code and documentation from the original repository using the ordinary
+[Git workflow](docs/public-release.md); no separate sanitized history is required.

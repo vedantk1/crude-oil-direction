@@ -1,7 +1,8 @@
 # Contributing
 
-This research phase is frozen. The project is an audited forecasting benchmark
-with negative and mixed findings, not a validated price or trading predictor.
+Crude Oil Direction's initial research phase is frozen. The project is a
+forecasting benchmark with negative and mixed findings, not a validated price
+or trading predictor.
 The 2023-onward final holdout remains closed. Changes to model selection need a
 new documented hypothesis and protocol before any results are computed.
 
@@ -30,12 +31,14 @@ separate availability audit and protocol; see [the source audit](docs/free-train
 
 Tests and CI use synthetic data without market downloads or keys. A passing demo
 proves pipeline behavior, not live source availability or forecasting skill.
-Public source-audit reports omit quotations; never interpret their redacted
-nulls as source missingness. Preserve private originals and immutable artifacts;
-use the [clean exporter](docs/public-release.md) for public distribution.
-Use a new output root for
-every source replay. Record capture identity, environment and whether a result
-uses retained snapshots or a newly captured history.
+Current source-audit reports omit quotations; never interpret their redacted
+nulls as source missingness. Older report excerpts remain in Git history. Keep
+raw captures and full artifacts under ignored `data/`, and use the original
+repository for development, commits and pushes. No separate release checkout is
+required; see the [publication workflow](docs/public-release.md).
+Use a new output root for every source replay. Record capture identity,
+environment and whether a result uses retained snapshots or newly captured
+history.
 
 Do not use held-out values for development, tuning, diagnostics or examples.
 Future history may be hashed as raw bytes for integrity, but cannot be decoded

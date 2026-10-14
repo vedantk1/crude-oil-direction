@@ -1,9 +1,15 @@
-# Crude oil direction research
+# Crude Oil Direction
 
-A free, CPU-only research benchmark for predicting whether WTI spot rises over
+A free, CPU-only forecasting project for predicting whether WTI spot rises over
 **five fixed US business days**. It reconstructs source availability, trains on
 historically available labels, and compares simple models chronologically.
 The 2023-onward final holdout remains closed.
+
+The project uses its original repository and full development history. Code,
+documentation and historical aggregate results belong in Git; downloaded data,
+private backups and full model artifacts stay under ignored `data/`. See the
+[development history](docs/development-history.md) and
+[publication record](docs/public-release.md).
 
 **This research phase is frozen. No fitted model has demonstrated an advantage
 over the simple probability benchmarks.** The project is useful as a reproducible
@@ -102,18 +108,21 @@ The target calendar is fixed US business days, not exchange trading sessions.
 - [Dataset specification](docs/dataset.md)
 - [Inventory source audit](docs/inventory-audit.md)
 - [Evaluation protocols and complete experiment history](docs/evaluation.md)
+- [Development milestones and original commits](docs/development-history.md)
 - [Fresh-checkout and retained-source workflows](docs/reproducibility.md)
 - [Research card and frozen-phase boundaries](docs/research-card.md)
 
-Public audit reports under `reports/` now omit source-price quotations and mark
-those omissions explicitly. Byte-exact originals, full per-forecast inputs,
-predictions, fitted diagnostics and checksums remain private under ignored `data/`.
+Current audit reports under `reports/` omit source-price quotations and mark
+those omissions explicitly. Older report excerpts remain in the unchanged Git
+history; the omissions were a precaution, not a finding that those particular
+excerpts were prohibited. Raw captures, byte-exact backup files, full per-forecast
+inputs, predictions and fitted diagnostics remain under ignored `data/`.
 CI runs synthetic tests and the offline demonstration without market data.
 
 ## License and contributions
 
 Original code, documentation and synthetic fixtures are [MIT licensed](LICENSE).
 External data remain subject to [their own terms](DATA_LICENSE.md).
-Use the [clean release exporter](docs/public-release.md) to omit private Git
-history, which still preserves older unsanitized reports and author metadata.
+Use the original checkout for development and normal Git pushes; a separate
+export or working copy is not required. See the [publication workflow](docs/public-release.md).
 See [contributing](CONTRIBUTING.md).

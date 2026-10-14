@@ -1,4 +1,4 @@
-"""Export clean tracked HEAD files without publishing private Git history."""
+"""Create an optional source ZIP from tracked HEAD files."""
 
 import argparse
 import hashlib
@@ -17,7 +17,7 @@ if __package__ in (None, ""):
 from oil_audit.public_reports import sanitize_report
 
 
-ARCHIVE_PREFIX = "oil-direction-research"
+ARCHIVE_PREFIX = "crude-oil-direction"
 ARCHIVE_NAME = ARCHIVE_PREFIX + ".zip"
 MANIFEST_NAME = "PUBLIC_RELEASE_MANIFEST.json"
 PUBLIC_REPORTS = {
@@ -160,7 +160,7 @@ def _archive(payloads, manifest):
 def export_public_release(output_root):
     """Validate everything before creating a deterministic, history-free export.
 
-    The manifest identifies the private source commit, without its author,
+    The manifest identifies the source commit, without its author,
     committer, timestamps or messages. It is provenance, not Git history.
     """
     output_root = _output_path(output_root)
